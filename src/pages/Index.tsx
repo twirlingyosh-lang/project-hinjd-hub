@@ -1,14 +1,15 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import HubView from '@/components/HubView';
+import AggregateOppsApp from '@/components/AggregateOppsApp';
 
 const Index = () => {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
+  const [view, setView] = useState<'hub' | 'app'>('hub');
+
+  if (view === 'app') {
+    return <AggregateOppsApp onNavigateToHub={() => setView('hub')} />;
+  }
+
+  return <HubView onNavigateToApp={() => setView('app')} />;
 };
 
 export default Index;
