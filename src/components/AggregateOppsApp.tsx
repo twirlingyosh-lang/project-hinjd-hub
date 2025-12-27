@@ -1,10 +1,15 @@
-import { ShieldCheck, ArrowLeft } from 'lucide-react';
+import { useState } from 'react';
+import { ShieldCheck, ArrowLeft, Wrench, BarChart3, Settings } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import BeltSaverTool from './BeltSaverTool';
 
 interface AggregateOppsAppProps {
   onNavigateToHub: () => void;
 }
 
 const AggregateOppsApp = ({ onNavigateToHub }: AggregateOppsAppProps) => {
+  const [activeTab, setActiveTab] = useState('beltsaver');
+
   return (
     <div className="min-h-screen bg-secondary text-foreground flex flex-col">
       {/* Header */}
@@ -27,20 +32,66 @@ const AggregateOppsApp = ({ onNavigateToHub }: AggregateOppsAppProps) => {
       </header>
       
       {/* Main Content */}
-      <main className="flex-1 p-6 flex flex-col items-center justify-center">
-        <div className="text-center max-w-md">
-          <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <span className="text-3xl industrial-title text-primary">A</span>
-          </div>
-          <h1 className="text-2xl industrial-title mb-3 text-foreground">AggregateOpps</h1>
-          <p className="text-muted-foreground italic mb-8">
-            Production & Yield Utility for aggregate operations
-          </p>
-          <div className="p-6 bg-card border border-border rounded-3xl">
-            <p className="text-muted-foreground text-sm">
-              [App Content Active Here]
+      <main className="flex-1 p-4 md:p-6 overflow-auto">
+        <div className="max-w-2xl mx-auto">
+          {/* App Header */}
+          <div className="text-center mb-6">
+            <h1 className="text-2xl industrial-title mb-2 text-foreground">Conveyor Diagnostics</h1>
+            <p className="text-muted-foreground text-sm italic">
+              BeltSaver® Mistracking Troubleshooter
             </p>
           </div>
+
+          {/* Tabs Navigation */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="w-full grid grid-cols-3 mb-6 bg-card border border-border">
+              <TabsTrigger 
+                value="beltsaver" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <Wrench size={16} className="mr-2" />
+                BeltSaver
+              </TabsTrigger>
+              <TabsTrigger 
+                value="metrics"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <BarChart3 size={16} className="mr-2" />
+                Metrics
+              </TabsTrigger>
+              <TabsTrigger 
+                value="settings"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <Settings size={16} className="mr-2" />
+                Config
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="beltsaver" className="mt-0">
+              <BeltSaverTool />
+            </TabsContent>
+
+            <TabsContent value="metrics" className="mt-0">
+              <div className="p-8 bg-card border border-border rounded-3xl text-center">
+                <BarChart3 size={48} className="mx-auto text-muted-foreground/30 mb-4" />
+                <h3 className="industrial-title text-lg mb-2">Production Metrics</h3>
+                <p className="text-muted-foreground text-sm italic">
+                  Yield tracking and performance analytics coming soon
+                </p>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="settings" className="mt-0">
+              <div className="p-8 bg-card border border-border rounded-3xl text-center">
+                <Settings size={48} className="mx-auto text-muted-foreground/30 mb-4" />
+                <h3 className="industrial-title text-lg mb-2">Configuration</h3>
+                <p className="text-muted-foreground text-sm italic">
+                  Conveyor profiles and settings coming soon
+                </p>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
     </div>
