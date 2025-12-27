@@ -26,6 +26,7 @@ export type Database = {
           severity: string
           status: string
           tracking_direction: string
+          user_id: string | null
         }
         Insert: {
           belt_saver_benefits: string[]
@@ -38,6 +39,7 @@ export type Database = {
           severity: string
           status?: string
           tracking_direction: string
+          user_id?: string | null
         }
         Update: {
           belt_saver_benefits?: string[]
@@ -50,6 +52,31 @@ export type Database = {
           severity?: string
           status?: string
           tracking_direction?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
         }
         Relationships: []
       }

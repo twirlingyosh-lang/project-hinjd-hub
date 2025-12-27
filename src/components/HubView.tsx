@@ -3,8 +3,14 @@ import {
   Wrench, 
   Zap,
   LayoutDashboard,
-  ChevronRight
+  ChevronRight,
+  LogIn,
+  LogOut,
+  User
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
 import PortfolioCard from './PortfolioCard';
 
 interface HubViewProps {
@@ -12,6 +18,8 @@ interface HubViewProps {
 }
 
 const HubView = ({ onNavigateToApp }: HubViewProps) => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const portfolio = [
     {
       title: "Cox-Aggs Pro",
@@ -44,8 +52,39 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
+      {/* Auth Bar */}
+      <div className="max-w-2xl mx-auto flex justify-end mb-4 animate-slide-up">
+        {user ? (
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-muted-foreground flex items-center gap-2">
+              <User size={16} />
+              {user.email}
+            </span>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => signOut()}
+              className="flex items-center gap-2"
+            >
+              <LogOut size={16} />
+              Sign Out
+            </Button>
+          </div>
+        ) : (
+          <Button 
+            variant="default" 
+            size="sm" 
+            onClick={() => navigate('/auth')}
+            className="flex items-center gap-2"
+          >
+            <LogIn size={16} />
+            Sign In
+          </Button>
+        )}
+      </div>
+
       {/* Header */}
-      <header className="max-w-2xl mx-auto text-center mt-12 mb-16 animate-slide-up">
+      <header className="max-w-2xl mx-auto text-center mt-8 mb-16 animate-slide-up">
         <div className="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-3xl mb-6 card-glow industrial-title text-3xl text-primary-foreground">
           H
         </div>
