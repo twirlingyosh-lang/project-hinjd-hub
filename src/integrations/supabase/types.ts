@@ -14,7 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      belt_diagnostics: {
+        Row: {
+          belt_saver_benefits: string[]
+          cause: string
+          created_at: string
+          id: string
+          location: string
+          notes: string | null
+          recommendations: string[]
+          severity: string
+          status: string
+          tracking_direction: string
+        }
+        Insert: {
+          belt_saver_benefits: string[]
+          cause: string
+          created_at?: string
+          id?: string
+          location: string
+          notes?: string | null
+          recommendations: string[]
+          severity: string
+          status?: string
+          tracking_direction: string
+        }
+        Update: {
+          belt_saver_benefits?: string[]
+          cause?: string
+          created_at?: string
+          id?: string
+          location?: string
+          notes?: string | null
+          recommendations?: string[]
+          severity?: string
+          status?: string
+          tracking_direction?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
