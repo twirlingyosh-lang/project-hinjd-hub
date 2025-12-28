@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { ShieldCheck, ArrowLeft, Wrench, BarChart3, Settings } from 'lucide-react';
+import { ShieldCheck, ArrowLeft, Wrench, BarChart3, History } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import BeltSaverTool from './BeltSaverTool';
+import DiagnosticsHistory from './DiagnosticsHistory';
 
 interface AggregateOppsAppProps {
   onNavigateToHub: () => void;
@@ -53,23 +54,27 @@ const AggregateOppsApp = ({ onNavigateToHub }: AggregateOppsAppProps) => {
                 BeltSaver
               </TabsTrigger>
               <TabsTrigger 
+                value="history"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <History size={16} className="mr-2" />
+                History
+              </TabsTrigger>
+              <TabsTrigger 
                 value="metrics"
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
                 <BarChart3 size={16} className="mr-2" />
                 Metrics
               </TabsTrigger>
-              <TabsTrigger 
-                value="settings"
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-              >
-                <Settings size={16} className="mr-2" />
-                Config
-              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="beltsaver" className="mt-0">
               <BeltSaverTool />
+            </TabsContent>
+
+            <TabsContent value="history" className="mt-0">
+              <DiagnosticsHistory />
             </TabsContent>
 
             <TabsContent value="metrics" className="mt-0">
@@ -78,16 +83,6 @@ const AggregateOppsApp = ({ onNavigateToHub }: AggregateOppsAppProps) => {
                 <h3 className="industrial-title text-lg mb-2">Production Metrics</h3>
                 <p className="text-muted-foreground text-sm italic">
                   Yield tracking and performance analytics coming soon
-                </p>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="settings" className="mt-0">
-              <div className="p-8 bg-card border border-border rounded-3xl text-center">
-                <Settings size={48} className="mx-auto text-muted-foreground/30 mb-4" />
-                <h3 className="industrial-title text-lg mb-2">Configuration</h3>
-                <p className="text-muted-foreground text-sm italic">
-                  Conveyor profiles and settings coming soon
                 </p>
               </div>
             </TabsContent>
