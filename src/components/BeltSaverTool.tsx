@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   AlertTriangle, 
   CheckCircle, 
@@ -8,12 +8,17 @@ import {
   ArrowRight,
   ArrowLeft,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Save,
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface DiagnosticStep {
   id: string;
@@ -164,6 +169,11 @@ const BeltSaverTool = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [showResults, setShowResults] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedDiagnosticId, setSavedDiagnosticId] = useState<string | null>(null);
+  
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   const handleAnswer = (value: string) => {
     const stepId = diagnosticSteps[currentStep].id;
@@ -188,11 +198,56 @@ const BeltSaverTool = () => {
     setCurrentStep(0);
     setAnswers({});
     setShowResults(false);
+    setSavedDiagnosticId(null);
   };
 
   const currentStepData = diagnosticSteps[currentStep];
   const currentAnswer = answers[currentStepData?.id];
   const diagnosis = showResults ? generateDiagnosis(answers) : null;
+
+  // Auto-save diagnostic when results are shown
+  useEffect(() => {
+    const saveDiagnostic = async () => {
+      if (!showResults || !diagnosis || savedDiagnosticId) return;
+      
+      setIsSaving(true);
+      try {
+        const { data, error } = await supabase
+          .from('belt_diagnostics')
+          .insert({
+            location: answers.location,
+            tracking_direction: answers.direction,
+            severity: diagnosis.severity,
+            cause: diagnosis.issue,
+            recommendations: diagnosis.repairs,
+            belt_saver_benefits: diagnosis.beltSaverBenefit ? [diagnosis.beltSaverBenefit] : [],
+            user_id: user?.id || null,
+            status: 'pending'
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        setSavedDiagnosticId(data.id);
+        toast({
+          title: "Diagnostic Saved",
+          description: "Your diagnosis has been saved to your history.",
+        });
+      } catch (error) {
+        console.error('Error saving diagnostic:', error);
+        toast({
+          title: "Save Failed",
+          description: "Could not save diagnostic. Please try again.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsSaving(false);
+      }
+    };
+
+    saveDiagnostic();
+  }, [showResults, diagnosis, answers, user?.id, savedDiagnosticId, toast]);
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -220,9 +275,22 @@ const BeltSaverTool = () => {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="industrial-title text-lg">{diagnosis.issue}</CardTitle>
-              <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase border ${getSeverityColor(diagnosis.severity)}`}>
-                {diagnosis.severity} severity
-              </span>
+              <div className="flex items-center gap-2">
+                {isSaving ? (
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Loader2 size={12} className="animate-spin" />
+                    Saving...
+                  </span>
+                ) : savedDiagnosticId ? (
+                  <span className="flex items-center gap-1 text-xs text-green-500">
+                    <Save size={12} />
+                    Saved
+                  </span>
+                ) : null}
+                <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase border ${getSeverityColor(diagnosis.severity)}`}>
+                  {diagnosis.severity} severity
+                </span>
+              </div>
             </div>
           </CardHeader>
         </Card>
