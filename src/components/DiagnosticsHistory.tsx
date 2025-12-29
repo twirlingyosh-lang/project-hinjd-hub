@@ -7,12 +7,26 @@ import {
   AlertTriangle,
   CheckCircle,
   Loader2,
-  RefreshCw
+  RefreshCw,
+  Trash2
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface Diagnostic {
   id: string;
@@ -25,12 +39,17 @@ interface Diagnostic {
   belt_saver_benefits: string[];
   status: string;
   notes: string | null;
+  user_id: string | null;
 }
 
 const DiagnosticsHistory = () => {
   const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   const fetchDiagnostics = async () => {
     setIsLoading(true);
@@ -48,6 +67,33 @@ const DiagnosticsHistory = () => {
       setError('Failed to load diagnostics');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    setDeletingId(id);
+    try {
+      const { error } = await supabase
+        .from('belt_diagnostics')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setDiagnostics(prev => prev.filter(d => d.id !== id));
+      toast({
+        title: "Diagnostic Deleted",
+        description: "The diagnostic record has been removed.",
+      });
+    } catch (err) {
+      console.error('Error deleting diagnostic:', err);
+      toast({
+        title: "Delete Failed",
+        description: "Could not delete the diagnostic. You can only delete your own records.",
+        variant: "destructive"
+      });
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -198,6 +244,46 @@ const DiagnosticsHistory = () => {
               <div className="flex items-center gap-1 mt-2 text-xs text-primary">
                 <CheckCircle size={12} />
                 BeltSaver® solution available
+              </div>
+            )}
+
+            {/* Delete button - only show for user's own diagnostics */}
+            {user && diag.user_id === user.id && (
+              <div className="flex justify-end mt-3 pt-3 border-t border-border">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      disabled={deletingId === diag.id}
+                    >
+                      {deletingId === diag.id ? (
+                        <Loader2 size={14} className="mr-2 animate-spin" />
+                      ) : (
+                        <Trash2 size={14} className="mr-2" />
+                      )}
+                      Delete
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Diagnostic?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently delete this diagnostic record. This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction 
+                        onClick={() => handleDelete(diag.id)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             )}
           </CardContent>
