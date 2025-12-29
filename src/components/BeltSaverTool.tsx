@@ -7,7 +7,6 @@ import {
   Wrench,
   ArrowRight,
   ArrowLeft,
-  ArrowUp,
   ArrowDown,
   Save,
   Loader2
@@ -19,6 +18,7 @@ import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import SocialShareButtons from './SocialShareButtons';
 
 interface DiagnosticStep {
   id: string;
@@ -361,6 +361,16 @@ const BeltSaverTool = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* Social Share */}
+        <Card className="bg-card border-border">
+          <CardContent className="pt-4">
+            <SocialShareButtons 
+              title={`Conveyor Diagnosis: ${diagnosis.issue}`}
+              text={`${diagnosis.severity.toUpperCase()} severity - ${diagnosis.causes[0]}. Recommended: ${diagnosis.repairs[0]}`}
+            />
+          </CardContent>
+        </Card>
 
         {/* Reset Button */}
         <Button 
