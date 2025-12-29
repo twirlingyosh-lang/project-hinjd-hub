@@ -8,9 +8,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { z } from 'zod';
+import PasswordStrengthIndicator from '@/components/PasswordStrengthIndicator';
 
 const emailSchema = z.string().email('Please enter a valid email address');
-const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
+
+const passwordSchemaSignIn = z.string().min(6, 'Password must be at least 6 characters');
+
+const passwordSchemaSignUp = z.string()
+  .min(8, 'Password must be at least 8 characters')
+  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+  .regex(/[0-9]/, 'Password must contain at least one number')
+  .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character')
+  .refine(
+    (password) => {
+      const commonPasswords = ['password', '123456', 'qwerty', 'abc123', 'letmein', 'password1', '12345678'];
+      return !commonPasswords.includes(password.toLowerCase());
+    },
+    { message: 'This password is too common. Please choose a stronger password.' }
+  );
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -29,7 +45,11 @@ const Auth = () => {
   const validateInputs = (isSignUp: boolean) => {
     try {
       emailSchema.parse(email);
-      passwordSchema.parse(password);
+      if (isSignUp) {
+        passwordSchemaSignUp.parse(password);
+      } else {
+        passwordSchemaSignIn.parse(password);
+      }
       return true;
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -184,6 +204,7 @@ const Auth = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
+                  {password && <PasswordStrengthIndicator password={password} />}
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? 'Creating account...' : 'Create Account'}
