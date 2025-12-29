@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       belt_diagnostics: {
         Row: {
+          attachments: string[] | null
           belt_saver_benefits: string[]
           cause: string
           created_at: string
@@ -29,6 +30,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          attachments?: string[] | null
           belt_saver_benefits: string[]
           cause: string
           created_at?: string
@@ -42,6 +44,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          attachments?: string[] | null
           belt_saver_benefits?: string[]
           cause?: string
           created_at?: string

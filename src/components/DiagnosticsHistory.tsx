@@ -8,7 +8,8 @@ import {
   CheckCircle,
   Loader2,
   RefreshCw,
-  Trash2
+  Trash2,
+  Paperclip
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,6 +28,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import DocumentUpload from './DocumentUpload';
 
 interface Diagnostic {
   id: string;
@@ -40,6 +42,7 @@ interface Diagnostic {
   status: string;
   notes: string | null;
   user_id: string | null;
+  attachments: string[] | null;
 }
 
 const DiagnosticsHistory = () => {
@@ -244,6 +247,25 @@ const DiagnosticsHistory = () => {
               <div className="flex items-center gap-1 mt-2 text-xs text-primary">
                 <CheckCircle size={12} />
                 BeltSaver® solution available
+              </div>
+            )}
+
+            {/* Attachments section */}
+            {user && diag.user_id === user.id && (
+              <div className="mt-3 pt-3 border-t border-border">
+                <div className="flex items-center gap-1 mb-2 text-xs text-muted-foreground">
+                  <Paperclip size={12} />
+                  Attachments ({diag.attachments?.length || 0})
+                </div>
+                <DocumentUpload 
+                  diagnosticId={diag.id}
+                  existingAttachments={diag.attachments || []}
+                  onUploadComplete={(attachments) => {
+                    setDiagnostics(prev => prev.map(d => 
+                      d.id === diag.id ? { ...d, attachments } : d
+                    ));
+                  }}
+                />
               </div>
             )}
 
