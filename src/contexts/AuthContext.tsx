@@ -1,13 +1,14 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { authLimiter } from '@/lib/rateLimiter';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
   signUp: (email: string, password: string, fullName?: string) => Promise<{ error: Error | null }>;
-  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: Error | null; rateLimited?: boolean; remainingMinutes?: number }>;
   signOut: () => Promise<void>;
 }
 
@@ -63,10 +64,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signIn = async (email: string, password: string) => {
+    // Check rate limit
+    if (!authLimiter.tryAcquire(email)) {
+      const remainingMinutes = authLimiter.getRemainingTime(email);
+      return { 
+        error: new Error(`Too many login attempts. Please try again in ${remainingMinutes} minutes.`),
+        rateLimited: true,
+        remainingMinutes
+      };
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password
     });
+
+    if (error) {
+      authLimiter.recordFailure(email);
+    } else {
+      authLimiter.reset(email);
+    }
+
     return { error };
   };
 
