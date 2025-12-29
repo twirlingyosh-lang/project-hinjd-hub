@@ -1,1 +1,4 @@
 project_id = "zpslppxkrwjxsfotypdp"
+
+[functions.belt-assistant]
+verify_jwt = false
