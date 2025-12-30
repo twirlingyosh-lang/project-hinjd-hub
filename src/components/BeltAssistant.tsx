@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import { MessageCircle, Send, X, Loader2, Bot, User, Minimize2 } from 'lucide-react';
+import { MessageCircle, Send, Loader2, Bot, User, Minimize2, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -24,6 +26,8 @@ const BeltAssistant = () => {
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const { session, user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -33,6 +37,16 @@ const BeltAssistant = () => {
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
+
+    // Check authentication before sending
+    if (!session?.access_token) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to use the AI assistant.",
+        variant: "destructive"
+      });
+      return;
+    }
 
     const userMessage: Message = { role: 'user', content: input.trim() };
     const newMessages = [...messages, userMessage];
@@ -47,12 +61,21 @@ const BeltAssistant = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          'Authorization': `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({ 
           messages: newMessages.map(m => ({ role: m.role, content: m.content }))
         }),
       });
+
+      if (response.status === 401) {
+        toast({
+          title: "Session Expired",
+          description: "Please sign in again to continue.",
+          variant: "destructive"
+        });
+        return;
+      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -158,61 +181,79 @@ const BeltAssistant = () => {
         </Button>
       </div>
 
-      {/* Messages */}
-      <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-        <div className="space-y-4">
-          {messages.map((msg, i) => (
-            <div
-              key={i}
-              className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              {msg.role === 'assistant' && (
-                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Bot size={14} className="text-primary" />
-                </div>
-              )}
-              <div
-                className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm ${
-                  msg.role === 'user'
-                    ? 'bg-primary text-primary-foreground rounded-tr-sm'
-                    : 'bg-muted rounded-tl-sm'
-                }`}
-              >
-                {msg.content || (isLoading && i === messages.length - 1 ? (
-                  <Loader2 size={14} className="animate-spin" />
-                ) : null)}
-              </div>
-              {msg.role === 'user' && (
-                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary flex items-center justify-center">
-                  <User size={14} className="text-primary-foreground" />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </ScrollArea>
-
-      {/* Input */}
-      <div className="p-3 border-t border-border">
-        <div className="flex gap-2">
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Describe your belt issue..."
-            disabled={isLoading}
-            className="flex-1 rounded-xl"
-          />
-          <Button 
-            onClick={sendMessage} 
-            disabled={isLoading || !input.trim()}
-            size="icon"
-            className="rounded-xl"
-          >
-            {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+      {/* Authentication Check */}
+      {!user ? (
+        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+          <div className="p-4 bg-muted rounded-full mb-4">
+            <LogIn size={32} className="text-muted-foreground" />
+          </div>
+          <h4 className="font-semibold mb-2">Sign In Required</h4>
+          <p className="text-sm text-muted-foreground mb-4">
+            Please sign in to use the AI diagnostic assistant.
+          </p>
+          <Button onClick={() => navigate('/auth')} className="rounded-xl">
+            Sign In
           </Button>
         </div>
-      </div>
+      ) : (
+        <>
+          {/* Messages */}
+          <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+            <div className="space-y-4">
+              {messages.map((msg, i) => (
+                <div
+                  key={i}
+                  className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  {msg.role === 'assistant' && (
+                    <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Bot size={14} className="text-primary" />
+                    </div>
+                  )}
+                  <div
+                    className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm ${
+                      msg.role === 'user'
+                        ? 'bg-primary text-primary-foreground rounded-tr-sm'
+                        : 'bg-muted rounded-tl-sm'
+                    }`}
+                  >
+                    {msg.content || (isLoading && i === messages.length - 1 ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : null)}
+                  </div>
+                  {msg.role === 'user' && (
+                    <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary flex items-center justify-center">
+                      <User size={14} className="text-primary-foreground" />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+
+          {/* Input */}
+          <div className="p-3 border-t border-border">
+            <div className="flex gap-2">
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Describe your belt issue..."
+                disabled={isLoading}
+                className="flex-1 rounded-xl"
+              />
+              <Button 
+                onClick={sendMessage} 
+                disabled={isLoading || !input.trim()}
+                size="icon"
+                className="rounded-xl"
+              >
+                {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
