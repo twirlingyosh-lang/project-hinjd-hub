@@ -20,6 +20,7 @@ import beltCloseup from '@/assets/beltsaver-closeup.jpg';
 import quarryAerial from '@/assets/quarry-aerial.jpg';
 import smashGuruThumb from '@/assets/smash-guru-thumb.jpg';
 import yardageProThumb from '@/assets/yardage-pro-thumb.jpg';
+import coxAggsThumb from '@/assets/cox-aggs-thumb.jpg';
 
 interface HubViewProps {
   onNavigateToApp: () => void;
@@ -37,7 +38,8 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
       colorClass: "text-primary",
       bgClass: "bg-primary/10",
       icon: <Zap size={24} />,
-      tag: "Enterprise"
+      tag: "Enterprise",
+      thumbnail: coxAggsThumb
     },
     {
       title: "Smash-Fix-Guru",
