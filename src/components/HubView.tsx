@@ -18,6 +18,8 @@ import SocialMediaLinks from './SocialMediaLinks';
 import heroImage from '@/assets/hero-beltsaver.jpg';
 import beltCloseup from '@/assets/beltsaver-closeup.jpg';
 import quarryAerial from '@/assets/quarry-aerial.jpg';
+import smashGuruThumb from '@/assets/smash-guru-thumb.jpg';
+import yardageProThumb from '@/assets/yardage-pro-thumb.jpg';
 
 interface HubViewProps {
   onNavigateToApp: () => void;
@@ -44,7 +46,8 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
       colorClass: "text-industrial-red",
       bgClass: "bg-industrial-red/10",
       icon: <Wrench size={24} />,
-      tag: "Maintenance"
+      tag: "Maintenance",
+      thumbnail: smashGuruThumb
     },
     {
       title: "Concrete-Quantify",
@@ -53,7 +56,8 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
       colorClass: "text-industrial-blue",
       bgClass: "bg-industrial-blue/10",
       icon: <BarChart3 size={24} />,
-      tag: "Civil"
+      tag: "Civil",
+      thumbnail: yardageProThumb
     }
   ];
 
@@ -165,6 +169,7 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
                   tag={item.tag}
                   colorClass={item.colorClass}
                   bgClass={item.bgClass}
+                  thumbnail={item.thumbnail}
                 />
               </div>
             ))}

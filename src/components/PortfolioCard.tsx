@@ -9,9 +9,10 @@ interface PortfolioCardProps {
   tag: string;
   colorClass: string;
   bgClass: string;
+  thumbnail?: string;
 }
 
-const PortfolioCard = ({ title, description, url, icon, tag, colorClass, bgClass }: PortfolioCardProps) => {
+const PortfolioCard = ({ title, description, url, icon, tag, colorClass, bgClass, thumbnail }: PortfolioCardProps) => {
   return (
     <a 
       href={url} 
@@ -20,9 +21,19 @@ const PortfolioCard = ({ title, description, url, icon, tag, colorClass, bgClass
       className="group p-5 bg-card/50 border border-border rounded-3xl flex justify-between items-center hover:border-foreground/20 transition-all duration-300"
     >
       <div className="flex items-center gap-4">
-        <div className={`p-2 rounded-xl ${bgClass} ${colorClass}`}>
-          {icon}
-        </div>
+        {thumbnail ? (
+          <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0">
+            <img 
+              src={thumbnail} 
+              alt={`${title} thumbnail`} 
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+            />
+          </div>
+        ) : (
+          <div className={`p-2 rounded-xl ${bgClass} ${colorClass}`}>
+            {icon}
+          </div>
+        )}
         <div>
           <div className="flex items-center gap-2">
             <h4 className="font-bold text-sm uppercase italic text-foreground">{title}</h4>
