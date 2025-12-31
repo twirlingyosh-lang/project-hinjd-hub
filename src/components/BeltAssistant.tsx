@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import { MessageCircle, Send, Loader2, Bot, User, Minimize2, LogIn } from 'lucide-react';
+import { MessageCircle, Send, Loader2, Bot, User, Minimize2, LogIn, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUsageLimit } from '@/hooks/useUsageLimit';
 import { useNavigate } from 'react-router-dom';
 
 interface Message {
@@ -27,6 +28,7 @@ const BeltAssistant = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { session, user } = useAuth();
+  const { freeUsesRemaining, hasActiveSubscription, canUse, decrementUsage } = useUsageLimit();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,6 +45,27 @@ const BeltAssistant = () => {
       toast({
         title: "Authentication Required",
         description: "Please sign in to use the AI assistant.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Check usage limits
+    if (!hasActiveSubscription && !canUse) {
+      toast({
+        title: "Usage Limit Reached",
+        description: "You've used all your free uses. Subscribe for unlimited access.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Decrement usage for AI chat
+    const usageSuccess = await decrementUsage();
+    if (!usageSuccess && !hasActiveSubscription) {
+      toast({
+        title: "Usage Limit Reached",
+        description: "You've used all your free uses. Subscribe for unlimited access.",
         variant: "destructive"
       });
       return;
@@ -195,8 +218,36 @@ const BeltAssistant = () => {
             Sign In
           </Button>
         </div>
+      ) : !canUse && !hasActiveSubscription ? (
+        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+          <div className="p-4 bg-destructive/10 rounded-full mb-4">
+            <AlertCircle size={32} className="text-destructive" />
+          </div>
+          <h4 className="font-semibold mb-2">Usage Limit Reached</h4>
+          <p className="text-sm text-muted-foreground mb-4">
+            You've used all 10 free uses. Subscribe for unlimited access.
+          </p>
+          <Button 
+            onClick={() => window.open('mailto:info@hinjd.com?subject=Subscription%20Inquiry', '_blank')} 
+            className="rounded-xl"
+          >
+            Subscribe Now
+          </Button>
+        </div>
       ) : (
         <>
+          {/* Usage indicator */}
+          {!hasActiveSubscription && (
+            <div className="px-4 py-2 bg-muted/50 border-b border-border">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">Free uses remaining</span>
+                <span className={`font-bold ${freeUsesRemaining <= 3 ? 'text-primary' : 'text-foreground'}`}>
+                  {freeUsesRemaining}/10
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Messages */}
           <ScrollArea className="flex-1 p-4" ref={scrollRef}>
             <div className="space-y-4">
