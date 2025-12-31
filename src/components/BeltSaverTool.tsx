@@ -15,12 +15,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useUsageLimit } from '@/hooks/useUsageLimit';
+import { useStripeSubscription } from '@/hooks/useStripeSubscription';
 import SocialShareButtons from './SocialShareButtons';
 import UsageLimitBanner from './UsageLimitBanner';
+import { SubscriptionPlans } from './SubscriptionPlans';
 
 interface DiagnosticStep {
   id: string;
@@ -183,6 +186,22 @@ const BeltSaverTool = () => {
     decrementUsage,
     isLoading: usageLoading 
   } = useUsageLimit();
+  const { subscribed, tier, hasUnlimitedAccess, checkSubscription } = useStripeSubscription();
+  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
+  
+  // Check subscription on mount and after checkout
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('checkout') === 'success') {
+      checkSubscription();
+      toast({
+        title: "Subscription Activated!",
+        description: "Thank you for subscribing. You now have full access.",
+      });
+      // Clean up URL
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [checkSubscription, toast]);
 
   const handleAnswer = (value: string) => {
     const stepId = diagnosticSteps[currentStep].id;
@@ -416,14 +435,19 @@ const BeltSaverTool = () => {
   }
 
   // Show upgrade prompt if no uses remaining
-  if (!canUse && !hasActiveSubscription && !usageLoading) {
+  if (!canUse && !hasActiveSubscription && !subscribed && !usageLoading) {
     return (
       <div className="space-y-6">
-        <UsageLimitBanner
-          freeUsesRemaining={freeUsesRemaining}
-          hasActiveSubscription={hasActiveSubscription}
-          onSubscribe={() => window.open('mailto:info@hinjd.com?subject=Subscription%20Inquiry', '_blank')}
-        />
+        <Dialog open={showSubscriptionDialog} onOpenChange={setShowSubscriptionDialog}>
+          <UsageLimitBanner
+            freeUsesRemaining={freeUsesRemaining}
+            hasActiveSubscription={hasActiveSubscription || subscribed}
+            onSubscribe={() => setShowSubscriptionDialog(true)}
+          />
+          <DialogContent className="max-w-3xl">
+            <SubscriptionPlans onClose={() => setShowSubscriptionDialog(false)} />
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
@@ -431,12 +455,17 @@ const BeltSaverTool = () => {
   return (
     <div className="space-y-6">
       {/* Usage Banner */}
-      {!hasActiveSubscription && (
-        <UsageLimitBanner
-          freeUsesRemaining={freeUsesRemaining}
-          hasActiveSubscription={hasActiveSubscription}
-          onSubscribe={() => window.open('mailto:info@hinjd.com?subject=Subscription%20Inquiry', '_blank')}
-        />
+      {!hasActiveSubscription && !subscribed && (
+        <Dialog open={showSubscriptionDialog} onOpenChange={setShowSubscriptionDialog}>
+          <UsageLimitBanner
+            freeUsesRemaining={freeUsesRemaining}
+            hasActiveSubscription={hasActiveSubscription || subscribed}
+            onSubscribe={() => setShowSubscriptionDialog(true)}
+          />
+          <DialogContent className="max-w-3xl">
+            <SubscriptionPlans onClose={() => setShowSubscriptionDialog(false)} />
+          </DialogContent>
+        </Dialog>
       )}
 
       {/* Progress Indicator */}
