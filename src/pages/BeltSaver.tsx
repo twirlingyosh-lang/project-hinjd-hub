@@ -8,7 +8,9 @@ import {
   Settings,
   Gauge,
   Factory,
-  Mail
+  Mail,
+  Download,
+  FileText
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -23,23 +25,23 @@ const BeltSaver = () => {
   const features = [
     {
       icon: <Shield size={24} />,
-      title: "Edge Protection",
-      description: "Patented crown design prevents belt edge damage and eliminates costly tracking wander"
+      title: "Clamp-On Retrofit",
+      description: "Two semi-circular discs bolt around existing shafts, extending 4-6\" above the belt for guidance"
     },
     {
       icon: <Zap size={24} />,
-      title: "Self-Tracking",
-      description: "Automatic belt centering reduces manual adjustments and maintenance interventions"
+      title: "Integrated Design",
+      description: "Built-in discs form part of the pulley for OEM installations—no welding or cutting required"
     },
     {
       icon: <TrendingDown size={24} />,
-      title: "Reduced Downtime",
-      description: "Minimize unplanned shutdowns with proactive belt protection technology"
+      title: "Reduce Downtime",
+      description: "Prevent belt derailments before they happen, keeping your operation running"
     },
     {
       icon: <Clock size={24} />,
-      title: "Extended Belt Life",
-      description: "2-3x longer belt lifespan through consistent edge protection and alignment"
+      title: "Fast Installation",
+      description: "Universal fit for standard shaft sizes with minimal downtime during install"
     }
   ];
 
@@ -55,12 +57,12 @@ const BeltSaver = () => {
   ];
 
   const applications = [
-    "Aggregate & Mining Operations",
-    "Cement & Concrete Plants",
-    "Coal Handling Facilities",
-    "Port & Terminal Conveyors",
-    "Recycling & Waste Processing",
-    "Food & Beverage Processing"
+    "Mining Operations",
+    "Aggregates & Quarries",
+    "Cement Plants",
+    "Power Generation",
+    "Bulk Material Handling",
+    "Industrial Conveyors"
   ];
 
   return (
@@ -95,13 +97,13 @@ const BeltSaver = () => {
         {/* Hero Content */}
         <div className="absolute bottom-0 left-0 right-0 p-8 text-center">
           <span className="inline-block px-4 py-1 bg-primary/20 text-primary rounded-full text-xs font-bold uppercase tracking-widest mb-4 animate-slide-up">
-            Patented Technology
+            U.S. Patent No. 12,195,281 B1
           </span>
           <h1 className="text-5xl md:text-6xl industrial-title animate-slide-up" style={{ animationDelay: '0.1s' }}>
-            BeltSaver<span className="text-primary">®</span>
+            Belt Saver<span className="text-primary">™</span>
           </h1>
           <p className="text-xl text-muted-foreground mt-4 max-w-2xl mx-auto animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            Integrated Tail Pulley Technology
+            Patented Tail Pulley Protection
           </p>
         </div>
       </div>
@@ -112,13 +114,21 @@ const BeltSaver = () => {
         {/* Value Proposition */}
         <section className="text-center mb-20 animate-slide-up" style={{ animationDelay: '0.3s' }}>
           <h2 className="text-3xl industrial-title mb-6">
-            Eliminate Belt Tracking Issues <span className="text-primary">Forever</span>
+            Stop Belt Misalignment <span className="text-primary">At The Source</span>
           </h2>
-          <p className="text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            The BeltSaver® Integrated Tail Pulley revolutionizes conveyor maintenance by combining 
-            self-tracking technology with edge protection. Our patented crown design automatically 
-            centers your belt while protecting edges from damage—reducing maintenance costs by up to 60%.
+          <p className="text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
+            Conveyor belt misalignment at the tail pulley is a leading cause of costly downtime, 
+            premature belt wear, and expensive pulley replacements. The Belt Saver™ solves this 
+            with a simple, field-ready solution that protects belts and extends equipment life.
           </p>
+          <a 
+            href="/documents/BeltSaver_Brochure.pdf"
+            download
+            className="inline-flex items-center gap-2 bg-primary/10 text-primary border border-primary/30 px-6 py-3 rounded-xl font-bold text-sm hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+          >
+            <Download size={18} />
+            Download Brochure (PDF)
+          </a>
         </section>
 
         {/* Features Grid */}
