@@ -199,12 +199,20 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
             <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
               Patented Integrated Tail Pulley IP. Protect your belt edges and eliminate tracking wander.
             </p>
-            <a 
-              href="mailto:twirlingyosh@gmail.com" 
-              className="inline-block bg-primary text-primary-foreground px-6 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-transform duration-300"
-            >
-              Inquire for Acquisition
-            </a>
+            <div className="flex flex-wrap gap-3">
+              <button 
+                onClick={() => navigate('/beltsaver')}
+                className="inline-block bg-primary text-primary-foreground px-6 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-transform duration-300"
+              >
+                View Details
+              </button>
+              <a 
+                href="mailto:twirlingyosh@gmail.com" 
+                className="inline-block bg-secondary text-foreground border border-border px-6 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-transform duration-300"
+              >
+                Inquire
+              </a>
+            </div>
           </div>
         </div>
       </div>
