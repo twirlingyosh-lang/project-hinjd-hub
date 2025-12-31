@@ -63,22 +63,28 @@ export type Database = {
         Row: {
           created_at: string
           email: string | null
+          free_uses_remaining: number
           full_name: string | null
           id: string
+          total_uses: number
           updated_at: string
         }
         Insert: {
           created_at?: string
           email?: string | null
+          free_uses_remaining?: number
           full_name?: string | null
           id: string
+          total_uses?: number
           updated_at?: string
         }
         Update: {
           created_at?: string
           email?: string | null
+          free_uses_remaining?: number
           full_name?: string | null
           id?: string
+          total_uses?: number
           updated_at?: string
         }
         Relationships: []
@@ -121,7 +127,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      decrement_usage: { Args: { p_user_id: string }; Returns: boolean }
+      get_usage_status: {
+        Args: { p_user_id: string }
+        Returns: {
+          free_uses_remaining: number
+          has_active_subscription: boolean
+          total_uses: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

@@ -18,7 +18,9 @@ import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { useUsageLimit } from '@/hooks/useUsageLimit';
 import SocialShareButtons from './SocialShareButtons';
+import UsageLimitBanner from './UsageLimitBanner';
 
 interface DiagnosticStep {
   id: string;
@@ -174,16 +176,44 @@ const BeltSaverTool = () => {
   
   const { user } = useAuth();
   const { toast } = useToast();
+  const { 
+    freeUsesRemaining, 
+    hasActiveSubscription, 
+    canUse, 
+    decrementUsage,
+    isLoading: usageLoading 
+  } = useUsageLimit();
 
   const handleAnswer = (value: string) => {
     const stepId = diagnosticSteps[currentStep].id;
     setAnswers(prev => ({ ...prev, [stepId]: value }));
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < diagnosticSteps.length - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
+      // Check usage limit before showing results
+      if (!hasActiveSubscription && !canUse) {
+        toast({
+          title: "Usage Limit Reached",
+          description: "You've used all your free diagnostics. Subscribe for unlimited access.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Decrement usage when completing a diagnostic
+      const success = await decrementUsage();
+      if (!success && !hasActiveSubscription) {
+        toast({
+          title: "Usage Limit Reached",
+          description: "You've used all your free diagnostics. Subscribe for unlimited access.",
+          variant: "destructive"
+        });
+        return;
+      }
+
       setShowResults(true);
     }
   };
@@ -385,8 +415,30 @@ const BeltSaverTool = () => {
     );
   }
 
+  // Show upgrade prompt if no uses remaining
+  if (!canUse && !hasActiveSubscription && !usageLoading) {
+    return (
+      <div className="space-y-6">
+        <UsageLimitBanner
+          freeUsesRemaining={freeUsesRemaining}
+          hasActiveSubscription={hasActiveSubscription}
+          onSubscribe={() => window.open('mailto:info@hinjd.com?subject=Subscription%20Inquiry', '_blank')}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
+      {/* Usage Banner */}
+      {!hasActiveSubscription && (
+        <UsageLimitBanner
+          freeUsesRemaining={freeUsesRemaining}
+          hasActiveSubscription={hasActiveSubscription}
+          onSubscribe={() => window.open('mailto:info@hinjd.com?subject=Subscription%20Inquiry', '_blank')}
+        />
+      )}
+
       {/* Progress Indicator */}
       <div className="flex gap-2">
         {diagnosticSteps.map((_, i) => (
