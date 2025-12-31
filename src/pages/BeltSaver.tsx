@@ -208,6 +208,84 @@ const BeltSaver = () => {
           </div>
         </section>
 
+        {/* Comparison Table */}
+        <section className="mb-20 animate-slide-up" style={{ animationDelay: '0.95s' }}>
+          <h3 className="industrial-label text-center mb-8">Belt Saver™ vs Traditional Solutions</h3>
+          <div className="bg-card border border-border rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-primary/5 border-b border-border">
+                    <th className="text-left p-4 font-bold text-foreground">Feature</th>
+                    <th className="text-center p-4 font-bold text-primary">Belt Saver™</th>
+                    <th className="text-center p-4 font-bold text-muted-foreground">Training Idlers</th>
+                    <th className="text-center p-4 font-bold text-muted-foreground">Edge Guides</th>
+                    <th className="text-center p-4 font-bold text-muted-foreground">Standard Pulley</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  <tr className="hover:bg-secondary/30 transition-colors">
+                    <td className="p-4 text-muted-foreground">Prevents Belt Misalignment</td>
+                    <td className="p-4 text-center"><CheckCircle2 size={18} className="text-primary mx-auto" /></td>
+                    <td className="p-4 text-center"><CheckCircle2 size={18} className="text-muted-foreground/50 mx-auto" /></td>
+                    <td className="p-4 text-center"><CheckCircle2 size={18} className="text-muted-foreground/50 mx-auto" /></td>
+                    <td className="p-4 text-center text-muted-foreground/50">—</td>
+                  </tr>
+                  <tr className="hover:bg-secondary/30 transition-colors">
+                    <td className="p-4 text-muted-foreground">Protects Belt Edges</td>
+                    <td className="p-4 text-center"><CheckCircle2 size={18} className="text-primary mx-auto" /></td>
+                    <td className="p-4 text-center text-muted-foreground/50">—</td>
+                    <td className="p-4 text-center"><CheckCircle2 size={18} className="text-muted-foreground/50 mx-auto" /></td>
+                    <td className="p-4 text-center text-muted-foreground/50">—</td>
+                  </tr>
+                  <tr className="hover:bg-secondary/30 transition-colors">
+                    <td className="p-4 text-muted-foreground">No Welding Required</td>
+                    <td className="p-4 text-center"><CheckCircle2 size={18} className="text-primary mx-auto" /></td>
+                    <td className="p-4 text-center"><CheckCircle2 size={18} className="text-muted-foreground/50 mx-auto" /></td>
+                    <td className="p-4 text-center text-muted-foreground/50">—</td>
+                    <td className="p-4 text-center"><CheckCircle2 size={18} className="text-muted-foreground/50 mx-auto" /></td>
+                  </tr>
+                  <tr className="hover:bg-secondary/30 transition-colors">
+                    <td className="p-4 text-muted-foreground">Retrofit to Existing Systems</td>
+                    <td className="p-4 text-center"><CheckCircle2 size={18} className="text-primary mx-auto" /></td>
+                    <td className="p-4 text-center"><CheckCircle2 size={18} className="text-muted-foreground/50 mx-auto" /></td>
+                    <td className="p-4 text-center"><CheckCircle2 size={18} className="text-muted-foreground/50 mx-auto" /></td>
+                    <td className="p-4 text-center text-muted-foreground/50">—</td>
+                  </tr>
+                  <tr className="hover:bg-secondary/30 transition-colors">
+                    <td className="p-4 text-muted-foreground">Install Time</td>
+                    <td className="p-4 text-center font-semibold text-primary">&lt; 4 hrs</td>
+                    <td className="p-4 text-center text-muted-foreground">2-4 hrs</td>
+                    <td className="p-4 text-center text-muted-foreground">4-8 hrs</td>
+                    <td className="p-4 text-center text-muted-foreground">8-16 hrs</td>
+                  </tr>
+                  <tr className="hover:bg-secondary/30 transition-colors">
+                    <td className="p-4 text-muted-foreground">Ongoing Maintenance</td>
+                    <td className="p-4 text-center font-semibold text-primary">Minimal</td>
+                    <td className="p-4 text-center text-muted-foreground">Regular</td>
+                    <td className="p-4 text-center text-muted-foreground">Frequent</td>
+                    <td className="p-4 text-center text-muted-foreground">Moderate</td>
+                  </tr>
+                  <tr className="hover:bg-secondary/30 transition-colors">
+                    <td className="p-4 text-muted-foreground">Extends Belt Life</td>
+                    <td className="p-4 text-center font-semibold text-primary">Up to 3x</td>
+                    <td className="p-4 text-center text-muted-foreground">1.5x</td>
+                    <td className="p-4 text-center text-muted-foreground">1.2x</td>
+                    <td className="p-4 text-center text-muted-foreground">1x</td>
+                  </tr>
+                  <tr className="hover:bg-secondary/30 transition-colors">
+                    <td className="p-4 text-muted-foreground">Patented Technology</td>
+                    <td className="p-4 text-center"><CheckCircle2 size={18} className="text-primary mx-auto" /></td>
+                    <td className="p-4 text-center text-muted-foreground/50">—</td>
+                    <td className="p-4 text-center text-muted-foreground/50">—</td>
+                    <td className="p-4 text-center text-muted-foreground/50">—</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
         {/* Applications */}
         <section className="mb-20 animate-slide-up" style={{ animationDelay: '1s' }}>
           <h3 className="industrial-label text-center mb-8">Applications</h3>
