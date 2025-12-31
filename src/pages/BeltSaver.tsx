@@ -18,7 +18,9 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import SocialMediaLinks from '@/components/SocialMediaLinks';
 import heroImage from '@/assets/tail-pulley-hero.jpg';
-import beltCloseup from '@/assets/beltsaver-closeup.jpg';
+import tailPulleyTakeup from '@/assets/tail-pulley-takeup.jpg';
+import tailPulleyEdge from '@/assets/tail-pulley-edge-protection.jpg';
+import tailPulleyAssembly from '@/assets/tail-pulley-assembly.jpg';
 import quarryAerial from '@/assets/quarry-aerial.jpg';
 
 const BeltSaver = () => {
@@ -174,8 +176,22 @@ const BeltSaver = () => {
           <div className="grid md:grid-cols-2 gap-4">
             <div className="aspect-video overflow-hidden rounded-2xl border border-border">
               <img 
-                src={beltCloseup} 
-                alt="BeltSaver tail pulley mechanism" 
+                src={tailPulleyTakeup} 
+                alt="Tail pulley take-up system with belt tensioning" 
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <div className="aspect-video overflow-hidden rounded-2xl border border-border">
+              <img 
+                src={tailPulleyEdge} 
+                alt="Belt edge protection at tail pulley" 
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <div className="aspect-video overflow-hidden rounded-2xl border border-border">
+              <img 
+                src={tailPulleyAssembly} 
+                alt="Tail pulley assembly with mounting frame" 
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
               />
             </div>
