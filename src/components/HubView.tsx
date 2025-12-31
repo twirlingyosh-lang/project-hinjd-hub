@@ -15,6 +15,9 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { Button } from '@/components/ui/button';
 import PortfolioCard from './PortfolioCard';
 import SocialMediaLinks from './SocialMediaLinks';
+import heroImage from '@/assets/hero-beltsaver.jpg';
+import beltCloseup from '@/assets/beltsaver-closeup.jpg';
+import quarryAerial from '@/assets/quarry-aerial.jpg';
 
 interface HubViewProps {
   onNavigateToApp: () => void;
@@ -55,52 +58,67 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-6">
-      {/* Auth Bar */}
-      <div className="max-w-2xl mx-auto flex justify-end mb-4 animate-slide-up">
-        {user ? (
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground flex items-center gap-2">
-              <User size={16} />
-              {user.email}
-            </span>
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Hero Section with Image */}
+      <div className="relative w-full h-[50vh] min-h-[400px] overflow-hidden rounded-b-[3rem] mb-8">
+        <img 
+          src={heroImage} 
+          alt="BeltSaver conveyor belt technology in aggregate quarry" 
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+        
+        {/* Auth Bar Overlay */}
+        <div className="absolute top-4 right-4 z-10">
+          {user ? (
+            <div className="flex items-center gap-3 bg-background/80 backdrop-blur-sm rounded-xl px-4 py-2">
+              <span className="text-sm text-muted-foreground flex items-center gap-2">
+                <User size={16} />
+                {user.email}
+              </span>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => signOut()}
+                className="flex items-center gap-2"
+              >
+                <LogOut size={16} />
+                Sign Out
+              </Button>
+            </div>
+          ) : (
             <Button 
-              variant="outline" 
+              variant="default" 
               size="sm" 
-              onClick={() => signOut()}
+              onClick={() => navigate('/auth')}
               className="flex items-center gap-2"
             >
-              <LogOut size={16} />
-              Sign Out
+              <LogIn size={16} />
+              Sign In
             </Button>
+          )}
+        </div>
+
+        {/* Social Media Links Overlay */}
+        <div className="absolute top-4 left-4 z-10">
+          <SocialMediaLinks variant="inline" />
+        </div>
+
+        {/* Hero Content */}
+        <div className="absolute bottom-0 left-0 right-0 p-8 text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-3xl mb-6 card-glow industrial-title text-3xl text-primary-foreground animate-slide-up">
+            H
           </div>
-        ) : (
-          <Button 
-            variant="default" 
-            size="sm" 
-            onClick={() => navigate('/auth')}
-            className="flex items-center gap-2"
-          >
-            <LogIn size={16} />
-            Sign In
-          </Button>
-        )}
+          <h1 className="text-5xl industrial-title animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            Hinjd <span className="text-primary">Global</span>
+          </h1>
+          <p className="industrial-label mt-3 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            Industrial IP Portfolio
+          </p>
+        </div>
       </div>
 
-      {/* Header */}
-      <header className="max-w-2xl mx-auto text-center mt-8 mb-16 animate-slide-up">
-        <div className="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-3xl mb-6 card-glow industrial-title text-3xl text-primary-foreground">
-          H
-        </div>
-        <h1 className="text-5xl industrial-title">
-          Hinjd <span className="text-primary">Global</span>
-        </h1>
-        <p className="industrial-label mt-3">
-          Industrial IP Portfolio
-        </p>
-      </header>
-
-      <div className="max-w-2xl mx-auto space-y-4">
+      <div className="max-w-2xl mx-auto space-y-4 px-6">
         {/* Main App Trigger */}
         <button 
           onClick={onNavigateToApp}
@@ -153,21 +171,41 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
           </div>
         </div>
 
-        {/* Hardware Section */}
+        {/* BeltSaver Section with Images */}
         <div 
-          className="p-8 bg-gradient-to-br from-card to-primary/10 border border-primary/20 rounded-4xl mt-8 animate-slide-up"
+          className="overflow-hidden rounded-4xl mt-8 animate-slide-up bg-card border border-primary/20"
           style={{ animationDelay: '0.6s' }}
         >
-          <h3 className="text-xl industrial-title mb-2">BeltSaver® IP</h3>
-          <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-            Patented Integrated Tail Pulley IP. Protect your belt edges and eliminate tracking wander.
-          </p>
-          <a 
-            href="mailto:twirlingyosh@gmail.com" 
-            className="inline-block bg-primary text-primary-foreground px-6 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-transform duration-300"
-          >
-            Inquire for Acquisition
-          </a>
+          {/* Image Gallery */}
+          <div className="grid grid-cols-2 gap-1">
+            <div className="aspect-square overflow-hidden">
+              <img 
+                src={beltCloseup} 
+                alt="BeltSaver tail pulley mechanism close-up" 
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <div className="aspect-square overflow-hidden">
+              <img 
+                src={quarryAerial} 
+                alt="Aggregate quarry aerial view with conveyor systems" 
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+          </div>
+          
+          <div className="p-8 bg-gradient-to-br from-card to-primary/10">
+            <h3 className="text-xl industrial-title mb-2">BeltSaver® IP</h3>
+            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+              Patented Integrated Tail Pulley IP. Protect your belt edges and eliminate tracking wander.
+            </p>
+            <a 
+              href="mailto:twirlingyosh@gmail.com" 
+              className="inline-block bg-primary text-primary-foreground px-6 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-transform duration-300"
+            >
+              Inquire for Acquisition
+            </a>
+          </div>
         </div>
       </div>
 
