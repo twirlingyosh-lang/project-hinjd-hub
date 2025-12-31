@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import PortfolioCard from './PortfolioCard';
 import SocialMediaLinks from './SocialMediaLinks';
 import heroImage from '@/assets/hero-beltsaver.jpg';
-import tailPulleyThumb from '@/assets/beltsaver-tailpulley-thumb.jpg';
+import beltCloseup from '@/assets/beltsaver-closeup.jpg';
 import quarryAerial from '@/assets/quarry-aerial.jpg';
 import smashGuruThumb from '@/assets/smash-guru-thumb.jpg';
 import yardageProThumb from '@/assets/yardage-pro-thumb.jpg';
@@ -187,8 +187,8 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
           <div className="grid grid-cols-2 gap-1">
             <div className="aspect-square overflow-hidden">
               <img 
-                src={tailPulleyThumb} 
-                alt="BeltSaver tail pulley take-up mechanism close-up" 
+                src={beltCloseup} 
+                alt="BeltSaver mechanism close-up" 
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
               />
             </div>
