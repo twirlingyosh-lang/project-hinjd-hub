@@ -10,12 +10,14 @@ import {
   Factory,
   Mail,
   Download,
-  FileText
+  FileText,
+  ShoppingCart,
+  Scale
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import SocialMediaLinks from '@/components/SocialMediaLinks';
-import heroImage from '@/assets/hero-beltsaver.jpg';
+import heroImage from '@/assets/tail-pulley-hero.jpg';
 import beltCloseup from '@/assets/beltsaver-closeup.jpg';
 import quarryAerial from '@/assets/quarry-aerial.jpg';
 
@@ -121,14 +123,25 @@ const BeltSaver = () => {
             premature belt wear, and expensive pulley replacements. The Belt Saver™ solves this 
             with a simple, field-ready solution that protects belts and extends equipment life.
           </p>
-          <a 
-            href="/documents/BeltSaver_Brochure.pdf"
-            download
-            className="inline-flex items-center gap-2 bg-primary/10 text-primary border border-primary/30 px-6 py-3 rounded-xl font-bold text-sm hover:bg-primary hover:text-primary-foreground transition-all duration-300"
-          >
-            <Download size={18} />
-            Download Brochure (PDF)
-          </a>
+          <div className="flex flex-wrap justify-center gap-4">
+            <a 
+              href="/documents/BeltSaver_Brochure.pdf"
+              download
+              className="inline-flex items-center gap-2 bg-primary/10 text-primary border border-primary/30 px-6 py-3 rounded-xl font-bold text-sm hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+            >
+              <Download size={18} />
+              Download Brochure (PDF)
+            </a>
+            <a 
+              href="https://buy.stripe.com/00weVdbUv4kZ75L8nB87K01"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-bold text-sm hover:scale-105 transition-all duration-300"
+            >
+              <ShoppingCart size={18} />
+              Purchase Now
+            </a>
+          </div>
         </section>
 
         {/* Features Grid */}
@@ -208,6 +221,38 @@ const BeltSaver = () => {
                 <span className="text-sm">{app}</span>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Patent Protection */}
+        <section className="mb-20 animate-slide-up" style={{ animationDelay: '1.05s' }}>
+          <h3 className="industrial-label text-center mb-8">Patent Protection</h3>
+          <div className="bg-card border border-border rounded-2xl overflow-hidden">
+            <div className="p-6 bg-primary/5 border-b border-border flex items-center gap-3">
+              <Scale size={20} className="text-primary" />
+              <span className="font-bold">Intellectual Property</span>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 bg-secondary/30 rounded-xl">
+                <div>
+                  <p className="font-bold text-foreground">U.S. Patent No. 12,195,281 B1</p>
+                  <p className="text-sm text-muted-foreground">Conveyor Belt Edge Protection System</p>
+                </div>
+                <span className="text-xs font-bold text-primary bg-primary/10 px-3 py-1 rounded-full">Granted 2025</span>
+              </div>
+              <div className="text-sm text-muted-foreground leading-relaxed">
+                <p className="mb-3">
+                  The Belt Saver™ technology is protected by United States patent law. Our patented design 
+                  covers the unique clamp-on retrofit system and integrated pulley disc configuration that 
+                  prevents belt misalignment and edge damage.
+                </p>
+                <p>
+                  <strong className="text-foreground">Licensing Inquiries:</strong> We offer licensing agreements 
+                  for manufacturers interested in incorporating Belt Saver™ technology into their conveyor systems. 
+                  Contact us for terms and conditions.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
