@@ -6,12 +6,15 @@ import {
   ChevronRight,
   LogIn,
   LogOut,
-  User
+  User,
+  Lock
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/hooks/useSubscription';
 import { Button } from '@/components/ui/button';
 import PortfolioCard from './PortfolioCard';
+import SocialMediaLinks from './SocialMediaLinks';
 
 interface HubViewProps {
   onNavigateToApp: () => void;
@@ -19,6 +22,7 @@ interface HubViewProps {
 
 const HubView = ({ onNavigateToApp }: HubViewProps) => {
   const { user, signOut } = useAuth();
+  const { hasAccess, isSubscribed, loading: subscriptionLoading } = useSubscription();
   const navigate = useNavigate();
   const portfolio = [
     {
@@ -112,8 +116,16 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
               <p className="text-muted-foreground text-sm italic">Production & Yield Utility</p>
             </div>
           </div>
-          <div className="bg-primary/20 p-2 rounded-full text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
-            <ChevronRight size={20} />
+          <div className="flex items-center gap-3">
+            {!hasAccess && !subscriptionLoading && (
+              <span className="flex items-center gap-1 px-2 py-1 bg-primary/10 rounded-full text-xs text-primary">
+                <Lock size={12} />
+                {user ? 'Subscribe' : 'Demo'}
+              </span>
+            )}
+            <div className="bg-primary/20 p-2 rounded-full text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+              <ChevronRight size={20} />
+            </div>
           </div>
         </button>
 
@@ -159,8 +171,13 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
         </div>
       </div>
 
+      {/* Social Media Links */}
+      <div className="mt-16 animate-slide-up" style={{ animationDelay: '0.75s' }}>
+        <SocialMediaLinks variant="footer" />
+      </div>
+
       {/* Footer */}
-      <footer className="mt-20 text-center pb-12 animate-slide-up" style={{ animationDelay: '0.7s' }}>
+      <footer className="mt-8 text-center pb-12 animate-slide-up" style={{ animationDelay: '0.8s' }}>
         <p className="text-muted-foreground/30 text-[10px] font-black uppercase tracking-[0.5em]">
           © 2025 Hinjd Global Systems
         </p>
