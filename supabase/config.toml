@@ -2,3 +2,6 @@ project_id = "zpslppxkrwjxsfotypdp"
 
 [functions.belt-assistant]
 verify_jwt = true
+
+[functions.generate-content]
+verify_jwt = true
