@@ -40,7 +40,7 @@ const SocialMediaLinks = ({ variant = 'footer' }: SocialMediaLinksProps) => {
     {
       name: 'LinkedIn',
       icon: <Linkedin size={20} />,
-      url: 'https://linkedin.com/company/hinjdglobal',
+      url: 'https://linkedin.com/company/hinjd-global',
       hoverColor: 'hover:text-[#0A66C2]'
     }
   ];
