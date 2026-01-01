@@ -1,11 +1,14 @@
 import AppLayout from '@/components/AppLayout';
 import { Link } from 'react-router-dom';
-import { Calculator, Box, Wrench, History, Crown, ArrowRight } from 'lucide-react';
+import { Calculator, Box, Wrench, History, Crown, ArrowRight, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/hooks/useSubscription';
+import SocialMediaLinks from '@/components/SocialMediaLinks';
 import heroImage from '@/assets/hero-beltsaver.jpg';
+import beltCloseup from '@/assets/beltsaver-closeup.jpg';
+import quarryAerial from '@/assets/quarry-aerial.jpg';
 
 const quickLinks = [
   { path: '/calculator', label: 'Calculator', icon: Calculator, description: 'Run belt mistracking diagnostics' },
@@ -91,6 +94,42 @@ const Home = () => {
         </div>
       </section>
 
+      {/* BeltSaver Section */}
+      <section className="max-w-7xl mx-auto px-4 py-12">
+        <Card className="overflow-hidden">
+          <div className="grid grid-cols-2 gap-1">
+            <div className="aspect-square overflow-hidden">
+              <img 
+                src={beltCloseup} 
+                alt="BeltSaver mechanism close-up" 
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <div className="aspect-square overflow-hidden">
+              <img 
+                src={quarryAerial} 
+                alt="Aggregate quarry aerial view" 
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+          </div>
+          <div className="p-8 bg-gradient-to-br from-card to-primary/10">
+            <h3 className="text-xl industrial-title mb-2">BeltSaver® IP</h3>
+            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+              Patented Integrated Tail Pulley IP. Protect your belt edges and eliminate tracking wander.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Button asChild>
+                <Link to="/beltsaver">View Details</Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <a href="mailto:twirlingyosh@gmail.com">Inquire</a>
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </section>
+
       {/* Welcome/Status Section */}
       <section className="max-w-7xl mx-auto px-4 py-12">
         <Card className="p-8 bg-gradient-to-br from-card to-secondary/50">
@@ -123,6 +162,14 @@ const Home = () => {
             ) : null}
           </div>
         </Card>
+      </section>
+
+      {/* Social Media & Footer */}
+      <section className="max-w-7xl mx-auto px-4 py-8">
+        <SocialMediaLinks variant="footer" />
+        <p className="text-center text-muted-foreground/30 text-[10px] font-black uppercase tracking-[0.5em] mt-8">
+          © 2025 Hinjd Global Systems
+        </p>
       </section>
     </AppLayout>
   );
