@@ -28,7 +28,7 @@ export const useUsageLimit = () => {
 
     try {
       const { data, error } = await supabase
-        .rpc('get_usage_status', { p_user_id: user.id });
+        .rpc('get_usage_status');
 
       if (error) {
         console.error('Error fetching usage status:', error);
@@ -60,7 +60,7 @@ export const useUsageLimit = () => {
 
     try {
       const { data, error } = await supabase
-        .rpc('decrement_usage', { p_user_id: user.id });
+        .rpc('decrement_usage');
 
       if (error) {
         console.error('Error decrementing usage:', error);
