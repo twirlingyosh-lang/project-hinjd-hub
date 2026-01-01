@@ -7,7 +7,8 @@ import {
   LogIn,
   LogOut,
   User,
-  Lock
+  Lock,
+  Sparkles
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -150,6 +151,26 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
             <div className="bg-primary/20 p-2 rounded-full text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
               <ChevronRight size={20} />
             </div>
+          </div>
+        </button>
+
+        {/* Content Generator Link */}
+        <button 
+          onClick={() => navigate('/content-generator')}
+          className="w-full p-4 bg-card border border-border rounded-3xl text-left flex justify-between items-center group hover:bg-secondary transition-all duration-300 animate-slide-up"
+          style={{ animationDelay: '0.15s' }}
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-xl text-primary">
+              <Sparkles size={20} />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">AI Content Generator</h3>
+              <p className="text-muted-foreground text-xs">Generate descriptions, summaries & reports</p>
+            </div>
+          </div>
+          <div className="bg-primary/20 p-2 rounded-full text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+            <ChevronRight size={18} />
           </div>
         </button>
 
