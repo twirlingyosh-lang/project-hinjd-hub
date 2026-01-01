@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import BeltSaver from "./pages/BeltSaver";
 import ConveyorMaintenance from "./pages/ConveyorMaintenance";
+import ContentGeneratorPage from "./pages/ContentGeneratorPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/beltsaver" element={<BeltSaver />} />
               <Route path="/conveyor-maintenance" element={<ConveyorMaintenance />} />
+              <Route path="/content-generator" element={<ContentGeneratorPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
