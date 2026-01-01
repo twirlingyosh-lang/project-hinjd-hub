@@ -1,4 +1,4 @@
-import { Facebook, Instagram } from 'lucide-react';
+import { Facebook, Instagram, Linkedin } from 'lucide-react';
 
 // TikTok icon (not in lucide-react)
 const TikTokIcon = ({ size = 20 }: { size?: number }) => (
@@ -36,6 +36,12 @@ const SocialMediaLinks = ({ variant = 'footer' }: SocialMediaLinksProps) => {
       icon: <TikTokIcon size={20} />,
       url: 'https://tiktok.com/@hinjdglobal',
       hoverColor: 'hover:text-foreground'
+    },
+    {
+      name: 'LinkedIn',
+      icon: <Linkedin size={20} />,
+      url: 'https://linkedin.com/company/hinjdglobal',
+      hoverColor: 'hover:text-[#0A66C2]'
     }
   ];
 
