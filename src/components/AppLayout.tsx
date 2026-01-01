@@ -32,9 +32,12 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       {/* Header */}
       <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center industrial-title text-sm text-primary-foreground">
+              H
+            </div>
             <span className="industrial-title text-xl tracking-tighter">
-              HINJD <span className="text-primary">AGGS</span>
+              HINJD <span className="text-primary">GLOBAL</span>
             </span>
           </Link>
           
