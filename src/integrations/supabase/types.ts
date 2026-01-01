@@ -127,9 +127,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      decrement_usage: { Args: { p_user_id: string }; Returns: boolean }
+      decrement_usage: { Args: never; Returns: boolean }
       get_usage_status: {
-        Args: { p_user_id: string }
+        Args: never
         Returns: {
           free_uses_remaining: number
           has_active_subscription: boolean
