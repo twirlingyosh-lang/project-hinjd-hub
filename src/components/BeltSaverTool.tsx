@@ -9,7 +9,11 @@ import {
   ArrowLeft,
   ArrowDown,
   Save,
-  Loader2
+  Loader2,
+  FileText,
+  Sparkles,
+  Copy,
+  Check
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,6 +28,7 @@ import { useStripeSubscription } from '@/hooks/useStripeSubscription';
 import SocialShareButtons from './SocialShareButtons';
 import UsageLimitBanner from './UsageLimitBanner';
 import { SubscriptionPlans } from './SubscriptionPlans';
+import { useContentGeneration } from '@/hooks/useContentGeneration';
 
 interface DiagnosticStep {
   id: string;
@@ -176,6 +181,8 @@ const BeltSaverTool = () => {
   const [showResults, setShowResults] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [savedDiagnosticId, setSavedDiagnosticId] = useState<string | null>(null);
+  const [aiReport, setAiReport] = useState<string | null>(null);
+  const [reportCopied, setReportCopied] = useState(false);
   
   const { user } = useAuth();
   const { toast } = useToast();
@@ -187,6 +194,7 @@ const BeltSaverTool = () => {
     isLoading: usageLoading 
   } = useUsageLimit();
   const { subscribed, tier, hasUnlimitedAccess, checkSubscription } = useStripeSubscription();
+  const { generateContent, isGenerating: isGeneratingReport } = useContentGeneration();
   const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
   
   // Check subscription on mount and after checkout
@@ -248,6 +256,56 @@ const BeltSaverTool = () => {
     setAnswers({});
     setShowResults(false);
     setSavedDiagnosticId(null);
+    setAiReport(null);
+    setReportCopied(false);
+  };
+
+  const handleGenerateReport = async () => {
+    if (!diagnosis) return;
+
+    const prompt = `Generate a professional maintenance report for this conveyor belt diagnostic:
+
+Issue: ${diagnosis.issue}
+Severity: ${diagnosis.severity}
+Location: ${answers.location}
+Tracking Direction: ${answers.direction}
+
+Probable Causes:
+${diagnosis.causes.map(c => `- ${c}`).join('\n')}
+
+Recommended Repairs:
+${diagnosis.repairs.map(r => `- ${r}`).join('\n')}
+
+${diagnosis.beltSaverBenefit ? `BeltSaver Solution: ${diagnosis.beltSaverBenefit}` : ''}
+
+Please create a formal maintenance report with:
+1. Executive Summary
+2. Findings
+3. Root Cause Analysis
+4. Action Items (prioritized)
+5. Estimated Timeline
+6. Safety Considerations`;
+
+    const report = await generateContent({
+      prompt,
+      type: 'report',
+      context: 'Industrial conveyor belt maintenance report for aggregate/mining operations'
+    });
+
+    if (report) {
+      setAiReport(report);
+    }
+  };
+
+  const handleCopyReport = async () => {
+    if (!aiReport) return;
+    await navigator.clipboard.writeText(aiReport);
+    setReportCopied(true);
+    toast({
+      title: "Report Copied",
+      description: "The report has been copied to your clipboard."
+    });
+    setTimeout(() => setReportCopied(false), 2000);
   };
 
   const currentStepData = diagnosticSteps[currentStep];
@@ -410,6 +468,87 @@ const BeltSaverTool = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* AI Report Generator */}
+        <Card className="bg-card border-border">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm industrial-label flex items-center gap-2">
+              <FileText size={14} className="text-primary" />
+              AI-Generated Report
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {!aiReport ? (
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  Generate a comprehensive maintenance report based on this diagnosis.
+                </p>
+                <Button 
+                  onClick={handleGenerateReport}
+                  disabled={isGeneratingReport || !user}
+                  className="w-full"
+                >
+                  {isGeneratingReport ? (
+                    <>
+                      <Loader2 size={16} className="mr-2 animate-spin" />
+                      Generating Report...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={16} className="mr-2" />
+                      Generate Detailed Report
+                    </>
+                  )}
+                </Button>
+                {!user && (
+                  <p className="text-xs text-muted-foreground text-center">
+                    Sign in to generate AI reports
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-green-500 flex items-center gap-1">
+                    <CheckCircle size={12} />
+                    Report Generated
+                  </span>
+                  <Button variant="ghost" size="sm" onClick={handleCopyReport}>
+                    {reportCopied ? (
+                      <Check className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+                <div className="p-4 bg-muted rounded-lg max-h-64 overflow-y-auto">
+                  <pre className="text-xs whitespace-pre-wrap font-sans text-foreground">
+                    {aiReport}
+                  </pre>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleGenerateReport}
+                  disabled={isGeneratingReport}
+                  className="w-full"
+                >
+                  {isGeneratingReport ? (
+                    <>
+                      <Loader2 size={14} className="mr-2 animate-spin" />
+                      Regenerating...
+                    </>
+                  ) : (
+                    <>
+                      <RotateCcw size={14} className="mr-2" />
+                      Regenerate Report
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Social Share */}
         <Card className="bg-card border-border">
