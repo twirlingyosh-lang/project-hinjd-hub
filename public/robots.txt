@@ -1,3 +1,4 @@
+# Standard Search Engine Crawlers
 User-agent: Googlebot
 Allow: /
 
@@ -10,7 +11,35 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
+User-agent: LinkedInBot
+Allow: /
+
+# AI/LLM Crawlers - Allow for citations and visibility
+User-agent: GPTBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Anthropic-AI
+Allow: /
+
+# AI Training Crawlers - Block
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+# Default rule
 User-agent: *
 Allow: /
 
+# Sitemap location
 Sitemap: https://hinjd-global.lovable.app/sitemap.xml
+
+# LLM-friendly summary page
+# https://hinjd-global.lovable.app/llm.html

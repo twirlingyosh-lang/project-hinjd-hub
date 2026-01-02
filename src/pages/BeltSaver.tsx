@@ -15,6 +15,7 @@ import {
   Scale
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import SocialMediaLinks from '@/components/SocialMediaLinks';
 import heroImage from '@/assets/tail-pulley-hero.jpg';
@@ -25,6 +26,36 @@ import quarryAerial from '@/assets/quarry-aerial.jpg';
 
 const BeltSaver = () => {
   const navigate = useNavigate();
+
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "BeltSaver™ Tail Pulley Protection System",
+    "description": "Patented clamp-on retrofit system for conveyor belt edge protection. Prevents belt misalignment at the tail pulley with no welding required.",
+    "brand": {
+      "@type": "Brand",
+      "name": "Hinjd Global"
+    },
+    "manufacturer": {
+      "@type": "Organization",
+      "name": "Hinjd Global"
+    },
+    "category": "Industrial Conveyor Equipment",
+    "image": "https://hinjd-global.lovable.app/og-image.jpg",
+    "offers": {
+      "@type": "Offer",
+      "availability": "https://schema.org/InStock",
+      "priceCurrency": "USD",
+      "url": "https://buy.stripe.com/00weVdbUv4kZ75L8nB87K01"
+    },
+    "additionalProperty": [
+      { "@type": "PropertyValue", "name": "Patent Number", "value": "US 12,195,281 B1" },
+      { "@type": "PropertyValue", "name": "Pulley Diameter Range", "value": "12\" - 48\"" },
+      { "@type": "PropertyValue", "name": "Belt Width Compatibility", "value": "18\" - 72\"" },
+      { "@type": "PropertyValue", "name": "Installation Time", "value": "< 4 hours" },
+      { "@type": "PropertyValue", "name": "Warranty", "value": "5-year limited warranty" }
+    ]
+  };
 
   const features = [
     {
@@ -70,8 +101,33 @@ const BeltSaver = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Hero Section */}
+    <>
+      <Helmet>
+        <title>BeltSaver™ Patented Tail Pulley Protection System | Hinjd Global</title>
+        <meta 
+          name="description" 
+          content="BeltSaver™ patented conveyor belt protection system. Clamp-on retrofit design prevents belt misalignment, extends belt life up to 3x. U.S. Patent No. 12,195,281 B1." 
+        />
+        <meta 
+          name="keywords" 
+          content="BeltSaver, tail pulley protection, conveyor belt edge protection, belt misalignment solution, belt tracking system, mining conveyor equipment" 
+        />
+        <link rel="canonical" href="https://hinjd-global.lovable.app/beltsaver" />
+        <meta property="og:title" content="BeltSaver™ Patented Tail Pulley Protection System" />
+        <meta property="og:description" content="Prevent conveyor belt misalignment with patented BeltSaver™ technology. Clamp-on retrofit, extends belt life up to 3x." />
+        <meta property="og:type" content="product" />
+        <meta property="og:url" content="https://hinjd-global.lovable.app/beltsaver" />
+        <meta property="og:image" content="https://hinjd-global.lovable.app/og-image.jpg" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="BeltSaver™ Patented Tail Pulley Protection" />
+        <meta name="twitter:description" content="Patented conveyor belt protection. Clamp-on retrofit, extends belt life up to 3x." />
+        <meta name="twitter:image" content="https://hinjd-global.lovable.app/og-image.jpg" />
+        <script type="application/ld+json">
+          {JSON.stringify(productSchema)}
+        </script>
+      </Helmet>
+      <div className="min-h-screen bg-background text-foreground">
+        {/* Hero Section */}
       <div className="relative w-full h-[60vh] min-h-[500px] overflow-hidden">
         <img 
           src={heroImage} 
@@ -404,6 +460,7 @@ const BeltSaver = () => {
         </div>
       </footer>
     </div>
+    </>
   );
 };
 
