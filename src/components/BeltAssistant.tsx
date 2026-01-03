@@ -180,6 +180,7 @@ const BeltAssistant = () => {
         onClick={() => setIsOpen(true)}
         className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50"
         size="icon"
+        aria-label="Open BeltSaver AI diagnostic assistant"
       >
         <MessageCircle size={24} />
       </Button>
