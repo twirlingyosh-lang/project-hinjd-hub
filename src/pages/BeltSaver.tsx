@@ -18,11 +18,11 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import SocialMediaLinks from '@/components/SocialMediaLinks';
-import heroImage from '@/assets/tail-pulley-hero.jpg';
-import tailPulleyTakeup from '@/assets/tail-pulley-takeup.jpg';
-import tailPulleyEdge from '@/assets/tail-pulley-edge-protection.jpg';
-import tailPulleyAssembly from '@/assets/tail-pulley-assembly.jpg';
-import quarryAerial from '@/assets/quarry-aerial.jpg';
+import heroImage from '@/assets/tail-pulley-hero.jpg?format=webp';
+import tailPulleyTakeup from '@/assets/tail-pulley-takeup.jpg?format=webp';
+import tailPulleyEdge from '@/assets/tail-pulley-edge-protection.jpg?format=webp';
+import tailPulleyAssembly from '@/assets/tail-pulley-assembly.jpg?format=webp';
+import quarryAerial from '@/assets/quarry-aerial.jpg?format=webp';
 
 const BeltSaver = () => {
   const navigate = useNavigate();
