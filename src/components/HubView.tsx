@@ -16,12 +16,12 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { Button } from '@/components/ui/button';
 import PortfolioCard from './PortfolioCard';
 import SocialMediaLinks from './SocialMediaLinks';
-import heroImage from '@/assets/hero-beltsaver.jpg';
-import beltCloseup from '@/assets/beltsaver-closeup.jpg';
-import quarryAerial from '@/assets/quarry-aerial.jpg';
-import smashGuruThumb from '@/assets/smash-guru-thumb.jpg';
-import yardageProThumb from '@/assets/yardage-pro-thumb.jpg';
-import coxAggsThumb from '@/assets/cox-aggs-thumb.jpg';
+import heroImage from '@/assets/hero-beltsaver.jpg?format=webp';
+import beltCloseup from '@/assets/beltsaver-closeup.jpg?format=webp';
+import quarryAerial from '@/assets/quarry-aerial.jpg?format=webp';
+import smashGuruThumb from '@/assets/smash-guru-thumb.jpg?format=webp';
+import yardageProThumb from '@/assets/yardage-pro-thumb.jpg?format=webp';
+import coxAggsThumb from '@/assets/cox-aggs-thumb.jpg?format=webp';
 
 interface HubViewProps {
   onNavigateToApp: () => void;
