@@ -211,6 +211,7 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
               <img 
                 src={beltCloseup} 
                 alt="BeltSaver mechanism close-up" 
+                loading="lazy"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
               />
             </div>
@@ -218,6 +219,7 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
               <img 
                 src={quarryAerial} 
                 alt="Aggregate quarry aerial view with conveyor systems" 
+                loading="lazy"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
               />
             </div>
