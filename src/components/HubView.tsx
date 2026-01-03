@@ -126,7 +126,7 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto space-y-4 px-6">
+      <main className="max-w-2xl mx-auto space-y-4 px-6">
         {/* Main App Trigger */}
         <button 
           onClick={onNavigateToApp}
@@ -244,7 +244,7 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
             </div>
           </div>
         </div>
-      </div>
+      </main>
 
       {/* Social Media Links */}
       <div className="mt-16 animate-slide-up" style={{ animationDelay: '0.75s' }}>
