@@ -72,6 +72,7 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
           src={heroImage} 
           alt="BeltSaver conveyor belt technology in aggregate quarry" 
           className="absolute inset-0 w-full h-full object-cover"
+          fetchPriority="high"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         
