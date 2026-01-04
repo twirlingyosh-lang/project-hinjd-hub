@@ -121,14 +121,7 @@ const AggregateOppsDemo = ({ onNavigateToHub }: AggregateOppsDemoProps) => {
                       </Button>
                     )}
                     <Button 
-                      onClick={() => {
-                        if (!user) {
-                          navigate('/auth');
-                        } else {
-                          // TODO: Navigate to subscription/pricing page
-                          alert('Subscription coming soon!');
-                        }
-                      }}
+                      onClick={() => navigate('/aggregate-opps')}
                       className="gap-2"
                     >
                       <ShieldCheck size={16} />

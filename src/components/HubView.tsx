@@ -24,13 +24,17 @@ import yardageProThumb from '@/assets/yardage-pro-thumb.jpg?format=webp';
 import coxAggsThumb from '@/assets/cox-aggs-thumb.jpg?format=webp';
 
 interface HubViewProps {
-  onNavigateToApp: () => void;
+  onNavigateToApp?: () => void;
 }
 
 const HubView = ({ onNavigateToApp }: HubViewProps) => {
   const { user, signOut } = useAuth();
   const { hasAccess, isSubscribed, loading: subscriptionLoading } = useSubscription();
   const navigate = useNavigate();
+
+  const handleNavigateToApp = () => {
+    navigate('/aggregate-opps');
+  };
   const portfolio = [
     {
       title: "Cox-Aggs Pro",
@@ -129,7 +133,7 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
       <main className="max-w-2xl mx-auto space-y-4 px-6">
         {/* Main App Trigger */}
         <button 
-          onClick={onNavigateToApp}
+          onClick={handleNavigateToApp}
           className="w-full p-6 bg-card border border-primary/30 rounded-4xl text-left flex justify-between items-center group hover:bg-secondary transition-all duration-300 animate-slide-up"
           style={{ animationDelay: '0.1s' }}
         >
