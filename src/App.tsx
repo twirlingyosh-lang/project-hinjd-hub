@@ -13,6 +13,7 @@ const Auth = lazy(() => import("./pages/Auth"));
 const BeltSaver = lazy(() => import("./pages/BeltSaver"));
 const ConveyorMaintenance = lazy(() => import("./pages/ConveyorMaintenance"));
 const ContentGeneratorPage = lazy(() => import("./pages/ContentGeneratorPage"));
+const AggregateOpps = lazy(() => import("./pages/AggregateOpps"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
                 <Route path="/beltsaver" element={<BeltSaver />} />
                 <Route path="/conveyor-maintenance" element={<ConveyorMaintenance />} />
                 <Route path="/content-generator" element={<ContentGeneratorPage />} />
+                <Route path="/aggregate-opps" element={<AggregateOpps />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
