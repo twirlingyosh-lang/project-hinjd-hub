@@ -1,15 +1,8 @@
-import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import HubView from '@/components/HubView';
-import AggregateOppsApp from '@/components/AggregateOppsApp';
-import AggregateOppsDemo from '@/components/AggregateOppsDemo';
 import BeltAssistant from '@/components/BeltAssistant';
-import { useSubscription } from '@/hooks/useSubscription';
 
 const Index = () => {
-  const [view, setView] = useState<'hub' | 'app'>('hub');
-  const { hasAccess, loading } = useSubscription();
-
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -28,14 +21,6 @@ const Index = () => {
       "contactType": "sales",
       "email": "sales@hinjd.com"
     }
-  };
-
-  const renderAppView = () => {
-    // Show demo for non-subscribers
-    if (!hasAccess) {
-      return <AggregateOppsDemo onNavigateToHub={() => setView('hub')} />;
-    }
-    return <AggregateOppsApp onNavigateToHub={() => setView('hub')} />;
   };
 
   return (
@@ -64,11 +49,7 @@ const Index = () => {
           {JSON.stringify(organizationSchema)}
         </script>
       </Helmet>
-      {view === 'app' ? (
-        renderAppView()
-      ) : (
-        <HubView onNavigateToApp={() => setView('app')} />
-      )}
+      <HubView />
       <BeltAssistant />
     </>
   );
