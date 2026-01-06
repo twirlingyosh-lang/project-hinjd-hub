@@ -57,9 +57,9 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
       thumbnail: smashGuruThumb
     },
     {
-      title: "Concrete-Quantify",
+      title: "Yardage Pro",
       desc: "Civil Engineering Volume & Costing",
-      url: "https://concrete-quantify.lovable.app",
+      url: "https://yardage-pro.lovable.app",
       colorClass: "text-industrial-blue",
       bgClass: "bg-industrial-blue/10",
       icon: <BarChart3 size={24} />,
