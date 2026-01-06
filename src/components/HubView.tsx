@@ -37,6 +37,16 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
   };
   const portfolio = [
     {
+      title: "Hinjd Hub",
+      desc: "Industrial IP Portfolio & Central Dashboard",
+      url: "https://hinjd-global.lovable.app",
+      colorClass: "text-primary",
+      bgClass: "bg-primary/10",
+      icon: <LayoutDashboard size={24} />,
+      tag: "Hub",
+      thumbnail: heroImage
+    },
+    {
       title: "Cox-Aggs Pro",
       desc: "Enterprise G-Force & Carryover Modeling",
       url: "https://cox-aggs-27e91ba7.base44.app",
