@@ -16,6 +16,17 @@ const ContentGeneratorPage = lazy(() => import("./pages/ContentGeneratorPage"));
 const AggregateOpps = lazy(() => import("./pages/AggregateOpps"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
+// Aggregate Tools App pages
+const AppHome = lazy(() => import("./pages/app/AppHome"));
+const MaterialsPage = lazy(() => import("./pages/app/MaterialsPage"));
+const EquipmentPage = lazy(() => import("./pages/app/EquipmentPage"));
+const CalculatorPage = lazy(() => import("./pages/app/CalculatorPage"));
+const ResultsPage = lazy(() => import("./pages/app/ResultsPage"));
+const SavedRunsPage = lazy(() => import("./pages/app/SavedRunsPage"));
+const UpgradePage = lazy(() => import("./pages/app/UpgradePage"));
+const AccountPage = lazy(() => import("./pages/app/AccountPage"));
+const LegalPage = lazy(() => import("./pages/app/LegalPage"));
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -34,6 +45,16 @@ const App = () => (
                 <Route path="/conveyor-maintenance" element={<ConveyorMaintenance />} />
                 <Route path="/content-generator" element={<ContentGeneratorPage />} />
                 <Route path="/aggregate-opps" element={<AggregateOpps />} />
+                {/* Aggregate Tools App Routes */}
+                <Route path="/app" element={<AppHome />} />
+                <Route path="/app/materials" element={<MaterialsPage />} />
+                <Route path="/app/equipment" element={<EquipmentPage />} />
+                <Route path="/app/calculator" element={<CalculatorPage />} />
+                <Route path="/app/results" element={<ResultsPage />} />
+                <Route path="/app/saved" element={<SavedRunsPage />} />
+                <Route path="/app/upgrade" element={<UpgradePage />} />
+                <Route path="/app/account" element={<AccountPage />} />
+                <Route path="/app/legal" element={<LegalPage />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
