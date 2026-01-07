@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 export type ContentType = 'description' | 'summary' | 'report' | 'custom';
@@ -19,16 +18,10 @@ interface UseContentGenerationReturn {
 }
 
 export const useContentGeneration = (): UseContentGenerationReturn => {
-  const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const generateContent = useCallback(async (options: GenerateContentOptions): Promise<string | null> => {
-    if (!user) {
-      toast.error('Please sign in to use content generation');
-      return null;
-    }
-
     const { prompt, type = 'custom', context, maxTokens = 1000 } = options;
 
     if (!prompt.trim()) {
@@ -65,7 +58,7 @@ export const useContentGeneration = (): UseContentGenerationReturn => {
     } finally {
       setIsGenerating(false);
     }
-  }, [user]);
+  }, []);
 
   return {
     generateContent,
