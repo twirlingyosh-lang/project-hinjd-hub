@@ -2,12 +2,9 @@ import { ContentGenerator } from '@/components/ContentGenerator';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
 import BeltAssistant from '@/components/BeltAssistant';
 
 const ContentGeneratorPage = () => {
-  const { user } = useAuth();
-
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card">
@@ -18,23 +15,12 @@ const ContentGeneratorPage = () => {
             </Button>
           </Link>
           <h1 className="text-xl font-semibold">AI Content Generator</h1>
+          <span className="ml-auto text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">Demo</span>
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        {user ? (
-          <ContentGenerator />
-        ) : (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-semibold mb-4">Sign In Required</h2>
-            <p className="text-muted-foreground mb-6">
-              Please sign in to use the AI content generator.
-            </p>
-            <Link to="/auth">
-              <Button>Sign In</Button>
-            </Link>
-          </div>
-        )}
+        <ContentGenerator />
       </main>
 
       <BeltAssistant />
