@@ -16,14 +16,17 @@ export default defineConfig(({ mode }) => ({
     imagetools(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "og-image.jpg", "robots.txt"],
+      includeAssets: ["favicon.ico", "og-image.jpg", "robots.txt", "pwa-icon-192.png", "pwa-icon-512.png"],
       manifest: {
-        name: "Hinjd Global - Industrial Conveyor Diagnostics",
-        short_name: "Hinjd Global",
-        description: "Professional conveyor belt diagnostics and BeltSaver® solutions",
+        name: "Aggregate Tools - Production Calculator",
+        short_name: "Aggregate Tools",
+        description: "Tonnage calculator, equipment specs, and troubleshooting for aggregate operations",
         theme_color: "#020617",
         background_color: "#020617",
         display: "standalone",
+        orientation: "portrait",
+        start_url: "/app",
+        scope: "/",
         icons: [
           {
             src: "/pwa-icon-192.png",
@@ -41,6 +44,8 @@ export default defineConfig(({ mode }) => ({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,jpg,jpeg,webp,svg,woff,woff2}"],
+        navigateFallback: "/index.html",
+        navigateFallbackAllowlist: [/^(?!\/__).*/],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -49,7 +54,7 @@ export default defineConfig(({ mode }) => ({
               cacheName: "google-fonts-cache",
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+                maxAgeSeconds: 60 * 60 * 24 * 365,
               },
               cacheableResponse: {
                 statuses: [0, 200],
@@ -63,8 +68,23 @@ export default defineConfig(({ mode }) => ({
               cacheName: "gstatic-fonts-cache",
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+                maxAgeSeconds: 60 * 60 * 24 * 365,
               },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: /\/api\/.*/i,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "api-cache",
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24,
+              },
+              networkTimeoutSeconds: 10,
               cacheableResponse: {
                 statuses: [0, 200],
               },

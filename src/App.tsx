@@ -26,7 +26,7 @@ const SavedRunsPage = lazy(() => import("./pages/app/SavedRunsPage"));
 const UpgradePage = lazy(() => import("./pages/app/UpgradePage"));
 const AccountPage = lazy(() => import("./pages/app/AccountPage"));
 const LegalPage = lazy(() => import("./pages/app/LegalPage"));
-
+const InstallPage = lazy(() => import("./pages/app/InstallPage"));
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -55,6 +55,7 @@ const App = () => (
                 <Route path="/app/upgrade" element={<UpgradePage />} />
                 <Route path="/app/account" element={<AccountPage />} />
                 <Route path="/app/legal" element={<LegalPage />} />
+                <Route path="/app/install" element={<InstallPage />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
