@@ -1,16 +1,21 @@
+import { useState } from 'react';
 import { AppLayout } from '@/components/app/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
-  Crown, Check, Zap, Cloud, Sparkles, 
-  BarChart3, Shield, ArrowLeft 
+  Crown, Check, Cloud, Sparkles, 
+  BarChart3, Shield, Loader2 
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useStripeSubscription } from '@/hooks/useStripeSubscription';
+import { SUBSCRIPTION_TIERS, SubscriptionTier } from '@/lib/subscriptionTiers';
+import { toast } from 'sonner';
 
 const plans = [
   {
+    id: null as SubscriptionTier | null,
     name: 'Free',
     price: '$0',
     period: 'forever',
@@ -26,42 +31,63 @@ const plans = [
       'No export options',
       'Basic support',
     ],
-    current: true,
   },
   {
+    id: 'pro' as SubscriptionTier,
     name: 'Pro',
-    price: '$29',
+    price: `$${SUBSCRIPTION_TIERS.pro.price}`,
     period: '/month',
     description: 'Full access for serious operators',
     badge: 'Popular',
-    features: [
-      'Unlimited AI troubleshooting',
-      'Cloud sync across devices',
-      'Export reports (PDF/CSV)',
-      'Advanced optimizations',
-      'Priority support',
-      'Custom equipment profiles',
-    ],
+    features: SUBSCRIPTION_TIERS.pro.features,
     highlighted: true,
   },
   {
+    id: 'enterprise' as SubscriptionTier,
     name: 'Enterprise',
-    price: '$99',
+    price: `$${SUBSCRIPTION_TIERS.enterprise.price}`,
     period: '/month',
     description: 'For teams and large operations',
-    features: [
-      'Everything in Pro',
-      'Multi-user access',
-      'API integration',
-      'Custom branding',
-      'Dedicated support',
-      'Training sessions',
-    ],
+    badge: 'Recommended',
+    features: SUBSCRIPTION_TIERS.enterprise.features,
   },
 ];
 
 const UpgradePage = () => {
   const { user } = useAuth();
+  const { subscribed, tier, isLoading, createCheckout, openCustomerPortal } = useStripeSubscription();
+  const [loadingTier, setLoadingTier] = useState<SubscriptionTier | null>(null);
+
+  const handleSubscribe = async (planId: SubscriptionTier) => {
+    if (!user) {
+      toast.error('Please sign in to subscribe');
+      return;
+    }
+    
+    try {
+      setLoadingTier(planId);
+      await createCheckout(planId);
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast.error('Failed to start checkout');
+    } finally {
+      setLoadingTier(null);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    try {
+      await openCustomerPortal();
+    } catch (error) {
+      console.error('Portal error:', error);
+      toast.error('Failed to open billing portal');
+    }
+  };
+
+  const isCurrentPlan = (planId: SubscriptionTier | null) => {
+    if (!subscribed && planId === null) return true;
+    return subscribed && tier === planId;
+  };
 
   return (
     <AppLayout title="Upgrade">
@@ -74,60 +100,98 @@ const UpgradePage = () => {
           </p>
         </div>
 
+        {subscribed && (
+          <div className="text-center">
+            <Button variant="outline" onClick={handleManageSubscription}>
+              Manage Billing & Subscription
+            </Button>
+          </div>
+        )}
+
         <div className="space-y-4">
-          {plans.map((plan) => (
-            <Card 
-              key={plan.name}
-              className={`relative overflow-hidden ${
-                plan.highlighted 
-                  ? 'border-primary bg-gradient-to-br from-primary/10 to-transparent' 
-                  : ''
-              }`}
-            >
-              {plan.badge && (
-                <Badge className="absolute top-3 right-3 bg-primary">
-                  {plan.badge}
-                </Badge>
-              )}
-              <CardHeader className="pb-2">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold">{plan.price}</span>
-                  <span className="text-muted-foreground">{plan.period}</span>
-                </div>
-                <CardTitle className="text-lg">{plan.name}</CardTitle>
-                <p className="text-sm text-muted-foreground">{plan.description}</p>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-2">
-                  {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-center gap-2 text-sm">
-                      <Check size={16} className="text-green-400 shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                
-                {plan.limitations && (
-                  <ul className="space-y-2 pt-2 border-t border-border">
-                    {plan.limitations.map((limitation, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span className="w-4 h-4 flex items-center justify-center">–</span>
-                        {limitation}
+          {plans.map((plan) => {
+            const isCurrent = isCurrentPlan(plan.id);
+            const isLoadingThis = loadingTier === plan.id;
+            
+            return (
+              <Card 
+                key={plan.name}
+                className={`relative overflow-hidden ${
+                  plan.highlighted 
+                    ? 'border-primary bg-gradient-to-br from-primary/10 to-transparent' 
+                    : ''
+                } ${isCurrent ? 'ring-2 ring-primary' : ''}`}
+              >
+                {plan.badge && (
+                  <Badge className="absolute top-3 right-3 bg-primary">
+                    {plan.badge}
+                  </Badge>
+                )}
+                {isCurrent && (
+                  <Badge className="absolute top-3 left-3 bg-green-600">
+                    Current Plan
+                  </Badge>
+                )}
+                <CardHeader className="pb-2">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-bold">{plan.price}</span>
+                    <span className="text-muted-foreground">{plan.period}</span>
+                  </div>
+                  <CardTitle className="text-lg">{plan.name}</CardTitle>
+                  <p className="text-sm text-muted-foreground">{plan.description}</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <ul className="space-y-2">
+                    {plan.features.map((feature, i) => (
+                      <li key={i} className="flex items-center gap-2 text-sm">
+                        <Check size={16} className="text-green-400 shrink-0" />
+                        {feature}
                       </li>
                     ))}
                   </ul>
-                )}
+                  
+                  {plan.limitations && (
+                    <ul className="space-y-2 pt-2 border-t border-border">
+                      {plan.limitations.map((limitation, i) => (
+                        <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <span className="w-4 h-4 flex items-center justify-center">–</span>
+                          {limitation}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
 
-                <Button 
-                  className="w-full" 
-                  variant={plan.highlighted ? 'default' : 'outline'}
-                  disabled={plan.current}
-                >
-                  {plan.current ? 'Current Plan' : `Get ${plan.name}`}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                  {plan.id === null ? (
+                    <Button 
+                      className="w-full" 
+                      variant="outline"
+                      disabled
+                    >
+                      {isCurrent ? 'Current Plan' : 'Free Forever'}
+                    </Button>
+                  ) : (
+                    <Button 
+                      className="w-full" 
+                      variant={plan.highlighted ? 'default' : 'outline'}
+                      disabled={isCurrent || isLoading || isLoadingThis}
+                      onClick={() => handleSubscribe(plan.id!)}
+                    >
+                      {isLoadingThis ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Loading...
+                        </>
+                      ) : isCurrent ? (
+                        'Current Plan'
+                      ) : (
+                        `Get ${plan.name}`
+                      )}
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         {/* Benefits Section */}
