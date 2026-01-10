@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Layers, Wrench, Calculator, Save, User, Crown, Download } from 'lucide-react';
+import { Home, Layers, Wrench, Calculator, Save, User, Crown, Download, Truck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -12,7 +12,7 @@ interface AppLayoutProps {
 const navItems = [
   { path: '/app', icon: Home, label: 'Home' },
   { path: '/app/materials', icon: Layers, label: 'Materials' },
-  { path: '/app/equipment', icon: Wrench, label: 'Equipment' },
+  { path: '/app/equipment-opps', icon: Truck, label: 'Equip Opps' },
   { path: '/app/calculator', icon: Calculator, label: 'Calc' },
   { path: '/app/saved', icon: Save, label: 'Saved' },
 ];
@@ -91,3 +91,5 @@ export const AppLayout = ({ children, title }: AppLayoutProps) => {
     </div>
   );
 };
+
+export default AppLayout;

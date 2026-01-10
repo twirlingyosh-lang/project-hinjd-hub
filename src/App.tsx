@@ -20,6 +20,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const AppHome = lazy(() => import("./pages/app/AppHome"));
 const MaterialsPage = lazy(() => import("./pages/app/MaterialsPage"));
 const EquipmentPage = lazy(() => import("./pages/app/EquipmentPage"));
+const EquipmentOppsPage = lazy(() => import("./pages/app/EquipmentOppsPage"));
 const CalculatorPage = lazy(() => import("./pages/app/CalculatorPage"));
 const ResultsPage = lazy(() => import("./pages/app/ResultsPage"));
 const SavedRunsPage = lazy(() => import("./pages/app/SavedRunsPage"));
@@ -49,6 +50,7 @@ const App = () => (
                 <Route path="/app" element={<AppHome />} />
                 <Route path="/app/materials" element={<MaterialsPage />} />
                 <Route path="/app/equipment" element={<EquipmentPage />} />
+                <Route path="/app/equipment-opps" element={<EquipmentOppsPage />} />
                 <Route path="/app/calculator" element={<CalculatorPage />} />
                 <Route path="/app/results" element={<ResultsPage />} />
                 <Route path="/app/saved" element={<SavedRunsPage />} />
