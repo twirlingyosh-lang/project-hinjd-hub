@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Layers, Wrench, Calculator, Save, User, Crown, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -27,12 +28,21 @@ export const AppLayout = ({ children, title }: AppLayoutProps) => {
           <div className="px-4 py-3 flex items-center justify-between">
             <h1 className="text-lg font-semibold">{title}</h1>
             <div className="flex items-center gap-2">
-              <Link 
-                to="/app/install" 
-                className="p-2 rounded-full bg-secondary hover:bg-secondary/80 transition-colors"
-              >
-                <Download size={18} />
-              </Link>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link 
+                      to="/app/install" 
+                      className="p-2 rounded-full bg-secondary hover:bg-secondary/80 transition-colors"
+                    >
+                      <Download size={18} />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Install app for offline use</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <Link 
                 to="/app/upgrade" 
                 className="p-2 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
