@@ -59,6 +59,147 @@ export type Database = {
         }
         Relationships: []
       }
+      equipment_dealers: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string
+          email: string | null
+          hours: Json | null
+          id: string
+          is_verified: boolean | null
+          latitude: number | null
+          longitude: number | null
+          makes_served: string[] | null
+          name: string
+          phone: string | null
+          state: string | null
+          website: string | null
+          zip: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          hours?: Json | null
+          id?: string
+          is_verified?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          makes_served?: string[] | null
+          name: string
+          phone?: string | null
+          state?: string | null
+          website?: string | null
+          zip?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          hours?: Json | null
+          id?: string
+          is_verified?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          makes_served?: string[] | null
+          name?: string
+          phone?: string | null
+          state?: string | null
+          website?: string | null
+          zip?: string | null
+        }
+        Relationships: []
+      }
+      equipment_diagnostics: {
+        Row: {
+          created_at: string
+          diagnosis: string | null
+          equipment_type: string | null
+          id: string
+          images: string[] | null
+          make: string | null
+          model: string | null
+          notes: string | null
+          parts_needed: Json | null
+          repair_steps: string | null
+          status: string
+          symptoms: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          diagnosis?: string | null
+          equipment_type?: string | null
+          id?: string
+          images?: string[] | null
+          make?: string | null
+          model?: string | null
+          notes?: string | null
+          parts_needed?: Json | null
+          repair_steps?: string | null
+          status?: string
+          symptoms: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          diagnosis?: string | null
+          equipment_type?: string | null
+          id?: string
+          images?: string[] | null
+          make?: string | null
+          model?: string | null
+          notes?: string | null
+          parts_needed?: Json | null
+          repair_steps?: string | null
+          status?: string
+          symptoms?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      equipment_parts: {
+        Row: {
+          avg_price: number | null
+          category: string | null
+          created_at: string
+          description: string | null
+          equipment_types: string[] | null
+          id: string
+          image_url: string | null
+          makes: string[] | null
+          name: string
+          part_number: string
+        }
+        Insert: {
+          avg_price?: number | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          equipment_types?: string[] | null
+          id?: string
+          image_url?: string | null
+          makes?: string[] | null
+          name: string
+          part_number: string
+        }
+        Update: {
+          avg_price?: number | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          equipment_types?: string[] | null
+          id?: string
+          image_url?: string | null
+          makes?: string[] | null
+          name?: string
+          part_number?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
