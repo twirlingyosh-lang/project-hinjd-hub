@@ -9,10 +9,21 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Send, Loader2, Wrench, Truck, AlertTriangle, Settings, Zap, History, MapPin, Package, Upload, Image, X, Save, Search, Phone, Globe, Clock } from 'lucide-react';
+import { Send, Loader2, Wrench, Truck, AlertTriangle, Settings, Zap, History, MapPin, Package, Upload, Image, X, Save, Search, Phone, Globe, Map, DollarSign } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix Leaflet default marker icons
+delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
 interface Message {
   role: 'user' | 'assistant';
@@ -41,6 +52,19 @@ interface Dealer {
   phone: string | null;
   website: string | null;
   makes_served: string[];
+  latitude: number | null;
+  longitude: number | null;
+}
+
+interface Part {
+  id: string;
+  part_number: string;
+  name: string;
+  description: string | null;
+  category: string | null;
+  equipment_types: string[];
+  makes: string[];
+  avg_price: number | null;
 }
 
 const EQUIPMENT_TYPES = [
@@ -89,6 +113,10 @@ export const EquipmentDiagnostics = () => {
   const [isLoadingDealers, setIsLoadingDealers] = useState(false);
   const [dealerSearch, setDealerSearch] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [showMap, setShowMap] = useState(false);
+  const [parts, setParts] = useState<Part[]>([]);
+  const [isLoadingParts, setIsLoadingParts] = useState(false);
+  const [partSearch, setPartSearch] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -106,6 +134,9 @@ export const EquipmentDiagnostics = () => {
     }
     if (activeTab === 'dealers') {
       fetchDealers();
+    }
+    if (activeTab === 'parts') {
+      fetchParts();
     }
   }, [activeTab, user]);
 
@@ -152,6 +183,36 @@ export const EquipmentDiagnostics = () => {
       console.error('Error fetching dealers:', error);
     } finally {
       setIsLoadingDealers(false);
+    }
+  };
+
+  const fetchParts = async () => {
+    setIsLoadingParts(true);
+    try {
+      let query = supabase
+        .from('equipment_parts')
+        .select('*')
+        .order('name');
+
+      if (partSearch) {
+        query = query.or(`name.ilike.%${partSearch}%,part_number.ilike.%${partSearch}%,description.ilike.%${partSearch}%,category.ilike.%${partSearch}%`);
+      }
+
+      if (make) {
+        query = query.contains('makes', [make]);
+      }
+
+      if (equipmentType) {
+        query = query.contains('equipment_types', [equipmentType]);
+      }
+
+      const { data, error } = await query.limit(50);
+      if (error) throw error;
+      setParts(data || []);
+    } catch (error) {
+      console.error('Error fetching parts:', error);
+    } finally {
+      setIsLoadingParts(false);
     }
   };
 
@@ -361,26 +422,35 @@ export const EquipmentDiagnostics = () => {
     setActiveTab('diagnose');
   };
 
+  const dealersWithCoords = dealers.filter(d => d.latitude && d.longitude);
+  const mapCenter: [number, number] = dealersWithCoords.length > 0 
+    ? [dealersWithCoords[0].latitude!, dealersWithCoords[0].longitude!]
+    : [33.5, -86.8]; // Default to Birmingham, AL
+
   return (
     <div className="flex flex-col h-full">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-3 mb-4">
-          <TabsTrigger value="diagnose" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-4 mb-4">
+          <TabsTrigger value="diagnose" className="flex items-center gap-1 text-xs sm:text-sm">
             <Wrench className="h-4 w-4" />
-            Diagnose
+            <span className="hidden sm:inline">Diagnose</span>
           </TabsTrigger>
-          <TabsTrigger value="history" className="flex items-center gap-2">
-            <History className="h-4 w-4" />
-            History
+          <TabsTrigger value="parts" className="flex items-center gap-1 text-xs sm:text-sm">
+            <Package className="h-4 w-4" />
+            <span className="hidden sm:inline">Parts</span>
           </TabsTrigger>
-          <TabsTrigger value="dealers" className="flex items-center gap-2">
+          <TabsTrigger value="dealers" className="flex items-center gap-1 text-xs sm:text-sm">
             <MapPin className="h-4 w-4" />
-            Dealers
+            <span className="hidden sm:inline">Dealers</span>
+          </TabsTrigger>
+          <TabsTrigger value="history" className="flex items-center gap-1 text-xs sm:text-sm">
+            <History className="h-4 w-4" />
+            <span className="hidden sm:inline">History</span>
           </TabsTrigger>
         </TabsList>
 
+        {/* DIAGNOSE TAB */}
         <TabsContent value="diagnose" className="flex-1 flex flex-col mt-0 data-[state=inactive]:hidden">
-          {/* Equipment Selection Header */}
           <Card className="mb-4 border-primary/20">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
@@ -540,7 +610,7 @@ export const EquipmentDiagnostics = () => {
                 )}
                 {messages.length > 0 && (
                   <Button variant="outline" size="sm" onClick={startNewDiagnosis}>
-                    New Diagnosis
+                    New
                   </Button>
                 )}
               </div>
@@ -614,6 +684,262 @@ export const EquipmentDiagnostics = () => {
           </Card>
         </TabsContent>
 
+        {/* PARTS TAB */}
+        <TabsContent value="parts" className="flex-1 flex flex-col mt-0 data-[state=inactive]:hidden">
+          <Card className="flex-1 flex flex-col">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Package className="h-5 w-5" />
+                Parts Search
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1">
+              <div className="flex gap-2 mb-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by part number, name, or category..."
+                    value={partSearch}
+                    onChange={e => setPartSearch(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <Button onClick={fetchParts} disabled={isLoadingParts}>
+                  {isLoadingParts ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                </Button>
+              </div>
+
+              <div className="flex gap-2 mb-4 flex-wrap">
+                <Select value={make} onValueChange={(v) => { setMake(v); }}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Filter by make" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">All Makes</SelectItem>
+                    {MAKES.filter(m => m !== 'Other').map(m => (
+                      <SelectItem key={m} value={m}>{m}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={equipmentType} onValueChange={(v) => { setEquipmentType(v); }}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Filter by type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">All Types</SelectItem>
+                    {EQUIPMENT_TYPES.map(t => (
+                      <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {isLoadingParts ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+              ) : parts.length === 0 ? (
+                <div className="text-center text-muted-foreground py-8">
+                  <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No parts found</p>
+                  <p className="text-sm mt-2">Try adjusting your search or filters</p>
+                </div>
+              ) : (
+                <ScrollArea className="h-[calc(100vh-400px)]">
+                  <div className="space-y-3">
+                    {parts.map(part => (
+                      <Card key={part.id} className="hover:bg-muted/50 transition-colors">
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Badge variant="outline" className="font-mono">{part.part_number}</Badge>
+                                {part.category && <Badge variant="secondary">{part.category}</Badge>}
+                              </div>
+                              <h3 className="font-semibold">{part.name}</h3>
+                              {part.description && (
+                                <p className="text-sm text-muted-foreground mt-1">{part.description}</p>
+                              )}
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {part.makes?.map((m, i) => (
+                                  <Badge key={i} variant="outline" className="text-xs">{m}</Badge>
+                                ))}
+                              </div>
+                            </div>
+                            {part.avg_price && (
+                              <div className="text-right ml-4">
+                                <div className="flex items-center text-lg font-bold text-primary">
+                                  <DollarSign className="h-4 w-4" />
+                                  {part.avg_price.toFixed(2)}
+                                </div>
+                                <p className="text-xs text-muted-foreground">avg. price</p>
+                              </div>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* DEALERS TAB */}
+        <TabsContent value="dealers" className="flex-1 flex flex-col mt-0 data-[state=inactive]:hidden">
+          <Card className="flex-1 flex flex-col">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <MapPin className="h-5 w-5" />
+                  Find Dealers
+                </CardTitle>
+                <Button 
+                  variant={showMap ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setShowMap(!showMap)}
+                >
+                  <Map className="h-4 w-4 mr-1" />
+                  {showMap ? 'List' : 'Map'}
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="flex-1 flex flex-col">
+              <div className="flex gap-2 mb-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by name, city, or state..."
+                    value={dealerSearch}
+                    onChange={e => setDealerSearch(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <Button onClick={fetchDealers} disabled={isLoadingDealers}>
+                  {isLoadingDealers ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                </Button>
+              </div>
+
+              {isLoadingDealers ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+              ) : showMap ? (
+                <div className="flex-1 min-h-[400px] rounded-lg overflow-hidden border">
+                  {dealersWithCoords.length > 0 ? (
+                    <MapContainer 
+                      center={mapCenter} 
+                      zoom={6} 
+                      className="h-full w-full"
+                      style={{ height: '100%', minHeight: '400px' }}
+                    >
+                      <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      />
+                      {dealersWithCoords.map(dealer => (
+                        <Marker 
+                          key={dealer.id} 
+                          position={[dealer.latitude!, dealer.longitude!]}
+                        >
+                          <Popup>
+                            <div className="p-1">
+                              <h3 className="font-bold">{dealer.name}</h3>
+                              {dealer.city && dealer.state && (
+                                <p className="text-sm">{dealer.city}, {dealer.state}</p>
+                              )}
+                              {dealer.phone && (
+                                <a href={`tel:${dealer.phone}`} className="text-sm text-primary block mt-1">
+                                  {dealer.phone}
+                                </a>
+                              )}
+                              {dealer.makes_served && dealer.makes_served.length > 0 && (
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {dealer.makes_served.join(', ')}
+                                </p>
+                              )}
+                            </div>
+                          </Popup>
+                        </Marker>
+                      ))}
+                    </MapContainer>
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-muted-foreground">
+                      <p>No dealers with location data available</p>
+                    </div>
+                  )}
+                </div>
+              ) : dealers.length === 0 ? (
+                <div className="text-center text-muted-foreground py-8">
+                  <MapPin className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No dealers found</p>
+                  <p className="text-sm mt-2">Try a different search</p>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="mt-4">
+                        Add Dealer
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add a Dealer</DialogTitle>
+                      </DialogHeader>
+                      <AddDealerForm onSuccess={fetchDealers} />
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              ) : (
+                <ScrollArea className="flex-1">
+                  <div className="space-y-3">
+                    {dealers.map(dealer => (
+                      <Card key={dealer.id}>
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <h3 className="font-semibold">{dealer.name}</h3>
+                              {(dealer.address || dealer.city || dealer.state) && (
+                                <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                                  <MapPin className="h-3 w-3" />
+                                  {[dealer.address, dealer.city, dealer.state].filter(Boolean).join(', ')}
+                                </p>
+                              )}
+                              {dealer.makes_served && dealer.makes_served.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-2">
+                                  {dealer.makes_served.map((m, i) => (
+                                    <Badge key={i} variant="secondary" className="text-xs">
+                                      {m}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex flex-col gap-2">
+                              {dealer.phone && (
+                                <a href={`tel:${dealer.phone}`} className="text-sm flex items-center gap-1 text-primary hover:underline">
+                                  <Phone className="h-3 w-3" />
+                                  {dealer.phone}
+                                </a>
+                              )}
+                              {dealer.website && (
+                                <a href={dealer.website} target="_blank" rel="noopener noreferrer" className="text-sm flex items-center gap-1 text-primary hover:underline">
+                                  <Globe className="h-3 w-3" />
+                                  Website
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* HISTORY TAB */}
         <TabsContent value="history" className="flex-1 flex flex-col mt-0 data-[state=inactive]:hidden">
           <Card className="flex-1 flex flex-col">
             <CardHeader>
@@ -673,103 +999,6 @@ export const EquipmentDiagnostics = () => {
                                 )}
                               </div>
                             )}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </ScrollArea>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="dealers" className="flex-1 flex flex-col mt-0 data-[state=inactive]:hidden">
-          <Card className="flex-1 flex flex-col">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="h-5 w-5" />
-                Find Dealers
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1">
-              <div className="flex gap-2 mb-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search by name, city, or state..."
-                    value={dealerSearch}
-                    onChange={e => setDealerSearch(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-                <Button onClick={fetchDealers} disabled={isLoadingDealers}>
-                  {isLoadingDealers ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-                </Button>
-              </div>
-
-              {isLoadingDealers ? (
-                <div className="flex justify-center py-8">
-                  <Loader2 className="h-8 w-8 animate-spin" />
-                </div>
-              ) : dealers.length === 0 ? (
-                <div className="text-center text-muted-foreground py-8">
-                  <MapPin className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No dealers found</p>
-                  <p className="text-sm mt-2">Try a different search or add dealers to the database</p>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" className="mt-4">
-                        Add Dealer
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Add a Dealer</DialogTitle>
-                      </DialogHeader>
-                      <AddDealerForm onSuccess={fetchDealers} />
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              ) : (
-                <ScrollArea className="h-[calc(100vh-350px)]">
-                  <div className="space-y-4">
-                    {dealers.map(dealer => (
-                      <Card key={dealer.id}>
-                        <CardContent className="p-4">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h3 className="font-semibold">{dealer.name}</h3>
-                              {(dealer.address || dealer.city || dealer.state) && (
-                                <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                                  <MapPin className="h-3 w-3" />
-                                  {[dealer.address, dealer.city, dealer.state].filter(Boolean).join(', ')}
-                                </p>
-                              )}
-                              {dealer.makes_served && dealer.makes_served.length > 0 && (
-                                <div className="flex flex-wrap gap-1 mt-2">
-                                  {dealer.makes_served.map((m, i) => (
-                                    <Badge key={i} variant="secondary" className="text-xs">
-                                      {m}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex flex-col gap-2">
-                              {dealer.phone && (
-                                <a href={`tel:${dealer.phone}`} className="text-sm flex items-center gap-1 text-primary hover:underline">
-                                  <Phone className="h-3 w-3" />
-                                  {dealer.phone}
-                                </a>
-                              )}
-                              {dealer.website && (
-                                <a href={dealer.website} target="_blank" rel="noopener noreferrer" className="text-sm flex items-center gap-1 text-primary hover:underline">
-                                  <Globe className="h-3 w-3" />
-                                  Website
-                                </a>
-                              )}
-                            </div>
                           </div>
                         </CardContent>
                       </Card>
