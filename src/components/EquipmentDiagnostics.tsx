@@ -7,12 +7,40 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Send, Loader2, Wrench, Truck, AlertTriangle, Settings, Zap } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Send, Loader2, Wrench, Truck, AlertTriangle, Settings, Zap, History, MapPin, Package, Upload, Image, X, Save, Search, Phone, Globe, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+}
+
+interface DiagnosticRecord {
+  id: string;
+  created_at: string;
+  equipment_type: string | null;
+  make: string | null;
+  model: string | null;
+  symptoms: string;
+  diagnosis: string | null;
+  parts_needed: unknown;
+  status: string;
+  images: string[] | null;
+}
+
+interface Dealer {
+  id: string;
+  name: string;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  phone: string | null;
+  website: string | null;
+  makes_served: string[];
 }
 
 const EQUIPMENT_TYPES = [
@@ -52,14 +80,166 @@ export const EquipmentDiagnostics = () => {
   const [equipmentType, setEquipmentType] = useState('');
   const [make, setMake] = useState('');
   const [model, setModel] = useState('');
+  const [activeTab, setActiveTab] = useState('diagnose');
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [diagnosticHistory, setDiagnosticHistory] = useState<DiagnosticRecord[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  const [dealers, setDealers] = useState<Dealer[]>([]);
+  const [isLoadingDealers, setIsLoadingDealers] = useState(false);
+  const [dealerSearch, setDealerSearch] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  useEffect(() => {
+    if (activeTab === 'history' && user) {
+      fetchHistory();
+    }
+    if (activeTab === 'dealers') {
+      fetchDealers();
+    }
+  }, [activeTab, user]);
+
+  const fetchHistory = async () => {
+    if (!user) return;
+    setIsLoadingHistory(true);
+    try {
+      const { data, error } = await supabase
+        .from('equipment_diagnostics')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (error) throw error;
+      setDiagnosticHistory(data || []);
+    } catch (error) {
+      console.error('Error fetching history:', error);
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  };
+
+  const fetchDealers = async () => {
+    setIsLoadingDealers(true);
+    try {
+      let query = supabase
+        .from('equipment_dealers')
+        .select('*')
+        .order('name');
+
+      if (dealerSearch) {
+        query = query.or(`name.ilike.%${dealerSearch}%,city.ilike.%${dealerSearch}%,state.ilike.%${dealerSearch}%`);
+      }
+
+      if (make) {
+        query = query.contains('makes_served', [make]);
+      }
+
+      const { data, error } = await query.limit(50);
+      if (error) throw error;
+      setDealers(data || []);
+    } catch (error) {
+      console.error('Error fetching dealers:', error);
+    } finally {
+      setIsLoadingDealers(false);
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || !user) return;
+
+    setIsUploading(true);
+    const newImages: string[] = [];
+
+    try {
+      for (const file of Array.from(files)) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('equipment-images')
+          .upload(fileName, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('equipment-images')
+          .getPublicUrl(fileName);
+
+        newImages.push(publicUrl);
+      }
+
+      setUploadedImages(prev => [...prev, ...newImages]);
+      toast({
+        title: 'Images uploaded',
+        description: `${newImages.length} image(s) uploaded successfully`,
+      });
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: 'Upload failed',
+        description: 'Failed to upload images',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setUploadedImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const saveDiagnostic = async () => {
+    if (!user || messages.length === 0) return;
+
+    setIsSaving(true);
+    try {
+      const symptoms = messages.filter(m => m.role === 'user').map(m => m.content).join('\n');
+      const diagnosis = messages.filter(m => m.role === 'assistant').map(m => m.content).join('\n\n');
+
+      const { error } = await supabase.from('equipment_diagnostics').insert({
+        user_id: user.id,
+        equipment_type: equipmentType || null,
+        make: make || null,
+        model: model || null,
+        symptoms,
+        diagnosis,
+        images: uploadedImages,
+        status: 'completed',
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Diagnostic saved',
+        description: 'Your diagnostic has been saved to history',
+      });
+    } catch (error) {
+      console.error('Save error:', error);
+      toast({
+        title: 'Save failed',
+        description: 'Failed to save diagnostic',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const streamChat = async (userMessages: Message[]) => {
     const response = await fetch(
@@ -75,6 +255,7 @@ export const EquipmentDiagnostics = () => {
           equipmentType,
           make,
           model,
+          images: uploadedImages,
         }),
       }
     );
@@ -165,182 +346,546 @@ export const EquipmentDiagnostics = () => {
   const startNewDiagnosis = () => {
     setMessages([]);
     setInput('');
+    setUploadedImages([]);
+  };
+
+  const loadFromHistory = (record: DiagnosticRecord) => {
+    setEquipmentType(record.equipment_type || '');
+    setMake(record.make || '');
+    setModel(record.model || '');
+    setMessages([
+      { role: 'user', content: record.symptoms },
+      { role: 'assistant', content: record.diagnosis || '' },
+    ]);
+    setUploadedImages(record.images || []);
+    setActiveTab('diagnose');
   };
 
   return (
     <div className="flex flex-col h-full">
-      {/* Equipment Selection Header */}
-      <Card className="mb-4 border-primary/20">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Truck className="h-5 w-5 text-primary" />
-            Equipment Details
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="equipment-type">Equipment Type</Label>
-              <Select value={equipmentType} onValueChange={setEquipmentType}>
-                <SelectTrigger id="equipment-type">
-                  <SelectValue placeholder="Select type..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {EQUIPMENT_TYPES.map(type => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="make">Make</Label>
-              <Select value={make} onValueChange={setMake}>
-                <SelectTrigger id="make">
-                  <SelectValue placeholder="Select make..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {MAKES.map(m => (
-                    <SelectItem key={m} value={m}>
-                      {m}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="model">Model</Label>
-              <Input
-                id="model"
-                placeholder="e.g., 320D, PC200, 410L"
-                value={model}
-                onChange={e => setModel(e.target.value)}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+        <TabsList className="grid w-full grid-cols-3 mb-4">
+          <TabsTrigger value="diagnose" className="flex items-center gap-2">
+            <Wrench className="h-4 w-4" />
+            Diagnose
+          </TabsTrigger>
+          <TabsTrigger value="history" className="flex items-center gap-2">
+            <History className="h-4 w-4" />
+            History
+          </TabsTrigger>
+          <TabsTrigger value="dealers" className="flex items-center gap-2">
+            <MapPin className="h-4 w-4" />
+            Dealers
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Quick Actions */}
-      {messages.length === 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-          <Button
-            variant="outline"
-            className="h-auto py-3 flex flex-col items-center gap-2"
-            onClick={() => setInput("My equipment won't start. The engine cranks but doesn't fire.")}
-          >
-            <Zap className="h-5 w-5 text-yellow-500" />
-            <span className="text-xs">Won't Start</span>
-          </Button>
-          <Button
-            variant="outline"
-            className="h-auto py-3 flex flex-col items-center gap-2"
-            onClick={() => setInput("Hydraulic system is losing power and moving slowly.")}
-          >
-            <Settings className="h-5 w-5 text-blue-500" />
-            <span className="text-xs">Hydraulic Issues</span>
-          </Button>
-          <Button
-            variant="outline"
-            className="h-auto py-3 flex flex-col items-center gap-2"
-            onClick={() => setInput("Engine is overheating and the temp gauge is in the red.")}
-          >
-            <AlertTriangle className="h-5 w-5 text-red-500" />
-            <span className="text-xs">Overheating</span>
-          </Button>
-          <Button
-            variant="outline"
-            className="h-auto py-3 flex flex-col items-center gap-2"
-            onClick={() => setInput("Strange noise coming from the undercarriage/tracks.")}
-          >
-            <Wrench className="h-5 w-5 text-orange-500" />
-            <span className="text-xs">Unusual Noise</span>
-          </Button>
-        </div>
-      )}
-
-      {/* Chat Messages */}
-      <Card className="flex-1 flex flex-col min-h-0">
-        <CardHeader className="pb-2 flex-shrink-0 flex flex-row items-center justify-between">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Wrench className="h-5 w-5" />
-            Diagnostic Chat
-          </CardTitle>
-          {messages.length > 0 && (
-            <Button variant="outline" size="sm" onClick={startNewDiagnosis}>
-              New Diagnosis
-            </Button>
-          )}
-        </CardHeader>
-        <CardContent className="flex-1 flex flex-col min-h-0 pb-4">
-          <ScrollArea className="flex-1 pr-4" ref={scrollRef}>
-            {messages.length === 0 ? (
-              <div className="text-center text-muted-foreground py-8">
-                <Truck className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p className="text-lg font-medium mb-2">Equipment Opps AI</p>
-                <p className="text-sm">
-                  Describe your equipment problem and I'll diagnose it, show you the fix, 
-                  identify parts, and help you find them at local dealers.
-                </p>
+        <TabsContent value="diagnose" className="flex-1 flex flex-col mt-0 data-[state=inactive]:hidden">
+          {/* Equipment Selection Header */}
+          <Card className="mb-4 border-primary/20">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Truck className="h-5 w-5 text-primary" />
+                Equipment Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="equipment-type">Equipment Type</Label>
+                  <Select value={equipmentType} onValueChange={setEquipmentType}>
+                    <SelectTrigger id="equipment-type">
+                      <SelectValue placeholder="Select type..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {EQUIPMENT_TYPES.map(type => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="make">Make</Label>
+                  <Select value={make} onValueChange={setMake}>
+                    <SelectTrigger id="make">
+                      <SelectValue placeholder="Select make..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {MAKES.map(m => (
+                        <SelectItem key={m} value={m}>
+                          {m}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="model">Model</Label>
+                  <Input
+                    id="model"
+                    placeholder="e.g., 320D, PC200, 410L"
+                    value={model}
+                    onChange={e => setModel(e.target.value)}
+                  />
+                </div>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {messages.map((msg, i) => (
-                  <div
-                    key={i}
-                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+
+              {/* Image Upload Section */}
+              <div className="mt-4 pt-4 border-t">
+                <div className="flex items-center justify-between mb-2">
+                  <Label className="flex items-center gap-2">
+                    <Image className="h-4 w-4" />
+                    Upload Photos
+                  </Label>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading || !user}
                   >
-                    <div
-                      className={`max-w-[85%] rounded-lg px-4 py-3 ${
-                        msg.role === 'user'
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted'
-                      }`}
-                    >
-                      <div className="whitespace-pre-wrap text-sm">{msg.content}</div>
-                      {msg.role === 'assistant' && msg.content && (
-                        <div className="mt-2 pt-2 border-t border-border/50">
-                          <Badge variant="secondary" className="text-xs">
-                            Equipment Opps AI
-                          </Badge>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-                {isLoading && messages[messages.length - 1]?.role === 'user' && (
-                  <div className="flex justify-start">
-                    <div className="bg-muted rounded-lg px-4 py-3">
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                    </div>
+                    {isUploading ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : (
+                      <Upload className="h-4 w-4 mr-2" />
+                    )}
+                    Upload
+                  </Button>
+                </div>
+                {uploadedImages.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {uploadedImages.map((url, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={url}
+                          alt={`Upload ${index + 1}`}
+                          className="h-16 w-16 object-cover rounded-md border"
+                        />
+                        <button
+                          onClick={() => removeImage(index)}
+                          className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 )}
+                {!user && (
+                  <p className="text-xs text-muted-foreground mt-2">Sign in to upload images</p>
+                )}
               </div>
-            )}
-          </ScrollArea>
+            </CardContent>
+          </Card>
 
-          {/* Input Area */}
-          <div className="flex gap-2 mt-4 pt-4 border-t">
-            <Textarea
-              placeholder="Describe your equipment problem..."
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={handleKeyPress}
-              className="min-h-[60px] resize-none"
-              disabled={isLoading}
-            />
-            <Button
-              onClick={handleSubmit}
-              disabled={!input.trim() || isLoading}
-              className="px-4"
-            >
-              {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+          {/* Quick Actions */}
+          {messages.length === 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+              <Button
+                variant="outline"
+                className="h-auto py-3 flex flex-col items-center gap-2"
+                onClick={() => setInput("My equipment won't start. The engine cranks but doesn't fire.")}
+              >
+                <Zap className="h-5 w-5 text-yellow-500" />
+                <span className="text-xs">Won't Start</span>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto py-3 flex flex-col items-center gap-2"
+                onClick={() => setInput("Hydraulic system is losing power and moving slowly.")}
+              >
+                <Settings className="h-5 w-5 text-blue-500" />
+                <span className="text-xs">Hydraulic Issues</span>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto py-3 flex flex-col items-center gap-2"
+                onClick={() => setInput("Engine is overheating and the temp gauge is in the red.")}
+              >
+                <AlertTriangle className="h-5 w-5 text-red-500" />
+                <span className="text-xs">Overheating</span>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto py-3 flex flex-col items-center gap-2"
+                onClick={() => setInput("Strange noise coming from the undercarriage/tracks.")}
+              >
+                <Wrench className="h-5 w-5 text-orange-500" />
+                <span className="text-xs">Unusual Noise</span>
+              </Button>
+            </div>
+          )}
+
+          {/* Chat Messages */}
+          <Card className="flex-1 flex flex-col min-h-0">
+            <CardHeader className="pb-2 flex-shrink-0 flex flex-row items-center justify-between">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Wrench className="h-5 w-5" />
+                Diagnostic Chat
+              </CardTitle>
+              <div className="flex gap-2">
+                {messages.length > 0 && user && (
+                  <Button variant="outline" size="sm" onClick={saveDiagnostic} disabled={isSaving}>
+                    {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
+                    Save
+                  </Button>
+                )}
+                {messages.length > 0 && (
+                  <Button variant="outline" size="sm" onClick={startNewDiagnosis}>
+                    New Diagnosis
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="flex-1 flex flex-col min-h-0 pb-4">
+              <ScrollArea className="flex-1 pr-4" ref={scrollRef}>
+                {messages.length === 0 ? (
+                  <div className="text-center text-muted-foreground py-8">
+                    <Truck className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg font-medium mb-2">Equipment Opps AI</p>
+                    <p className="text-sm">
+                      Describe your equipment problem and I'll diagnose it, show you the fix, 
+                      identify parts, and help you find them at local dealers.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {messages.map((msg, i) => (
+                      <div
+                        key={i}
+                        className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div
+                          className={`max-w-[85%] rounded-lg px-4 py-3 ${
+                            msg.role === 'user'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted'
+                          }`}
+                        >
+                          <div className="whitespace-pre-wrap text-sm">{msg.content}</div>
+                          {msg.role === 'assistant' && msg.content && (
+                            <div className="mt-2 pt-2 border-t border-border/50">
+                              <Badge variant="secondary" className="text-xs">
+                                Equipment Opps AI
+                              </Badge>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    {isLoading && messages[messages.length - 1]?.role === 'user' && (
+                      <div className="flex justify-start">
+                        <div className="bg-muted rounded-lg px-4 py-3">
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </ScrollArea>
+
+              {/* Input Area */}
+              <div className="flex gap-2 mt-4 pt-4 border-t">
+                <Textarea
+                  placeholder="Describe your equipment problem..."
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  className="min-h-[60px] resize-none"
+                  disabled={isLoading}
+                />
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!input.trim() || isLoading}
+                  className="px-4"
+                >
+                  {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="history" className="flex-1 flex flex-col mt-0 data-[state=inactive]:hidden">
+          <Card className="flex-1 flex flex-col">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <History className="h-5 w-5" />
+                Diagnostic History
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1">
+              {!user ? (
+                <div className="text-center text-muted-foreground py-8">
+                  <History className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Sign in to view your diagnostic history</p>
+                </div>
+              ) : isLoadingHistory ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+              ) : diagnosticHistory.length === 0 ? (
+                <div className="text-center text-muted-foreground py-8">
+                  <History className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No diagnostic history yet</p>
+                  <p className="text-sm mt-2">Your saved diagnostics will appear here</p>
+                </div>
+              ) : (
+                <ScrollArea className="h-[calc(100vh-300px)]">
+                  <div className="space-y-4">
+                    {diagnosticHistory.map(record => (
+                      <Card key={record.id} className="cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => loadFromHistory(record)}>
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                {record.make && <Badge variant="outline">{record.make}</Badge>}
+                                {record.model && <Badge variant="secondary">{record.model}</Badge>}
+                                {record.equipment_type && (
+                                  <Badge variant="secondary" className="capitalize">
+                                    {record.equipment_type}
+                                  </Badge>
+                                )}
+                              </div>
+                              <p className="text-sm line-clamp-2">{record.symptoms}</p>
+                              <p className="text-xs text-muted-foreground mt-2">
+                                {new Date(record.created_at).toLocaleDateString()} at{' '}
+                                {new Date(record.created_at).toLocaleTimeString()}
+                              </p>
+                            </div>
+                            {record.images && record.images.length > 0 && (
+                              <div className="ml-4 flex gap-1">
+                                {record.images.slice(0, 2).map((img, i) => (
+                                  <img key={i} src={img} alt="" className="h-12 w-12 object-cover rounded" />
+                                ))}
+                                {record.images.length > 2 && (
+                                  <div className="h-12 w-12 bg-muted rounded flex items-center justify-center text-sm">
+                                    +{record.images.length - 2}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="dealers" className="flex-1 flex flex-col mt-0 data-[state=inactive]:hidden">
+          <Card className="flex-1 flex flex-col">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="h-5 w-5" />
+                Find Dealers
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1">
+              <div className="flex gap-2 mb-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by name, city, or state..."
+                    value={dealerSearch}
+                    onChange={e => setDealerSearch(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <Button onClick={fetchDealers} disabled={isLoadingDealers}>
+                  {isLoadingDealers ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                </Button>
+              </div>
+
+              {isLoadingDealers ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+              ) : dealers.length === 0 ? (
+                <div className="text-center text-muted-foreground py-8">
+                  <MapPin className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No dealers found</p>
+                  <p className="text-sm mt-2">Try a different search or add dealers to the database</p>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="mt-4">
+                        Add Dealer
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add a Dealer</DialogTitle>
+                      </DialogHeader>
+                      <AddDealerForm onSuccess={fetchDealers} />
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              ) : (
+                <ScrollArea className="h-[calc(100vh-350px)]">
+                  <div className="space-y-4">
+                    {dealers.map(dealer => (
+                      <Card key={dealer.id}>
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <h3 className="font-semibold">{dealer.name}</h3>
+                              {(dealer.address || dealer.city || dealer.state) && (
+                                <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                                  <MapPin className="h-3 w-3" />
+                                  {[dealer.address, dealer.city, dealer.state].filter(Boolean).join(', ')}
+                                </p>
+                              )}
+                              {dealer.makes_served && dealer.makes_served.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-2">
+                                  {dealer.makes_served.map((m, i) => (
+                                    <Badge key={i} variant="secondary" className="text-xs">
+                                      {m}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex flex-col gap-2">
+                              {dealer.phone && (
+                                <a href={`tel:${dealer.phone}`} className="text-sm flex items-center gap-1 text-primary hover:underline">
+                                  <Phone className="h-3 w-3" />
+                                  {dealer.phone}
+                                </a>
+                              )}
+                              {dealer.website && (
+                                <a href={dealer.website} target="_blank" rel="noopener noreferrer" className="text-sm flex items-center gap-1 text-primary hover:underline">
+                                  <Globe className="h-3 w-3" />
+                                  Website
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
+  );
+};
+
+// Add Dealer Form Component
+const AddDealerForm = ({ onSuccess }: { onSuccess: () => void }) => {
+  const [name, setName] = useState('');
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [phone, setPhone] = useState('');
+  const [website, setWebsite] = useState('');
+  const [selectedMakes, setSelectedMakes] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase.from('equipment_dealers').insert({
+        name,
+        address: address || null,
+        city: city || null,
+        state: state || null,
+        phone: phone || null,
+        website: website || null,
+        makes_served: selectedMakes,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Dealer added',
+        description: 'The dealer has been added to the database',
+      });
+      onSuccess();
+    } catch (error) {
+      console.error('Error adding dealer:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to add dealer',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label>Dealer Name *</Label>
+        <Input value={name} onChange={e => setName(e.target.value)} required />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>City</Label>
+          <Input value={city} onChange={e => setCity(e.target.value)} />
+        </div>
+        <div className="space-y-2">
+          <Label>State</Label>
+          <Input value={state} onChange={e => setState(e.target.value)} />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label>Address</Label>
+        <Input value={address} onChange={e => setAddress(e.target.value)} />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>Phone</Label>
+          <Input value={phone} onChange={e => setPhone(e.target.value)} />
+        </div>
+        <div className="space-y-2">
+          <Label>Website</Label>
+          <Input value={website} onChange={e => setWebsite(e.target.value)} />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label>Makes Served</Label>
+        <div className="flex flex-wrap gap-2">
+          {MAKES.filter(m => m !== 'Other').map(m => (
+            <Badge
+              key={m}
+              variant={selectedMakes.includes(m) ? 'default' : 'outline'}
+              className="cursor-pointer"
+              onClick={() => {
+                setSelectedMakes(prev =>
+                  prev.includes(m) ? prev.filter(x => x !== m) : [...prev, m]
+                );
+              }}
+            >
+              {m}
+            </Badge>
+          ))}
+        </div>
+      </div>
+      <Button type="submit" className="w-full" disabled={isSubmitting}>
+        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+        Add Dealer
+      </Button>
+    </form>
   );
 };
 
