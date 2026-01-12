@@ -12,11 +12,11 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CHECK-SUBSCRIPTION] ${step}${detailsStr}`);
 };
 
-// Product IDs from Stripe
-const PRODUCT_TIERS = {
+// Hardcoded Stripe product IDs to tier mapping
+const PRODUCT_TIERS: Record<string, string> = {
   "prod_Thsg6srM9owk9O": "enterprise",
   "prod_ThsgeNu6wH9NSp": "pro",
-} as const;
+};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -41,6 +41,8 @@ serve(async (req) => {
     logStep("Authorization header found");
 
     const token = authHeader.replace("Bearer ", "");
+    logStep("Authenticating user with token");
+    
     const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
     if (userError) throw new Error(`Authentication error: ${userError.message}`);
     const user = userData.user;
@@ -48,11 +50,25 @@ serve(async (req) => {
     logStep("User authenticated", { userId: user.id, email: user.email });
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
+    
+    // Find customer by email
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-
+    
     if (customers.data.length === 0) {
       logStep("No customer found, returning unsubscribed state");
-      return new Response(JSON.stringify({ subscribed: false }), {
+      
+      // Update local subscriptions table to inactive
+      await supabaseClient
+        .from('subscriptions')
+        .update({ status: 'inactive', plan_name: 'free' })
+        .eq('user_id', user.id);
+      
+      return new Response(JSON.stringify({ 
+        subscribed: false,
+        tier: null,
+        product_id: null,
+        subscription_end: null
+      }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       });
@@ -61,26 +77,33 @@ serve(async (req) => {
     const customerId = customers.data[0].id;
     logStep("Found Stripe customer", { customerId });
 
+    // Check for active subscriptions
     const subscriptions = await stripe.subscriptions.list({
       customer: customerId,
       status: "active",
       limit: 1,
     });
-
+    
     const hasActiveSub = subscriptions.data.length > 0;
-    let tier = null;
-    let subscriptionEnd = null;
-    let productId = null;
+    let tier: string | null = null;
+    let productId: string | null = null;
+    let subscriptionEnd: string | null = null;
 
     if (hasActiveSub) {
       const subscription = subscriptions.data[0];
       subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
       productId = subscription.items.data[0].price.product as string;
-      tier = PRODUCT_TIERS[productId as keyof typeof PRODUCT_TIERS] || null;
-      logStep("Active subscription found", { subscriptionId: subscription.id, tier, endDate: subscriptionEnd });
+      tier = PRODUCT_TIERS[productId] || null;
+      
+      logStep("Active subscription found", { 
+        subscriptionId: subscription.id, 
+        productId,
+        tier,
+        endDate: subscriptionEnd 
+      });
 
-      // Update local subscription record
-      const { error: updateError } = await supabaseClient
+      // Update local subscriptions table
+      await supabaseClient
         .from('subscriptions')
         .update({
           status: 'active',
@@ -89,25 +112,21 @@ serve(async (req) => {
           expires_at: subscriptionEnd,
         })
         .eq('user_id', user.id);
-
-      if (updateError) {
-        logStep("Failed to update subscription record", { error: updateError.message });
-      } else {
-        logStep("Updated subscription record");
-      }
+      
+      logStep("Updated subscription record");
     } else {
       logStep("No active subscription found");
-
-      // Update local subscription record to inactive
+      
+      // Update local subscriptions table to inactive
       await supabaseClient
         .from('subscriptions')
-        .update({ status: 'inactive' })
+        .update({ status: 'inactive', plan_name: 'free' })
         .eq('user_id', user.id);
     }
 
     return new Response(JSON.stringify({
       subscribed: hasActiveSub,
-      tier,
+      tier: tier,
       product_id: productId,
       subscription_end: subscriptionEnd
     }), {
@@ -116,7 +135,7 @@ serve(async (req) => {
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    logStep("ERROR", { message: errorMessage });
+    logStep("ERROR in check-subscription", { message: errorMessage });
     return new Response(JSON.stringify({ error: errorMessage }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,

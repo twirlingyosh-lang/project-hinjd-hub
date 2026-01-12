@@ -86,10 +86,8 @@ export const useStripeSubscription = () => {
       throw new Error("No active session");
     }
 
-    const priceId = SUBSCRIPTION_TIERS[tier].price_id;
-
     const { data, error } = await supabase.functions.invoke('create-checkout', {
-      body: { priceId },
+      body: { tier },
       headers: {
         Authorization: `Bearer ${sessionData.session.access_token}`,
       },

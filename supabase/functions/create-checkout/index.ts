@@ -7,6 +7,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Hardcoded Stripe price IDs
+const PRICE_IDS = {
+  pro: "price_1SkSvRApXzGOpOgg3YvtNViL",
+  enterprise: "price_1SkSvKApXzGOpOgg8flgnodS",
+};
+
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[CREATE-CHECKOUT] ${step}${detailsStr}`);
@@ -25,28 +31,43 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
-    const { priceId } = await req.json();
-    if (!priceId) throw new Error("Price ID is required");
-    logStep("Price ID received", { priceId });
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
+    logStep("Stripe key verified");
 
-    const authHeader = req.headers.get("Authorization")!;
+    const { tier } = await req.json();
+    if (!tier || !PRICE_IDS[tier as keyof typeof PRICE_IDS]) {
+      throw new Error("Valid tier (pro or enterprise) is required");
+    }
+    
+    const priceId = PRICE_IDS[tier as keyof typeof PRICE_IDS];
+    logStep("Tier and price ID determined", { tier, priceId });
+
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) throw new Error("No authorization header provided");
+    
     const token = authHeader.replace("Bearer ", "");
     const { data } = await supabaseClient.auth.getUser(token);
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+    const stripe = new Stripe(stripeKey, {
       apiVersion: "2025-08-27.basil",
     });
 
+    // Check if customer already exists
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
       logStep("Existing customer found", { customerId });
+    } else {
+      logStep("No existing customer, will create new one");
     }
 
+    const origin = req.headers.get("origin") || "https://zpslppxkrwjxsfotypdp.lovableproject.com";
+    
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -57,8 +78,12 @@ serve(async (req) => {
         },
       ],
       mode: "subscription",
-      success_url: `${req.headers.get("origin")}/aggregate-opps?checkout=success`,
-      cancel_url: `${req.headers.get("origin")}/aggregate-opps?checkout=canceled`,
+      success_url: `${origin}/aggregate-opps?checkout=success`,
+      cancel_url: `${origin}/aggregate-opps?checkout=canceled`,
+      metadata: {
+        user_id: user.id,
+        tier: tier,
+      },
     });
 
     logStep("Checkout session created", { sessionId: session.id, url: session.url });
