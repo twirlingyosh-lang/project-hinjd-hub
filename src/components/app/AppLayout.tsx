@@ -1,8 +1,10 @@
 import { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Layers, Wrench, Calculator, Save, User, Crown, Download, Truck } from 'lucide-react';
+import { Home, Layers, Calculator, Save, User, Crown, Download, Truck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Badge } from '@/components/ui/badge';
+import { useSubscription } from '@/hooks/useSubscription';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -19,6 +21,23 @@ const navItems = [
 
 export const AppLayout = ({ children, title }: AppLayoutProps) => {
   const location = useLocation();
+  const { subscription, isSubscribed, loading } = useSubscription();
+
+  const getPlanDisplay = () => {
+    if (loading) return { label: '...', variant: 'secondary' as const };
+    if (!isSubscribed) return { label: 'Free', variant: 'secondary' as const };
+    
+    const planName = subscription?.plan_name?.toLowerCase() || '';
+    if (planName.includes('enterprise')) {
+      return { label: 'Enterprise', variant: 'default' as const };
+    }
+    if (planName.includes('pro')) {
+      return { label: 'Pro', variant: 'outline' as const };
+    }
+    return { label: 'Active', variant: 'secondary' as const };
+  };
+
+  const plan = getPlanDisplay();
 
   return (
     <div className="min-h-screen bg-background flex flex-col pb-20">
@@ -26,7 +45,21 @@ export const AppLayout = ({ children, title }: AppLayoutProps) => {
       {title && (
         <header className="sticky top-0 z-40 bg-card/95 backdrop-blur border-b border-border">
           <div className="px-4 py-3 flex items-center justify-between">
-            <h1 className="text-lg font-semibold">{title}</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-semibold">{title}</h1>
+              <Link to="/app/upgrade">
+                <Badge 
+                  variant={plan.variant} 
+                  className={cn(
+                    "text-xs cursor-pointer hover:opacity-80 transition-opacity",
+                    plan.label === 'Enterprise' && "bg-primary text-primary-foreground",
+                    plan.label === 'Pro' && "border-primary text-primary"
+                  )}
+                >
+                  {plan.label}
+                </Badge>
+              </Link>
+            </div>
             <div className="flex items-center gap-2">
               <TooltipProvider>
                 <Tooltip>
