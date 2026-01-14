@@ -9,21 +9,11 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Send, Loader2, Wrench, Truck, AlertTriangle, Settings, Zap, History, MapPin, Package, Upload, Image, X, Save, Search, Phone, Globe, Map, DollarSign } from 'lucide-react';
+import { Send, Loader2, Wrench, Truck, AlertTriangle, Settings, Zap, History, MapPin, Package, Upload, Image, X, Save, Search, Phone, Globe, Map, DollarSign, Navigation } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-
-// Fix Leaflet default marker icons
-delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
+import GoogleMapView from '@/components/app/GoogleMapView';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -117,6 +107,8 @@ export const EquipmentDiagnostics = () => {
   const [parts, setParts] = useState<Part[]>([]);
   const [isLoadingParts, setIsLoadingParts] = useState(false);
   const [partSearch, setPartSearch] = useState('');
+  const [selectedDealer, setSelectedDealer] = useState<Dealer | null>(null);
+  const [jobSiteLocation, setJobSiteLocation] = useState<{ lat: number; lng: number } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -127,6 +119,24 @@ export const EquipmentDiagnostics = () => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  // Get user's location for job site
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setJobSiteLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        () => {
+          // Default to Salt Lake area if geolocation fails
+          setJobSiteLocation({ lat: 40.76, lng: -111.89 });
+        }
+      );
+    }
+  }, []);
 
   useEffect(() => {
     if (activeTab === 'history' && user) {
@@ -422,10 +432,6 @@ export const EquipmentDiagnostics = () => {
     setActiveTab('diagnose');
   };
 
-  const dealersWithCoords = dealers.filter(d => d.latitude && d.longitude);
-  const mapCenter: [number, number] = dealersWithCoords.length > 0 
-    ? [dealersWithCoords[0].latitude!, dealersWithCoords[0].longitude!]
-    : [33.5, -86.8]; // Default to Birmingham, AL
 
   return (
     <div className="flex flex-col h-full">
@@ -826,49 +832,14 @@ export const EquipmentDiagnostics = () => {
                   <Loader2 className="h-8 w-8 animate-spin" />
                 </div>
               ) : showMap ? (
-                <div className="flex-1 min-h-[400px] rounded-lg overflow-hidden border">
-                  {dealersWithCoords.length > 0 ? (
-                    <MapContainer 
-                      center={mapCenter} 
-                      zoom={6} 
-                      className="h-full w-full"
-                      style={{ height: '100%', minHeight: '400px' }}
-                    >
-                      <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                      />
-                      {dealersWithCoords.map(dealer => (
-                        <Marker 
-                          key={dealer.id} 
-                          position={[dealer.latitude!, dealer.longitude!]}
-                        >
-                          <Popup>
-                            <div className="p-1">
-                              <h3 className="font-bold">{dealer.name}</h3>
-                              {dealer.city && dealer.state && (
-                                <p className="text-sm">{dealer.city}, {dealer.state}</p>
-                              )}
-                              {dealer.phone && (
-                                <a href={`tel:${dealer.phone}`} className="text-sm text-primary block mt-1">
-                                  {dealer.phone}
-                                </a>
-                              )}
-                              {dealer.makes_served && dealer.makes_served.length > 0 && (
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  {dealer.makes_served.join(', ')}
-                                </p>
-                              )}
-                            </div>
-                          </Popup>
-                        </Marker>
-                      ))}
-                    </MapContainer>
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-muted-foreground">
-                      <p>No dealers with location data available</p>
-                    </div>
-                  )}
+                <div className="flex-1 min-h-[500px] rounded-lg overflow-hidden border">
+                  <GoogleMapView
+                    dealers={dealers}
+                    selectedDealer={selectedDealer}
+                    onDealerSelect={setSelectedDealer}
+                    jobSiteLocation={jobSiteLocation}
+                    showLogistics={true}
+                  />
                 </div>
               ) : dealers.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">
