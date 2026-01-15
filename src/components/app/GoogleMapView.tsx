@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow, DirectionsRenderer } from '@react-google-maps/api';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Layers, Satellite, Mountain, MapPin, Navigation, Clock, Route, Package, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Layers, Satellite, Mountain, MapPin, Navigation, Clock, Route, Package, AlertTriangle, CheckCircle, Plus, X, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDealerInventory, DealerInventorySummary } from '@/hooks/useDealerInventory';
 
@@ -30,8 +30,10 @@ interface GoogleMapViewProps {
   selectedDealer?: Dealer | null;
   onDealerSelect?: (dealer: Dealer) => void;
   jobSiteLocation?: { lat: number; lng: number } | null;
+  onJobSiteChange?: (location: { lat: number; lng: number } | null) => void;
   showLogistics?: boolean;
   showInventoryStatus?: boolean;
+  allowManualJobSite?: boolean;
 }
 
 type MapStyle = 'roadmap' | 'satellite' | 'terrain';
@@ -107,8 +109,10 @@ export const GoogleMapView = ({
   selectedDealer,
   onDealerSelect,
   jobSiteLocation,
+  onJobSiteChange,
   showLogistics = true,
   showInventoryStatus = true,
+  allowManualJobSite = true,
 }: GoogleMapViewProps) => {
   const [mapStyle, setMapStyle] = useState<MapStyle>('roadmap');
   const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -120,6 +124,7 @@ export const GoogleMapView = ({
     isLoading: false,
   });
   const [showLayerMenu, setShowLayerMenu] = useState(false);
+  const [isPlacingPin, setIsPlacingPin] = useState(false);
 
   // Get dealer IDs for inventory tracking
   const dealerIds = useMemo(() => dealers.map(d => d.id), [dealers]);
@@ -164,6 +169,21 @@ export const GoogleMapView = ({
   const onUnmount = useCallback(() => {
     setMap(null);
   }, []);
+
+  // Handle map click for manual job site placement
+  const handleMapClick = useCallback((e: google.maps.MapMouseEvent) => {
+    if (isPlacingPin && allowManualJobSite && e.latLng) {
+      const newLocation = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+      onJobSiteChange?.(newLocation);
+      setIsPlacingPin(false);
+    }
+  }, [isPlacingPin, allowManualJobSite, onJobSiteChange]);
+
+  const clearJobSite = useCallback(() => {
+    onJobSiteChange?.(null);
+    setDirections(null);
+    setLogistics({ distance: '--', duration: '--', isLoading: false });
+  }, [onJobSiteChange]);
 
   // Calculate route when dealer and job site are selected
   useEffect(() => {
@@ -251,7 +271,11 @@ export const GoogleMapView = ({
         zoom={8}
         onLoad={onLoad}
         onUnmount={onUnmount}
-        options={getMapOptions()}
+        options={{
+          ...getMapOptions(),
+          draggableCursor: isPlacingPin ? 'crosshair' : undefined,
+        }}
+        onClick={handleMapClick}
       >
         {/* Dealer markers with inventory status */}
         {dealersWithCoords.map(dealer => (
@@ -383,6 +407,62 @@ export const GoogleMapView = ({
           )}
         </div>
       </div>
+
+      {/* Job Site Controls */}
+      {allowManualJobSite && (
+        <div className="absolute top-4 left-4 z-10">
+          <div className="flex flex-col gap-2">
+            {!jobSiteLocation ? (
+              <Button
+                variant={isPlacingPin ? "default" : "secondary"}
+                size="sm"
+                className={cn(
+                  "shadow-lg backdrop-blur-sm",
+                  isPlacingPin ? "bg-green-600 hover:bg-green-700" : "bg-background/90"
+                )}
+                onClick={() => setIsPlacingPin(!isPlacingPin)}
+              >
+                {isPlacingPin ? (
+                  <>
+                    <Target className="h-4 w-4 mr-2 animate-pulse" />
+                    Click Map to Place
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Job Site
+                  </>
+                )}
+              </Button>
+            ) : (
+              <div className="flex gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="shadow-lg backdrop-blur-sm bg-background/90"
+                  onClick={() => setIsPlacingPin(true)}
+                >
+                  <MapPin className="h-4 w-4 mr-2" />
+                  Move Pin
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="shadow-lg"
+                  onClick={clearJobSite}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+            {isPlacingPin && (
+              <div className="bg-background/95 backdrop-blur-sm rounded-lg px-3 py-2 text-xs text-muted-foreground animate-fade-in border">
+                Click anywhere on the map to place your job site marker
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Logistics Intelligence Panel */}
       {showLogistics && selectedDealer && jobSiteLocation && (
