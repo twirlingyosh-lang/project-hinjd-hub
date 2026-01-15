@@ -59,6 +59,51 @@ export type Database = {
         }
         Relationships: []
       }
+      dealer_inventory: {
+        Row: {
+          created_at: string
+          dealer_id: string
+          id: string
+          last_updated: string
+          part_id: string
+          quantity: number
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          dealer_id: string
+          id?: string
+          last_updated?: string
+          part_id: string
+          quantity?: number
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          dealer_id?: string
+          id?: string
+          last_updated?: string
+          part_id?: string
+          quantity?: number
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dealer_inventory_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "equipment_dealers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dealer_inventory_part_id_fkey"
+            columns: ["part_id"]
+            isOneToOne: false
+            referencedRelation: "equipment_parts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       equipment_dealers: {
         Row: {
           address: string | null
