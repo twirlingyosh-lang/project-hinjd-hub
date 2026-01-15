@@ -838,7 +838,10 @@ export const EquipmentDiagnostics = () => {
                     selectedDealer={selectedDealer}
                     onDealerSelect={setSelectedDealer}
                     jobSiteLocation={jobSiteLocation}
+                    onJobSiteChange={setJobSiteLocation}
                     showLogistics={true}
+                    showInventoryStatus={true}
+                    allowManualJobSite={true}
                   />
                 </div>
               ) : dealers.length === 0 ? (
