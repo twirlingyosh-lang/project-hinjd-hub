@@ -1,9 +1,10 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow, DirectionsRenderer } from '@react-google-maps/api';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Layers, Satellite, Mountain, MapPin, Navigation, Clock, Route } from 'lucide-react';
+import { Layers, Satellite, Mountain, MapPin, Navigation, Clock, Route, Package, AlertTriangle, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useDealerInventory, DealerInventorySummary } from '@/hooks/useDealerInventory';
 
 interface Dealer {
   id: string;
@@ -30,9 +31,56 @@ interface GoogleMapViewProps {
   onDealerSelect?: (dealer: Dealer) => void;
   jobSiteLocation?: { lat: number; lng: number } | null;
   showLogistics?: boolean;
+  showInventoryStatus?: boolean;
 }
 
 type MapStyle = 'roadmap' | 'satellite' | 'terrain';
+
+// Inventory status indicator component
+const InventoryStatusBadge = ({ 
+  summary, 
+  getStatusColor, 
+  getStatusLabel 
+}: { 
+  summary: DealerInventorySummary; 
+  getStatusColor: (status: string) => string;
+  getStatusLabel: (status: 'good' | 'warning' | 'critical') => string;
+}) => {
+  const statusIcon = summary.overall_status === 'good' 
+    ? <CheckCircle className="h-3 w-3" />
+    : summary.overall_status === 'warning'
+    ? <AlertTriangle className="h-3 w-3" />
+    : <Package className="h-3 w-3" />;
+
+  return (
+    <div className="flex items-center gap-2 mt-2 p-2 rounded-md bg-muted/50">
+      <div className={cn(
+        "w-3 h-3 rounded-full animate-pulse",
+        getStatusColor(summary.overall_status)
+      )} />
+      <div className="flex-1">
+        <div className="flex items-center gap-1 text-xs font-medium">
+          {statusIcon}
+          <span>{getStatusLabel(summary.overall_status)}</span>
+        </div>
+        <div className="flex gap-2 mt-1 text-[10px] text-muted-foreground">
+          <span className="flex items-center gap-0.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            {summary.in_stock}
+          </span>
+          <span className="flex items-center gap-0.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-yellow-500" />
+            {summary.low_stock}
+          </span>
+          <span className="flex items-center gap-0.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+            {summary.out_of_stock}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const mapContainerStyle = {
   width: '100%',
@@ -60,6 +108,7 @@ export const GoogleMapView = ({
   onDealerSelect,
   jobSiteLocation,
   showLogistics = true,
+  showInventoryStatus = true,
 }: GoogleMapViewProps) => {
   const [mapStyle, setMapStyle] = useState<MapStyle>('roadmap');
   const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -72,6 +121,10 @@ export const GoogleMapView = ({
   });
   const [showLayerMenu, setShowLayerMenu] = useState(false);
 
+  // Get dealer IDs for inventory tracking
+  const dealerIds = useMemo(() => dealers.map(d => d.id), [dealers]);
+  const { summaries, getStatusColor, getStatusLabel, isLoading: inventoryLoading } = useDealerInventory(dealerIds);
+
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
     libraries: ['places'],
@@ -81,6 +134,28 @@ export const GoogleMapView = ({
   const center = dealersWithCoords.length > 0
     ? { lat: dealersWithCoords[0].latitude!, lng: dealersWithCoords[0].longitude! }
     : defaultCenter;
+
+  // Get marker color based on inventory status
+  const getMarkerIcon = useCallback((dealer: Dealer, isSelected: boolean) => {
+    if (isSelected) {
+      return 'https://maps.google.com/mapfiles/ms/icons/gold-dot.png';
+    }
+    
+    if (showInventoryStatus) {
+      const summary = summaries.get(dealer.id);
+      if (summary) {
+        switch (summary.overall_status) {
+          case 'good':
+            return 'https://maps.google.com/mapfiles/ms/icons/green-dot.png';
+          case 'warning':
+            return 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+          case 'critical':
+            return 'https://maps.google.com/mapfiles/ms/icons/red-dot.png';
+        }
+      }
+    }
+    return 'https://maps.google.com/mapfiles/ms/icons/ltblue-dot.png';
+  }, [summaries, showInventoryStatus]);
 
   const onLoad = useCallback((map: google.maps.Map) => {
     setMap(map);
@@ -178,7 +253,7 @@ export const GoogleMapView = ({
         onUnmount={onUnmount}
         options={getMapOptions()}
       >
-        {/* Dealer markers */}
+        {/* Dealer markers with inventory status */}
         {dealersWithCoords.map(dealer => (
           <Marker
             key={dealer.id}
@@ -188,9 +263,7 @@ export const GoogleMapView = ({
               onDealerSelect?.(dealer);
             }}
             icon={{
-              url: selectedDealer?.id === dealer.id
-                ? 'https://maps.google.com/mapfiles/ms/icons/gold-dot.png'
-                : 'https://maps.google.com/mapfiles/ms/icons/ltblue-dot.png',
+              url: getMarkerIcon(dealer, selectedDealer?.id === dealer.id),
               scaledSize: new google.maps.Size(40, 40),
             }}
           />
@@ -207,7 +280,7 @@ export const GoogleMapView = ({
           />
         )}
 
-        {/* Info windows */}
+        {/* Info windows with inventory status */}
         {dealersWithCoords.map(dealer => (
           activeInfoWindow === dealer.id && (
             <InfoWindow
@@ -215,7 +288,7 @@ export const GoogleMapView = ({
               position={{ lat: dealer.latitude!, lng: dealer.longitude! }}
               onCloseClick={() => setActiveInfoWindow(null)}
             >
-              <div className="p-2 min-w-[200px]">
+              <div className="p-2 min-w-[220px]">
                 <h3 className="font-bold text-foreground">{dealer.name}</h3>
                 {dealer.city && dealer.state && (
                   <p className="text-sm text-muted-foreground">{dealer.city}, {dealer.state}</p>
@@ -231,6 +304,14 @@ export const GoogleMapView = ({
                       <Badge key={i} variant="secondary" className="text-xs">{m}</Badge>
                     ))}
                   </div>
+                )}
+                {/* Inventory status in info window */}
+                {showInventoryStatus && summaries.get(dealer.id) && (
+                  <InventoryStatusBadge 
+                    summary={summaries.get(dealer.id)!}
+                    getStatusColor={getStatusColor}
+                    getStatusLabel={getStatusLabel}
+                  />
                 )}
               </div>
             </InfoWindow>
