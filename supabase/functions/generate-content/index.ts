@@ -1,9 +1,23 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+const allowedOrigins = [
+  'https://hinjd-ecosystem-hub.lovable.app',
+  'https://id-preview--8a90f329-1999-4f92-9e0a-6730f7f00d7a.lovable.app',
+  'https://zpslppxkrwjxsfotypdp.supabase.co',
+  'http://localhost:5173',
+  'http://localhost:8080',
+];
+
+const getCorsHeaders = (origin: string | null) => {
+  const isAllowed = origin && allowedOrigins.some(allowed => 
+    origin === allowed || origin.endsWith('.lovableproject.com') || origin.endsWith('.lovable.app')
+  );
+  return {
+    'Access-Control-Allow-Origin': isAllowed ? origin : allowedOrigins[0],
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Credentials': 'true',
+  };
 };
 
 type ContentType = 'description' | 'summary' | 'report' | 'custom';
@@ -24,6 +38,9 @@ const getSystemPrompt = (type: ContentType, context?: string): string => {
 };
 
 serve(async (req) => {
+  const origin = req.headers.get('Origin');
+  const corsHeaders = getCorsHeaders(origin);
+
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -46,7 +63,7 @@ serve(async (req) => {
 
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
     if (userError || !user) {
-      console.error('Authentication failed:', userError?.message);
+      console.error('Authentication failed');
       return new Response(
         JSON.stringify({ error: 'Unauthorized - Invalid session' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

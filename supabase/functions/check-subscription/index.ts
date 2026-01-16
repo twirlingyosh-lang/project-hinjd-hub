@@ -2,13 +2,31 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+const allowedOrigins = [
+  'https://hinjd-ecosystem-hub.lovable.app',
+  'https://id-preview--8a90f329-1999-4f92-9e0a-6730f7f00d7a.lovable.app',
+  'https://zpslppxkrwjxsfotypdp.supabase.co',
+  'http://localhost:5173',
+  'http://localhost:8080',
+];
+
+const getCorsHeaders = (origin: string | null) => {
+  const isAllowed = origin && allowedOrigins.some(allowed => 
+    origin === allowed || origin.endsWith('.lovableproject.com') || origin.endsWith('.lovable.app')
+  );
+  return {
+    'Access-Control-Allow-Origin': isAllowed ? origin : allowedOrigins[0],
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Credentials': 'true',
+  };
 };
 
-const logStep = (step: string, details?: any) => {
-  const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
+const logStep = (step: string, details?: Record<string, unknown>) => {
+  // Log without PII (no user IDs or emails)
+  const safeDetails = details ? Object.fromEntries(
+    Object.entries(details).filter(([key]) => !['userId', 'email', 'user_id'].includes(key))
+  ) : undefined;
+  const detailsStr = safeDetails && Object.keys(safeDetails).length > 0 ? ` - ${JSON.stringify(safeDetails)}` : '';
   console.log(`[CHECK-SUBSCRIPTION] ${step}${detailsStr}`);
 };
 
@@ -19,6 +37,9 @@ const PRODUCT_TIERS: Record<string, string> = {
 };
 
 serve(async (req) => {
+  const origin = req.headers.get('Origin');
+  const corsHeaders = getCorsHeaders(origin);
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -47,7 +68,7 @@ serve(async (req) => {
     if (userError) throw new Error(`Authentication error: ${userError.message}`);
     const user = userData.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
-    logStep("User authenticated", { userId: user.id, email: user.email });
+    logStep("User authenticated");
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     

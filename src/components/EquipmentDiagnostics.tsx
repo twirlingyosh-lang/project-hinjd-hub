@@ -244,11 +244,14 @@ export const EquipmentDiagnostics = () => {
 
         if (uploadError) throw uploadError;
 
-        const { data: { publicUrl } } = supabase.storage
+        // Use signed URL instead of public URL (bucket is now private)
+        const { data: signedData, error: signError } = await supabase.storage
           .from('equipment-images')
-          .getPublicUrl(fileName);
+          .createSignedUrl(fileName, 3600); // 1 hour expiry
 
-        newImages.push(publicUrl);
+        if (signError || !signedData) throw signError || new Error('Failed to create signed URL');
+        
+        newImages.push(signedData.signedUrl);
       }
 
       setUploadedImages(prev => [...prev, ...newImages]);
