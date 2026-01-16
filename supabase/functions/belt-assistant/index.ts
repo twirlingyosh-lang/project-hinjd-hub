@@ -1,9 +1,23 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+const allowedOrigins = [
+  'https://hinjd-ecosystem-hub.lovable.app',
+  'https://id-preview--8a90f329-1999-4f92-9e0a-6730f7f00d7a.lovable.app',
+  'https://zpslppxkrwjxsfotypdp.supabase.co',
+  'http://localhost:5173',
+  'http://localhost:8080',
+];
+
+const getCorsHeaders = (origin: string | null) => {
+  const isAllowed = origin && allowedOrigins.some(allowed => 
+    origin === allowed || origin.endsWith('.lovableproject.com') || origin.endsWith('.lovable.app')
+  );
+  return {
+    'Access-Control-Allow-Origin': isAllowed ? origin : allowedOrigins[0],
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Credentials': 'true',
+  };
 };
 
 const systemPrompt = `You are BeltSaver AI, an expert diagnostic assistant for conveyor belt systems. You help maintenance technicians and engineers troubleshoot belt tracking issues, mistracking problems, edge wear, spillage, and other conveyor problems.
@@ -28,6 +42,9 @@ Guidelines:
 Keep responses focused and actionable. Use technical terminology appropriately but explain concepts when needed.`;
 
 serve(async (req) => {
+  const origin = req.headers.get('Origin');
+  const corsHeaders = getCorsHeaders(origin);
+
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -52,14 +69,14 @@ serve(async (req) => {
 
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
     if (userError || !user) {
-      console.error('User verification failed:', userError?.message);
+      console.error('User verification failed');
       return new Response(
         JSON.stringify({ error: 'Unauthorized - Invalid or expired session' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Authenticated user:', user.id);
+    console.log('User authenticated successfully');
 
     const { messages } = await req.json();
     
@@ -69,7 +86,7 @@ serve(async (req) => {
       throw new Error('AI service not configured');
     }
 
-    console.log('Processing chat request with', messages.length, 'messages for user:', user.id);
+    console.log('Processing chat request with', messages.length, 'messages');
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -110,7 +127,7 @@ serve(async (req) => {
       );
     }
 
-    console.log('Streaming response from AI gateway for user:', user.id);
+    console.log('Streaming response from AI gateway');
     
     return new Response(response.body, {
       headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },

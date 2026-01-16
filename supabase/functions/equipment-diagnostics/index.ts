@@ -1,8 +1,22 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+const allowedOrigins = [
+  'https://hinjd-ecosystem-hub.lovable.app',
+  'https://id-preview--8a90f329-1999-4f92-9e0a-6730f7f00d7a.lovable.app',
+  'https://zpslppxkrwjxsfotypdp.supabase.co',
+  'http://localhost:5173',
+  'http://localhost:8080',
+];
+
+const getCorsHeaders = (origin: string | null) => {
+  const isAllowed = origin && allowedOrigins.some(allowed => 
+    origin === allowed || origin.endsWith('.lovableproject.com') || origin.endsWith('.lovable.app')
+  );
+  return {
+    'Access-Control-Allow-Origin': isAllowed ? origin : allowedOrigins[0],
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Credentials': 'true',
+  };
 };
 
 const systemPrompt = `You are Equipment Opps AI, an expert heavy equipment diagnostic assistant specializing in CAT, Komatsu, John Deere, Hitachi, Volvo, Case, Kubota, and all major heavy equipment brands.
@@ -38,6 +52,9 @@ When responding, always structure your diagnosis with:
 Be conversational but technical. Ask clarifying questions if needed to narrow down the diagnosis. Always prioritize safety.`;
 
 serve(async (req) => {
+  const origin = req.headers.get('Origin');
+  const corsHeaders = getCorsHeaders(origin);
+
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -55,6 +72,8 @@ serve(async (req) => {
     if (equipmentType || make || model) {
       contextMessage = `\n\nEquipment Context: ${[make, model, equipmentType].filter(Boolean).join(' ')}`;
     }
+
+    console.log('Processing equipment diagnostics request');
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -89,6 +108,8 @@ serve(async (req) => {
       console.error('AI gateway error:', response.status, errorText);
       throw new Error(`AI gateway error: ${response.status}`);
     }
+
+    console.log('Streaming diagnostics response');
 
     return new Response(response.body, {
       headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
