@@ -308,11 +308,56 @@ export type Database = {
         }
         Relationships: []
       }
+      user_modules: {
+        Row: {
+          activated_at: string | null
+          active: boolean
+          created_at: string
+          expires_at: string | null
+          id: string
+          module_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activated_at?: string | null
+          active?: boolean
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          module_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activated_at?: string | null
+          active?: boolean
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          module_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      activate_user_module: {
+        Args: {
+          p_expires_at?: string
+          p_module_name: string
+          p_user_id: string
+        }
+        Returns: boolean
+      }
+      deactivate_user_module: {
+        Args: { p_module_name: string; p_user_id: string }
+        Returns: boolean
+      }
       decrement_usage: { Args: never; Returns: boolean }
       get_usage_status: {
         Args: never
@@ -322,6 +367,7 @@ export type Database = {
           total_uses: number
         }[]
       }
+      has_module_access: { Args: { p_module_name: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

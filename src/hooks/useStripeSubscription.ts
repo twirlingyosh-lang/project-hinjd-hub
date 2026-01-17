@@ -7,6 +7,7 @@ interface StripeSubscriptionStatus {
   subscribed: boolean;
   tier: SubscriptionTier | null;
   subscriptionEnd: string | null;
+  aggregateOpsActive: boolean;
   isLoading: boolean;
   error: string | null;
 }
@@ -17,6 +18,7 @@ export const useStripeSubscription = () => {
     subscribed: false,
     tier: null,
     subscriptionEnd: null,
+    aggregateOpsActive: false,
     isLoading: true,
     error: null,
   });
@@ -27,6 +29,7 @@ export const useStripeSubscription = () => {
         subscribed: false,
         tier: null,
         subscriptionEnd: null,
+        aggregateOpsActive: false,
         isLoading: false,
         error: null,
       });
@@ -53,6 +56,7 @@ export const useStripeSubscription = () => {
         subscribed: data.subscribed || false,
         tier: data.tier || null,
         subscriptionEnd: data.subscription_end || null,
+        aggregateOpsActive: data.aggregate_ops_active || false,
         isLoading: false,
         error: null,
       });
@@ -127,5 +131,6 @@ export const useStripeSubscription = () => {
     isEnterprise: status.tier === 'enterprise',
     isPro: status.tier === 'pro',
     hasUnlimitedAccess: status.tier === 'enterprise',
+    aggregateOpsActive: status.aggregateOpsActive,
   };
 };

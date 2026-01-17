@@ -135,6 +135,21 @@ serve(async (req) => {
         .eq('user_id', user.id);
       
       logStep("Updated subscription record");
+
+      // Activate aggregate_ops module for Pro and Enterprise subscribers
+      if (tier === 'pro' || tier === 'enterprise') {
+        const { error: moduleError } = await supabaseClient.rpc('activate_user_module', {
+          p_user_id: user.id,
+          p_module_name: 'aggregate_ops',
+          p_expires_at: subscriptionEnd,
+        });
+        
+        if (moduleError) {
+          logStep("Warning: Failed to activate module", { error: moduleError.message });
+        } else {
+          logStep("Activated aggregate_ops module");
+        }
+      }
     } else {
       logStep("No active subscription found");
       
@@ -143,13 +158,26 @@ serve(async (req) => {
         .from('subscriptions')
         .update({ status: 'inactive', plan_name: 'free' })
         .eq('user_id', user.id);
+
+      // Deactivate aggregate_ops module
+      const { error: moduleError } = await supabaseClient.rpc('deactivate_user_module', {
+        p_user_id: user.id,
+        p_module_name: 'aggregate_ops',
+      });
+      
+      if (moduleError) {
+        logStep("Warning: Failed to deactivate module", { error: moduleError.message });
+      } else {
+        logStep("Deactivated aggregate_ops module");
+      }
     }
 
     return new Response(JSON.stringify({
       subscribed: hasActiveSub,
       tier: tier,
       product_id: productId,
-      subscription_end: subscriptionEnd
+      subscription_end: subscriptionEnd,
+      aggregate_ops_active: hasActiveSub && (tier === 'pro' || tier === 'enterprise'),
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
