@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.2";
 
 const allowedOrigins = [
   'https://hinjd-ecosystem-hub.lovable.app',
@@ -17,6 +18,12 @@ const getCorsHeaders = (origin: string | null) => {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
     'Access-Control-Allow-Credentials': 'true',
   };
+};
+
+// Logging helper (filters PII)
+const logStep = (step: string, details?: Record<string, unknown>) => {
+  const safeDetails = details ? JSON.stringify(details) : '';
+  console.log(`[EQUIPMENT-DIAGNOSTICS] ${step}${safeDetails ? ` - ${safeDetails}` : ''}`);
 };
 
 const systemPrompt = `You are Equipment Opps AI, an expert heavy equipment diagnostic assistant specializing in CAT, Komatsu, John Deere, Hitachi, Volvo, Case, Kubota, and all major heavy equipment brands.
@@ -60,6 +67,36 @@ serve(async (req) => {
   }
 
   try {
+    logStep('Function started');
+
+    // REQUIRED: Verify user authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      logStep('Auth missing');
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - Please sign in to use diagnostics' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Create Supabase client with user's token
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    if (userError || !user) {
+      logStep('Auth invalid', { error: userError?.message });
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - Invalid or expired session' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    logStep('User authenticated', { userId: user.id });
+
     const { messages, equipmentType, make, model } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -73,7 +110,7 @@ serve(async (req) => {
       contextMessage = `\n\nEquipment Context: ${[make, model, equipmentType].filter(Boolean).join(' ')}`;
     }
 
-    console.log('Processing equipment diagnostics request');
+    logStep('Processing diagnostics request', { equipmentType, make, model });
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -109,7 +146,7 @@ serve(async (req) => {
       throw new Error(`AI gateway error: ${response.status}`);
     }
 
-    console.log('Streaming diagnostics response');
+    logStep('Streaming diagnostics response');
 
     return new Response(response.body, {
       headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },

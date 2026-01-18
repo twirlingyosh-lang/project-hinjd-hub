@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import GoogleMapView from '@/components/app/GoogleMapView';
+import { useNavigate } from 'react-router-dom';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -112,7 +113,8 @@ export const EquipmentDiagnostics = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, session } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -316,13 +318,18 @@ export const EquipmentDiagnostics = () => {
   };
 
   const streamChat = async (userMessages: Message[]) => {
+    // Verify user is authenticated before making API call
+    if (!session?.access_token) {
+      throw new Error('Please sign in to use diagnostics');
+    }
+
     const response = await fetch(
       `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/equipment-diagnostics`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          'Authorization': `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           messages: userMessages,
@@ -335,6 +342,9 @@ export const EquipmentDiagnostics = () => {
     );
 
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Session expired. Please sign in again.');
+      }
       const error = await response.json();
       throw new Error(error.error || 'Failed to get diagnosis');
     }
