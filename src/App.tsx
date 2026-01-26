@@ -28,6 +28,18 @@ const UpgradePage = lazy(() => import("./pages/app/UpgradePage"));
 const AccountPage = lazy(() => import("./pages/app/AccountPage"));
 const LegalPage = lazy(() => import("./pages/app/LegalPage"));
 const InstallPage = lazy(() => import("./pages/app/InstallPage"));
+
+// CRM pages
+const CRMDashboard = lazy(() => import("./pages/crm/CRMDashboard"));
+const CRMLogin = lazy(() => import("./pages/crm/CRMLogin"));
+const CRMClients = lazy(() => import("./pages/crm/CRMClients"));
+const CRMClientForm = lazy(() => import("./pages/crm/CRMClientForm"));
+const CRMDeals = lazy(() => import("./pages/crm/CRMDeals"));
+const CRMDealForm = lazy(() => import("./pages/crm/CRMDealForm"));
+const CRMInvoices = lazy(() => import("./pages/crm/CRMInvoices"));
+const CRMInvoiceForm = lazy(() => import("./pages/crm/CRMInvoiceForm"));
+const CRMMessages = lazy(() => import("./pages/crm/CRMMessages"));
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -58,6 +70,22 @@ const App = () => (
                 <Route path="/app/account" element={<AccountPage />} />
                 <Route path="/app/legal" element={<LegalPage />} />
                 <Route path="/app/install" element={<InstallPage />} />
+                {/* CRM Routes */}
+                <Route path="/crm" element={<CRMDashboard />} />
+                <Route path="/crm/login" element={<CRMLogin />} />
+                <Route path="/crm/clients" element={<CRMClients />} />
+                <Route path="/crm/clients/new" element={<CRMClientForm />} />
+                <Route path="/crm/clients/:id" element={<CRMClientForm />} />
+                <Route path="/crm/clients/:id/edit" element={<CRMClientForm />} />
+                <Route path="/crm/deals" element={<CRMDeals />} />
+                <Route path="/crm/deals/new" element={<CRMDealForm />} />
+                <Route path="/crm/deals/:id" element={<CRMDealForm />} />
+                <Route path="/crm/deals/:id/edit" element={<CRMDealForm />} />
+                <Route path="/crm/invoices" element={<CRMInvoices />} />
+                <Route path="/crm/invoices/new" element={<CRMInvoiceForm />} />
+                <Route path="/crm/invoices/:id" element={<CRMInvoiceForm />} />
+                <Route path="/crm/invoices/:id/edit" element={<CRMInvoiceForm />} />
+                <Route path="/crm/messages" element={<CRMMessages />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
