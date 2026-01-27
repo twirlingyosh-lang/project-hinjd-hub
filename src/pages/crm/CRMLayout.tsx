@@ -10,7 +10,8 @@ import {
   LogOut,
   Menu,
   X,
-  ChevronLeft
+  ChevronLeft,
+  TrendingUp
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ interface CRMLayoutProps {
 
 const navItems = [
   { path: '/crm', icon: LayoutDashboard, label: 'Dashboard' },
+  { path: '/crm/funnel', icon: TrendingUp, label: 'Sales Funnel' },
   { path: '/crm/clients', icon: Users, label: 'Clients' },
   { path: '/crm/deals', icon: Handshake, label: 'Deals' },
   { path: '/crm/invoices', icon: Receipt, label: 'Invoices' },
