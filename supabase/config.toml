@@ -17,3 +17,12 @@ verify_jwt = false
 
 [functions.customer-portal]
 verify_jwt = false
+
+[functions.verify-module-access]
+verify_jwt = false
+
+[functions.crm-ai-assistant]
+verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false
