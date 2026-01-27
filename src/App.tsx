@@ -40,6 +40,7 @@ const CRMInvoices = lazy(() => import("./pages/crm/CRMInvoices"));
 const CRMInvoiceForm = lazy(() => import("./pages/crm/CRMInvoiceForm"));
 const CRMMessages = lazy(() => import("./pages/crm/CRMMessages"));
 const CRMSalesFunnel = lazy(() => import("./pages/crm/CRMSalesFunnel"));
+const CRMReports = lazy(() => import("./pages/crm/CRMReports"));
 
 const queryClient = new QueryClient();
 
@@ -88,6 +89,7 @@ const App = () => (
                 <Route path="/crm/invoices/:id/edit" element={<CRMInvoiceForm />} />
                 <Route path="/crm/messages" element={<CRMMessages />} />
                 <Route path="/crm/funnel" element={<CRMSalesFunnel />} />
+                <Route path="/crm/reports" element={<CRMReports />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
