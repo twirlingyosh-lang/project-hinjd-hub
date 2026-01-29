@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Users, Handshake, Receipt, TrendingUp, Plus, ArrowRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { SolanaMetricsCard } from '@/components/crm/SolanaMetricsCard';
 
 interface DashboardStats {
   totalClients: number;
@@ -235,52 +236,57 @@ export const CRMDashboard = () => {
         </Button>
       </div>
 
-      {/* Recent Deals */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Recent Deals</CardTitle>
-            <CardDescription>Your latest pipeline activity</CardDescription>
-          </div>
-          <Button variant="ghost" size="sm" onClick={() => navigate('/crm/deals')}>
-            View All <ArrowRight size={16} className="ml-1" />
-          </Button>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="space-y-3">
-              {[1, 2, 3].map(i => (
-                <Skeleton key={i} className="h-12 w-full" />
-              ))}
+      {/* Recent Deals + Solana Metrics */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Recent Deals</CardTitle>
+              <CardDescription>Your latest pipeline activity</CardDescription>
             </div>
-          ) : recentDeals.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">
-              No deals yet. Create your first deal to get started.
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {recentDeals.map(deal => (
-                <div 
-                  key={deal.id}
-                  className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 cursor-pointer transition-colors"
-                  onClick={() => navigate(`/crm/deals/${deal.id}`)}
-                >
-                  <div>
-                    <p className="font-medium">{deal.title}</p>
-                    <p className="text-sm text-muted-foreground">{deal.client_name}</p>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/crm/deals')}>
+              View All <ArrowRight size={16} className="ml-1" />
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map(i => (
+                  <Skeleton key={i} className="h-12 w-full" />
+                ))}
+              </div>
+            ) : recentDeals.length === 0 ? (
+              <p className="text-muted-foreground text-center py-8">
+                No deals yet. Create your first deal to get started.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {recentDeals.map(deal => (
+                  <div 
+                    key={deal.id}
+                    className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 cursor-pointer transition-colors"
+                    onClick={() => navigate(`/crm/deals/${deal.id}`)}
+                  >
+                    <div>
+                      <p className="font-medium">{deal.title}</p>
+                      <p className="text-sm text-muted-foreground">{deal.client_name}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${getStageColor(deal.stage)}`}>
+                        {deal.stage.replace('_', ' ')}
+                      </span>
+                      <span className="font-semibold">{formatCurrency(deal.value)}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${getStageColor(deal.stage)}`}>
-                      {deal.stage.replace('_', ' ')}
-                    </span>
-                    <span className="font-semibold">{formatCurrency(deal.value)}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Solana Wallet Metrics */}
+        <SolanaMetricsCard />
+      </div>
     </CRMLayout>
   );
 };
