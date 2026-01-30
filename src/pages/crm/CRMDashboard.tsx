@@ -8,7 +8,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Users, Handshake, Receipt, TrendingUp, Plus, ArrowRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SolanaMetricsCard } from '@/components/crm/SolanaMetricsCard';
-
+import { HQCommandPanel } from '@/components/crm/HQCommandPanel';
+import { DiagnosticLookup } from '@/components/crm/DiagnosticLookup';
 interface DashboardStats {
   totalClients: number;
   totalDeals: number;
@@ -236,8 +237,16 @@ export const CRMDashboard = () => {
         </Button>
       </div>
 
+      {/* HQ Command Panel - Admin Only */}
+      <HQCommandPanel />
+
+      {/* Diagnostic Engine */}
+      <div className="mt-8">
+        <DiagnosticLookup />
+      </div>
+
       {/* Recent Deals + Solana Metrics */}
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-3 mt-8">
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
