@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, Wrench, DollarSign, Tag, Loader2 } from 'lucide-react';
+import { Search, Wrench, DollarSign, Tag, Loader2, ShoppingCart } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface DiagnosticResult {
@@ -17,6 +17,8 @@ interface DiagnosticResult {
   category: string | null;
   equipment_types: string[];
 }
+
+const ORDER_PRICE = 500; // Fixed $500 order price
 
 export const DiagnosticLookup = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -64,6 +66,39 @@ export const DiagnosticLookup = () => {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(value);
+  };
+
+  const handleOrderPart = async (result: DiagnosticResult) => {
+    try {
+      toast.loading('Creating order...', { id: 'order-loading' });
+      
+      const { data, error } = await supabase.functions.invoke('create-part-order', {
+        body: {
+          partNumber: result.part_number,
+          partName: result.part_name,
+          faultCode: result.fault_code,
+        },
+      });
+
+      toast.dismiss('order-loading');
+
+      if (error) {
+        console.error('Order error:', error);
+        toast.error('Failed to create order. Please try again.');
+        return;
+      }
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+        toast.success('Redirecting to checkout...');
+      } else {
+        toast.error('No checkout URL received');
+      }
+    } catch (err) {
+      toast.dismiss('order-loading');
+      console.error('Order error:', err);
+      toast.error('Failed to create order');
+    }
   };
 
   return (
@@ -148,11 +183,10 @@ export const DiagnosticLookup = () => {
 
                   <Button 
                     className="w-full mt-3" 
-                    variant="outline"
-                    onClick={() => toast.info('Order workflow coming soon!')}
+                    onClick={() => handleOrderPart(result)}
                   >
-                    <DollarSign className="mr-2 h-4 w-4" />
-                    Order Part - {formatCurrency(result.price)}
+                    <ShoppingCart className="mr-2 h-4 w-4" />
+                    Order Part - ${ORDER_PRICE} (80% Revenue / 20% Scholarship)
                   </Button>
                 </div>
               ))
