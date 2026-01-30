@@ -86,9 +86,40 @@ serve(async (req) => {
     // Handle checkout session completed
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
-      logStep('Checkout completed', { sessionId: session.id });
+      logStep('Checkout completed', { sessionId: session.id, orderType: session.metadata?.order_type });
 
-      if (session.payment_intent) {
+      // Handle part orders with 80/20 revenue split
+      if (session.metadata?.order_type === 'part_order') {
+        const businessRevenue = Number(session.metadata.business_revenue) / 100; // Convert cents to dollars
+        const scholarshipFund = Number(session.metadata.scholarship_fund) / 100;
+        const totalAmount = (session.amount_total || 50000) / 100;
+
+        const { data: txData, error: txError } = await supabase
+          .from('hq_transactions')
+          .insert({
+            user_id: session.metadata.user_id,
+            amount: totalAmount,
+            business_revenue: businessRevenue,
+            scholarship_fund: scholarshipFund,
+            transaction_type: 'part_order',
+            description: `Part Order: ${session.metadata.part_name} (${session.metadata.part_number})`,
+            stripe_payment_intent_id: session.payment_intent as string,
+            status: 'completed',
+          })
+          .select();
+
+        if (txError) {
+          logStep('Error logging part order transaction', { error: txError.message });
+        } else {
+          logStep('Part order transaction logged', { 
+            transactionId: txData?.[0]?.id,
+            amount: totalAmount,
+            businessRevenue,
+            scholarshipFund
+          });
+        }
+      } else if (session.payment_intent) {
+        // Handle regular invoice payments
         const { data, error } = await supabase
           .from('crm_invoices')
           .update({ 
