@@ -92,11 +92,14 @@ export const CRMClientForm = () => {
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
+      // Bucket is now private - use signed URL for secure access
+      const { data: signedUrlData, error: signedUrlError } = await supabase.storage
         .from('crm-profiles')
-        .getPublicUrl(fileName);
+        .createSignedUrl(fileName, 3600); // 1 hour expiry
 
-      setProfilePictureUrl(publicUrl);
+      if (signedUrlError) throw signedUrlError;
+
+      setProfilePictureUrl(signedUrlData.signedUrl);
       toast.success('Image uploaded');
     } catch (error) {
       console.error('Error uploading image:', error);
