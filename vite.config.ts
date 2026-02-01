@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
@@ -7,6 +7,23 @@ import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // Ensure VITE_* env vars are always available during dev/preview.
+  // This prevents hard-crashes like: "supabaseUrl is required" when env injection is flaky.
+  define: (() => {
+    const env = loadEnv(mode, process.cwd(), "");
+    const supabaseUrl = env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const supabaseKey =
+      env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+    const defineEnv: Record<string, string> = {};
+    if (supabaseUrl) {
+      defineEnv["import.meta.env.VITE_SUPABASE_URL"] = JSON.stringify(supabaseUrl);
+    }
+    if (supabaseKey) {
+      defineEnv["import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY"] = JSON.stringify(supabaseKey);
+    }
+    return defineEnv;
+  })(),
   server: {
     host: "::",
     port: 8080,
