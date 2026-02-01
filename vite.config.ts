@@ -10,10 +10,24 @@ export default defineConfig(({ mode }) => ({
   // Ensure VITE_* env vars are always available during dev/preview.
   // This prevents hard-crashes like: "supabaseUrl is required" when env injection is flaky.
   define: (() => {
-    const env = loadEnv(mode, process.cwd(), "");
-    const supabaseUrl = env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    // In some hosted/dev environments, process.cwd() may not be the repo root.
+    // Using __dirname (vite.config.ts location) is the most reliable way to load .env files.
+    const env = loadEnv(mode, __dirname, "");
+    // Lovable Cloud may expose these values under different names depending on runtime.
+    // Never fall back to service-role keys here (client-side code must use anon/publishable only).
+    const supabaseUrl =
+      env.VITE_SUPABASE_URL ||
+      process.env.VITE_SUPABASE_URL ||
+      env.SUPABASE_URL ||
+      process.env.SUPABASE_URL;
+
     const supabaseKey =
-      env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+      process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+      env.SUPABASE_PUBLISHABLE_KEY ||
+      process.env.SUPABASE_PUBLISHABLE_KEY ||
+      env.SUPABASE_ANON_KEY ||
+      process.env.SUPABASE_ANON_KEY;
 
     const defineEnv: Record<string, string> = {};
     if (supabaseUrl) {
