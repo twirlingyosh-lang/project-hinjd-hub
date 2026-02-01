@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,7 +14,8 @@ import {
   AlertTriangle,
   TrendingUp,
   Wallet,
-  ArrowUpRight
+  ArrowUpRight,
+  Radio
 } from 'lucide-react';
 
 interface HQMetrics {
@@ -30,14 +31,9 @@ export const HQCommandPanel = () => {
   const { isAdmin, loading: adminLoading } = useAdminRole();
   const [metrics, setMetrics] = useState<HQMetrics | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLive, setIsLive] = useState(false);
 
-  useEffect(() => {
-    if (isAdmin) {
-      fetchHQMetrics();
-    }
-  }, [isAdmin]);
-
-  const fetchHQMetrics = async () => {
+  const fetchHQMetrics = useCallback(async () => {
     try {
       // Fetch transaction totals
       const { data: transactions } = await supabase
@@ -77,7 +73,36 @@ export const HQCommandPanel = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (isAdmin) {
+      fetchHQMetrics();
+
+      // Subscribe to real-time updates on hq_transactions
+      const channel = supabase
+        .channel('hq-transactions-realtime')
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'hq_transactions'
+          },
+          () => {
+            setIsLive(true);
+            fetchHQMetrics();
+            // Flash effect
+            setTimeout(() => setIsLive(false), 2000);
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [isAdmin, fetchHQMetrics]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -98,18 +123,26 @@ export const HQCommandPanel = () => {
   }
 
   return (
-    <Card className="border-primary/30 bg-gradient-to-br from-card to-primary/5">
+    <Card className={`border-primary/30 bg-gradient-to-br from-card to-primary/5 transition-all duration-500 ${isLive ? 'ring-2 ring-green-500 ring-opacity-50' : ''}`}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Shield className="h-5 w-5 text-primary" />
             <CardTitle className="text-lg">HQ Command</CardTitle>
+            {isLive && (
+              <Radio className="h-4 w-4 text-green-500 animate-pulse" />
+            )}
           </div>
-          <Badge variant="outline" className="border-primary/50 text-primary">
-            ADMIN
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="border-green-500/50 text-green-500 text-xs">
+              LIVE
+            </Badge>
+            <Badge variant="outline" className="border-primary/50 text-primary">
+              ADMIN
+            </Badge>
+          </div>
         </div>
-        <CardDescription>Executive Dashboard & Financial Overview</CardDescription>
+        <CardDescription>Executive Dashboard & Financial Overview • Real-time updates</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Financial Overview */}
