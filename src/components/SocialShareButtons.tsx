@@ -1,6 +1,7 @@
 import { Facebook, Twitter, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 interface SocialShareButtonsProps {
   title: string;
@@ -12,9 +13,10 @@ const SocialShareButtons = ({ title, text, url }: SocialShareButtonsProps) => {
   const shareUrl = url || window.location.href;
   const encodedUrl = encodeURIComponent(shareUrl);
   const encodedText = encodeURIComponent(`${title}: ${text}`);
-  const encodedTitle = encodeURIComponent(title);
+  const { trackShare } = useAnalytics();
 
   const handleFacebookShare = () => {
+    trackShare('facebook', 'diagnostic');
     window.open(
       `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`,
       '_blank',
@@ -23,6 +25,7 @@ const SocialShareButtons = ({ title, text, url }: SocialShareButtonsProps) => {
   };
 
   const handleTwitterShare = () => {
+    trackShare('twitter', 'diagnostic');
     window.open(
       `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`,
       '_blank',
@@ -31,7 +34,7 @@ const SocialShareButtons = ({ title, text, url }: SocialShareButtonsProps) => {
   };
 
   const handleTikTokShare = async () => {
-    // TikTok doesn't have a direct web share API, so we copy link for sharing
+    trackShare('tiktok', 'diagnostic');
     try {
       await navigator.clipboard.writeText(`${title}: ${text}\n${shareUrl}`);
       toast({
@@ -47,6 +50,7 @@ const SocialShareButtons = ({ title, text, url }: SocialShareButtonsProps) => {
   };
 
   const handleNativeShare = async () => {
+    trackShare('native', 'diagnostic');
     if (navigator.share) {
       try {
         await navigator.share({
