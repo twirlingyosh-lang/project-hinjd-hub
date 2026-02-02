@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import HubView from '@/components/HubView';
 import BeltAssistant from '@/components/BeltAssistant';
-
+import { WorkerPoolDemo } from '@/components/WorkerPoolDemo';
 const Index = () => {
   const organizationSchema = {
     "@context": "https://schema.org",
@@ -50,6 +50,9 @@ const Index = () => {
         </script>
       </Helmet>
       <HubView />
+      <div className="fixed bottom-24 right-4 z-40">
+        <WorkerPoolDemo />
+      </div>
       <BeltAssistant />
     </>
   );
