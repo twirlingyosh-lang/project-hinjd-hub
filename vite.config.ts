@@ -7,6 +7,9 @@ import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // Ensure Vite loads env files relative to this config file (repo root),
+  // not relative to an unstable process working directory.
+  envDir: __dirname,
   // Ensure VITE_* env vars are always available during dev/preview.
   // This prevents hard-crashes like: "supabaseUrl is required" when env injection is flaky.
   define: (() => {
@@ -15,11 +18,22 @@ export default defineConfig(({ mode }) => ({
     const env = loadEnv(mode, __dirname, "");
     // Lovable Cloud may expose these values under different names depending on runtime.
     // Never fall back to service-role keys here (client-side code must use anon/publishable only).
+    const projectId =
+      env.VITE_SUPABASE_PROJECT_ID ||
+      process.env.VITE_SUPABASE_PROJECT_ID ||
+      env.SUPABASE_PROJECT_ID ||
+      process.env.SUPABASE_PROJECT_ID;
+
+    // Last-resort derived URL to prevent blank-screen crashes when env injection fails.
+    // (Public endpoint + anon key is safe for client usage.)
+    const derivedSupabaseUrl = projectId ? `https://${projectId}.supabase.co` : undefined;
+
     const supabaseUrl =
       env.VITE_SUPABASE_URL ||
       process.env.VITE_SUPABASE_URL ||
       env.SUPABASE_URL ||
-      process.env.SUPABASE_URL;
+      process.env.SUPABASE_URL ||
+      derivedSupabaseUrl;
 
     const supabaseKey =
       env.VITE_SUPABASE_PUBLISHABLE_KEY ||
