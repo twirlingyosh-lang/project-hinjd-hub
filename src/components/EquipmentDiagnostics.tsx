@@ -15,6 +15,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import GoogleMapView from '@/components/app/GoogleMapView';
 import { useNavigate } from 'react-router-dom';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -115,6 +116,7 @@ export const EquipmentDiagnostics = () => {
   const { toast } = useToast();
   const { user, session } = useAuth();
   const navigate = useNavigate();
+  const { trackDiagnostic, trackSearch, trackFileUpload, trackFormSubmit } = useAnalytics();
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -257,6 +259,7 @@ export const EquipmentDiagnostics = () => {
       }
 
       setUploadedImages(prev => [...prev, ...newImages]);
+      trackFileUpload('image', files[0]?.size);
       toast({
         title: 'Images uploaded',
         description: `${newImages.length} image(s) uploaded successfully`,
@@ -301,12 +304,14 @@ export const EquipmentDiagnostics = () => {
 
       if (error) throw error;
 
+      trackFormSubmit('diagnostic_save', true, { equipmentType, make, model });
       toast({
         title: 'Diagnostic saved',
         description: 'Your diagnostic has been saved to history',
       });
     } catch (error) {
       console.error('Save error:', error);
+      trackFormSubmit('diagnostic_save', false);
       toast({
         title: 'Save failed',
         description: 'Failed to save diagnostic',
@@ -355,6 +360,8 @@ export const EquipmentDiagnostics = () => {
   const handleSubmit = async () => {
     if (!input.trim() || isLoading) return;
 
+    trackDiagnostic('start', equipmentType, { make, model, hasImages: uploadedImages.length > 0 });
+    
     const userMessage: Message = { role: 'user', content: input };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
@@ -407,6 +414,8 @@ export const EquipmentDiagnostics = () => {
           }
         }
       }
+      
+      trackDiagnostic('complete', equipmentType, { make, model });
     } catch (error) {
       console.error('Diagnosis error:', error);
       toast({

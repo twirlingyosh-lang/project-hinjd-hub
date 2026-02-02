@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
 import { z } from 'zod';
 import PasswordStrengthIndicator from '@/components/PasswordStrengthIndicator';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const emailSchema = z.string().email('Please enter a valid email address');
 
@@ -42,6 +43,12 @@ const Auth = () => {
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const { signIn, signUp, user, loading } = useAuth();
   const navigate = useNavigate();
+  const { trackAuth, trackButtonClick, trackPageView } = useAnalytics();
+
+  // Track page view on mount
+  useEffect(() => {
+    trackPageView({ page: '/auth', title: 'Authentication' });
+  }, [trackPageView]);
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,12 +73,14 @@ const Auth = () => {
     setIsResettingPassword(false);
 
     if (error) {
+      trackAuth('reset_password', false);
       toast({
         title: 'Reset Failed',
         description: error.message,
         variant: 'destructive'
       });
     } else {
+      trackAuth('reset_password', true);
       toast({
         title: 'Check Your Email',
         description: 'We sent you a password reset link. Please check your inbox.'
@@ -81,12 +90,14 @@ const Auth = () => {
   };
 
   const handleGoogleSignIn = async () => {
+    trackButtonClick('google_signin');
     setIsGoogleLoading(true);
     const { error } = await lovable.auth.signInWithOAuth('google', {
       redirect_uri: window.location.origin
     });
     
     if (error) {
+      trackAuth('signin', false);
       toast({
         title: 'Google Sign In Failed',
         description: error.message,
@@ -97,12 +108,14 @@ const Auth = () => {
   };
 
   const handleAppleSignIn = async () => {
+    trackButtonClick('apple_signin');
     setIsAppleLoading(true);
     const { error } = await lovable.auth.signInWithOAuth('apple', {
       redirect_uri: window.location.origin
     });
     
     if (error) {
+      trackAuth('signin', false);
       toast({
         title: 'Apple Sign In Failed',
         description: error.message,
@@ -148,6 +161,7 @@ const Auth = () => {
     setIsLoading(false);
 
     if (error) {
+      trackAuth('signin', false);
       toast({
         title: 'Sign In Failed',
         description: error.message === 'Invalid login credentials' 
@@ -156,6 +170,7 @@ const Auth = () => {
         variant: 'destructive'
       });
     } else {
+      trackAuth('signin', true);
       toast({
         title: 'Welcome back!',
         description: 'You have successfully signed in.'
@@ -173,6 +188,7 @@ const Auth = () => {
     setIsLoading(false);
 
     if (error) {
+      trackAuth('signup', false);
       if (error.message.includes('already registered')) {
         toast({
           title: 'Account Exists',
@@ -187,6 +203,7 @@ const Auth = () => {
         });
       }
     } else {
+      trackAuth('signup', true);
       toast({
         title: 'Account Created!',
         description: 'You have successfully signed up and are now logged in.'
