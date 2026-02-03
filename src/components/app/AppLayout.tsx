@@ -1,10 +1,11 @@
 import { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Layers, Calculator, Save, User, Crown, Download, Truck } from 'lucide-react';
+import { Home, Layers, Calculator, Save, User, Crown, Download, Truck, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
 import { useSubscription } from '@/hooks/useSubscription';
+import { useAdminRole } from '@/hooks/useAdminRole';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -22,6 +23,7 @@ const navItems = [
 export const AppLayout = ({ children, title }: AppLayoutProps) => {
   const location = useLocation();
   const { subscription, isSubscribed, loading } = useSubscription();
+  const { isAdmin } = useAdminRole();
 
   const getPlanDisplay = () => {
     if (loading) return { label: '...', variant: 'secondary' as const };
@@ -61,6 +63,23 @@ export const AppLayout = ({ children, title }: AppLayoutProps) => {
               </Link>
             </div>
             <div className="flex items-center gap-2">
+              {isAdmin && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link 
+                        to="/app/admin" 
+                        className="p-2 rounded-full bg-primary/20 text-primary hover:bg-primary/30 transition-colors"
+                      >
+                        <ShieldCheck size={18} />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Admin Panel</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
