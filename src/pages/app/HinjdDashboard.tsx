@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Activity, TrendingUp, Shield, Download, Users, Lock, Zap, BarChart3, RefreshCw, Plus, Loader2 } from 'lucide-react';
+import { Activity, TrendingUp, Shield, Download, Users, Lock, Zap, BarChart3, RefreshCw, Plus, Loader2, ShieldCheck, Trash2, Edit3, DollarSign } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { AppLayout } from '@/components/app/AppLayout';
 import { useTreasuryData } from '@/hooks/useTreasuryData';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAdminRole } from '@/hooks/useAdminRole';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -256,6 +257,129 @@ const RecentActivity = ({ activities }: { activities: Array<{ id: string; activi
   );
 };
 
+// Admin Control Panel - Only visible to admins
+const AdminControlPanel = ({ 
+  onSetWealth,
+  onResetMetrics,
+  onBulkDeposit,
+  currentWealth
+}: { 
+  onSetWealth: (amount: number) => void;
+  onResetMetrics: () => void;
+  onBulkDeposit: (amount: number) => void;
+  currentWealth: number;
+}) => {
+  const [directAmount, setDirectAmount] = useState('');
+  const [bulkAmount, setBulkAmount] = useState('');
+
+  const handleSetWealth = () => {
+    const amount = parseFloat(directAmount);
+    if (!isNaN(amount) && amount >= 0) {
+      onSetWealth(amount);
+      setDirectAmount('');
+    }
+  };
+
+  const handleBulkDeposit = () => {
+    const amount = parseFloat(bulkAmount);
+    if (!isNaN(amount) && amount > 0) {
+      onBulkDeposit(amount);
+      setBulkAmount('');
+    }
+  };
+
+  return (
+    <div className="bg-gradient-to-br from-red-900/20 to-slate-900 p-6 rounded-2xl border border-red-500/30">
+      <div className="flex items-center gap-2 mb-4">
+        <ShieldCheck size={18} className="text-red-400" />
+        <h3 className="text-xs font-bold uppercase tracking-widest text-red-400">Admin Controls</h3>
+      </div>
+      
+      <div className="space-y-4">
+        {/* Direct Wealth Override */}
+        <div className="p-3 bg-slate-800/50 rounded-lg border border-slate-700">
+          <p className="text-[10px] text-slate-500 mb-2">SET TOTAL WEALTH DIRECTLY</p>
+          <div className="flex gap-2">
+            <Input
+              type="number"
+              step="0.01"
+              value={directAmount}
+              onChange={(e) => setDirectAmount(e.target.value)}
+              placeholder={currentWealth.toFixed(2)}
+              className="bg-slate-900 border-slate-700 text-white text-sm h-9"
+            />
+            <Button 
+              onClick={handleSetWealth}
+              size="sm"
+              variant="outline"
+              className="border-amber-500/50 text-amber-400 hover:bg-amber-500/20"
+            >
+              <Edit3 size={14} />
+            </Button>
+          </div>
+        </div>
+
+        {/* Bulk Deposit */}
+        <div className="p-3 bg-slate-800/50 rounded-lg border border-slate-700">
+          <p className="text-[10px] text-slate-500 mb-2">QUICK BULK DEPOSIT</p>
+          <div className="flex gap-2">
+            <Input
+              type="number"
+              step="100"
+              value={bulkAmount}
+              onChange={(e) => setBulkAmount(e.target.value)}
+              placeholder="1000"
+              className="bg-slate-900 border-slate-700 text-white text-sm h-9"
+            />
+            <Button 
+              onClick={handleBulkDeposit}
+              size="sm"
+              className="bg-emerald-600 hover:bg-emerald-700"
+            >
+              <DollarSign size={14} />
+            </Button>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            onClick={() => onBulkDeposit(5000)}
+            variant="outline"
+            size="sm"
+            className="border-slate-700 text-slate-300 hover:bg-slate-800 text-xs"
+          >
+            +$5,000
+          </Button>
+          <Button
+            onClick={() => onBulkDeposit(10000)}
+            variant="outline"
+            size="sm"
+            className="border-slate-700 text-slate-300 hover:bg-slate-800 text-xs"
+          >
+            +$10,000
+          </Button>
+        </div>
+
+        {/* Reset Button */}
+        <Button 
+          onClick={onResetMetrics}
+          variant="outline"
+          size="sm"
+          className="w-full border-red-500/50 text-red-400 hover:bg-red-500/20 mt-2"
+        >
+          <Trash2 size={14} className="mr-2" />
+          Reset to Zero
+        </Button>
+
+        <p className="text-[10px] text-slate-600 text-center">
+          Admin-only. Changes are immediate.
+        </p>
+      </div>
+    </div>
+  );
+};
+
 // Add Wealth Modal
 const AddWealthModal = ({ 
   open, 
@@ -375,6 +499,7 @@ const AddUnitModal = ({
 
 export default function HinjdDashboard() {
   const { user } = useAuth();
+  const { isAdmin } = useAdminRole();
   const { toast } = useToast();
   const { 
     metrics, 
@@ -417,6 +542,37 @@ export default function HinjdDashboard() {
     if (success) {
       await addActivity('lease', null, `Added ${name}`, 'active');
       toast({ title: `Added ${name} to fleet` });
+    }
+  };
+
+  // Admin-only handlers
+  const handleSetWealth = async (amount: number) => {
+    const success = await updateMetrics({ total_wealth: amount });
+    if (success) {
+      await addActivity('adjustment', amount, 'Admin: Direct wealth override', 'success');
+      toast({ title: `Treasury set to $${amount.toLocaleString()}`, description: 'Admin override applied' });
+    }
+  };
+
+  const handleResetMetrics = async () => {
+    const success = await updateMetrics({ 
+      total_wealth: 0, 
+      staked_sol: 0, 
+      rewards_earned: 0,
+      active_leases: 0
+    });
+    if (success) {
+      await addActivity('reset', null, 'Admin: Full treasury reset', 'success');
+      toast({ title: 'Treasury reset to zero', variant: 'destructive' });
+    }
+  };
+
+  const handleBulkDeposit = async (amount: number) => {
+    const newTotal = (metrics?.total_wealth || 0) + amount;
+    const success = await updateMetrics({ total_wealth: newTotal });
+    if (success) {
+      await addActivity('bulk_deposit', amount, 'Admin: Bulk deposit', 'success');
+      toast({ title: `Bulk deposit: +$${amount.toLocaleString()}` });
     }
   };
 
@@ -482,6 +638,16 @@ export default function HinjdDashboard() {
                 rewardsEarned={metrics?.rewards_earned || 0}
                 walletBalance={solanaData.walletBalance}
               />
+              
+              {/* Admin Control Panel - Only visible to admins */}
+              {isAdmin && (
+                <AdminControlPanel
+                  onSetWealth={handleSetWealth}
+                  onResetMetrics={handleResetMetrics}
+                  onBulkDeposit={handleBulkDeposit}
+                  currentWealth={metrics?.total_wealth || 0}
+                />
+              )}
             </div>
 
             {/* Right Column: Performance & Actions */}
