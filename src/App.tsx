@@ -29,6 +29,7 @@ const UpgradePage = lazy(() => import("./pages/app/UpgradePage"));
 const AccountPage = lazy(() => import("./pages/app/AccountPage"));
 const LegalPage = lazy(() => import("./pages/app/LegalPage"));
 const InstallPage = lazy(() => import("./pages/app/InstallPage"));
+const HinjdDashboard = lazy(() => import("./pages/app/HinjdDashboard"));
 
 // CRM pages
 const CRMDashboard = lazy(() => import("./pages/crm/CRMDashboard"));
@@ -74,6 +75,7 @@ const App = () => (
                 <Route path="/app/account" element={<AccountPage />} />
                 <Route path="/app/legal" element={<LegalPage />} />
                 <Route path="/app/install" element={<InstallPage />} />
+                <Route path="/app/dashboard" element={<HinjdDashboard />} />
                 {/* CRM Routes */}
                 <Route path="/crm" element={<CRMDashboard />} />
                 <Route path="/crm/login" element={<CRMLogin />} />
