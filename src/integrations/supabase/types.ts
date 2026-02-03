@@ -468,6 +468,45 @@ export type Database = {
         }
         Relationships: []
       }
+      fleet_units: {
+        Row: {
+          acquisition_date: string | null
+          created_at: string
+          id: string
+          monthly_revenue: number | null
+          notes: string | null
+          status: string
+          unit_name: string
+          unit_type: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          acquisition_date?: string | null
+          created_at?: string
+          id?: string
+          monthly_revenue?: number | null
+          notes?: string | null
+          status?: string
+          unit_name: string
+          unit_type?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          acquisition_date?: string | null
+          created_at?: string
+          id?: string
+          monthly_revenue?: number | null
+          notes?: string | null
+          status?: string
+          unit_name?: string
+          unit_type?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       hq_transactions: {
         Row: {
           amount: number
@@ -565,6 +604,78 @@ export type Database = {
           plan_name?: string
           started_at?: string | null
           status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      treasury_activity: {
+        Row: {
+          activity_type: string
+          amount: number | null
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          activity_type: string
+          amount?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          activity_type?: string
+          amount?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      treasury_metrics: {
+        Row: {
+          active_leases: number
+          created_at: string
+          id: string
+          milestone_target: number
+          notes: string | null
+          rewards_earned: number
+          staked_sol: number
+          total_wealth: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active_leases?: number
+          created_at?: string
+          id?: string
+          milestone_target?: number
+          notes?: string | null
+          rewards_earned?: number
+          staked_sol?: number
+          total_wealth?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active_leases?: number
+          created_at?: string
+          id?: string
+          milestone_target?: number
+          notes?: string | null
+          rewards_earned?: number
+          staked_sol?: number
+          total_wealth?: number
           updated_at?: string
           user_id?: string
         }
