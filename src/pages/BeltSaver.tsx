@@ -41,7 +41,7 @@ const BeltSaver = () => {
       "name": "Hinjd Global"
     },
     "category": "Industrial Conveyor Equipment",
-    "image": "https://hinjd-global.lovable.app/og-image.jpg",
+    "image": "https://hinjd-ecosystem-hub.lovable.app/og-image.jpg",
     "offers": {
       "@type": "Offer",
       "availability": "https://schema.org/InStock",
@@ -112,16 +112,16 @@ const BeltSaver = () => {
           name="keywords" 
           content="BeltSaver, tail pulley protection, conveyor belt edge protection, belt misalignment solution, belt tracking system, mining conveyor equipment" 
         />
-        <link rel="canonical" href="https://hinjd-global.lovable.app/beltsaver" />
+        <link rel="canonical" href="https://hinjd-ecosystem-hub.lovable.app/beltsaver" />
         <meta property="og:title" content="BeltSaver™ Patented Tail Pulley Protection System" />
         <meta property="og:description" content="Prevent conveyor belt misalignment with patented BeltSaver™ technology. Clamp-on retrofit, extends belt life up to 3x." />
         <meta property="og:type" content="product" />
-        <meta property="og:url" content="https://hinjd-global.lovable.app/beltsaver" />
-        <meta property="og:image" content="https://hinjd-global.lovable.app/og-image.jpg" />
+        <meta property="og:url" content="https://hinjd-ecosystem-hub.lovable.app/beltsaver" />
+        <meta property="og:image" content="https://hinjd-ecosystem-hub.lovable.app/og-image.jpg" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="BeltSaver™ Patented Tail Pulley Protection" />
         <meta name="twitter:description" content="Patented conveyor belt protection. Clamp-on retrofit, extends belt life up to 3x." />
-        <meta name="twitter:image" content="https://hinjd-global.lovable.app/og-image.jpg" />
+        <meta name="twitter:image" content="https://hinjd-ecosystem-hub.lovable.app/og-image.jpg" />
         <script type="application/ld+json">
           {JSON.stringify(productSchema)}
         </script>
