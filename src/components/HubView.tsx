@@ -23,6 +23,7 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { Button } from '@/components/ui/button';
 import PortfolioCard from './PortfolioCard';
 import InteractiveBeltDemo from './InteractiveBeltDemo';
+import LeadCaptureForm from './LeadCaptureForm';
 import SocialMediaLinks from './SocialMediaLinks';
 import heroImage from '@/assets/hero-beltsaver.jpg?format=webp';
 import beltCloseup from '@/assets/beltsaver-closeup.jpg?format=webp';
@@ -435,6 +436,9 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
             ))}
           </div>
         </section>
+
+        {/* Lead Capture / Free Diagnostic Trial */}
+        <LeadCaptureForm />
       </main>
 
       {/* Social Media Links */}

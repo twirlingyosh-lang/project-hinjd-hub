@@ -327,6 +327,36 @@ export type Database = {
         }
         Relationships: []
       }
+      email_leads: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string
+          id: string
+          name: string | null
+          source: string | null
+          status: string | null
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          name?: string | null
+          source?: string | null
+          status?: string | null
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string | null
+          source?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
       equipment_dealers: {
         Row: {
           address: string | null
