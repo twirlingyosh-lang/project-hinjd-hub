@@ -765,6 +765,89 @@ export type Database = {
         }
         Relationships: []
       }
+      workflow_runs: {
+        Row: {
+          created_at: string
+          current_step: string | null
+          id: string
+          metadata: Json | null
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+          webhook_url: string | null
+          workflow_type: string
+        }
+        Insert: {
+          created_at?: string
+          current_step?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+          webhook_url?: string | null
+          workflow_type: string
+        }
+        Update: {
+          created_at?: string
+          current_step?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+          webhook_url?: string | null
+          workflow_type?: string
+        }
+        Relationships: []
+      }
+      workflow_steps: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          metadata: Json | null
+          notes: string | null
+          status: string
+          step_name: string
+          step_order: number
+          workflow_run_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          status?: string
+          step_name: string
+          step_order?: number
+          workflow_run_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          status?: string
+          step_name?: string
+          step_order?: number
+          workflow_run_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_steps_workflow_run_id_fkey"
+            columns: ["workflow_run_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
