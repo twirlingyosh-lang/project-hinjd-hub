@@ -39,7 +39,7 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://hinjd-global.lovable.app/sitemap.xml
+Sitemap: https://hinjd-ecosystem-hub.lovable.app/sitemap.xml
 
 # LLM-friendly summary page
-# https://hinjd-global.lovable.app/llm.html
+# https://hinjd-ecosystem-hub.lovable.app/llm.html
