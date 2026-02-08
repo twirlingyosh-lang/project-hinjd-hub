@@ -6,8 +6,8 @@ const Index = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Hinjd Global",
-    "url": "https://hinjd-global.lovable.app",
-    "logo": "https://hinjd-global.lovable.app/og-image.jpg",
+    "url": "https://hinjd-ecosystem-hub.lovable.app",
+    "logo": "https://hinjd-ecosystem-hub.lovable.app/og-image.jpg",
     "description": "Industrial conveyor diagnostics and BeltSaver® technology solutions for mining, aggregates, and bulk material handling industries.",
     "sameAs": [
       "https://www.facebook.com/profile.php?id=61573858498498",
@@ -34,16 +34,16 @@ const Index = () => {
           name="keywords" 
           content="conveyor belt diagnostics, belt tracking, BeltSaver, industrial conveyor, belt mistracking, aggregate operations, mining conveyor" 
         />
-        <link rel="canonical" href="https://hinjd-global.lovable.app/" />
+        <link rel="canonical" href="https://hinjd-ecosystem-hub.lovable.app/" />
         <meta property="og:title" content="Hinjd Global - Industrial Conveyor Diagnostics & BeltSaver®" />
         <meta property="og:description" content="Professional conveyor belt diagnostics and BeltSaver® solutions. Protect your belt edges and eliminate tracking issues." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://hinjd-global.lovable.app/" />
-        <meta property="og:image" content="https://hinjd-global.lovable.app/og-image.jpg" />
+        <meta property="og:url" content="https://hinjd-ecosystem-hub.lovable.app/" />
+        <meta property="og:image" content="https://hinjd-ecosystem-hub.lovable.app/og-image.jpg" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Hinjd Global - Industrial Conveyor Diagnostics" />
         <meta name="twitter:description" content="Professional conveyor belt diagnostics and BeltSaver® solutions." />
-        <meta name="twitter:image" content="https://hinjd-global.lovable.app/og-image.jpg" />
+        <meta name="twitter:image" content="https://hinjd-ecosystem-hub.lovable.app/og-image.jpg" />
         <script type="application/ld+json">
           {JSON.stringify(organizationSchema)}
         </script>

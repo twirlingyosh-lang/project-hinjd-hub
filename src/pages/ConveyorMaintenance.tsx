@@ -90,11 +90,11 @@ const ConveyorMaintenance = () => {
           name="keywords" 
           content="conveyor belt maintenance, belt tracking solutions, belt mistracking, conveyor belt edge protection, tail pulley protection, belt damage prevention, industrial conveyor maintenance, aggregate conveyor systems, mining belt maintenance" 
         />
-        <link rel="canonical" href="https://hinjd.com/conveyor-maintenance" />
+        <link rel="canonical" href="https://hinjd-ecosystem-hub.lovable.app/conveyor-maintenance" />
         <meta property="og:title" content="Conveyor Belt Maintenance & Tracking Solutions" />
         <meta property="og:description" content="Prevent costly belt damage with patented protection systems. Expert solutions for mining, aggregate, and industrial applications." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://hinjd.com/conveyor-maintenance" />
+        <meta property="og:url" content="https://hinjd-ecosystem-hub.lovable.app/conveyor-maintenance" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Conveyor Belt Maintenance Solutions" />
         <meta name="twitter:description" content="Expert conveyor belt maintenance and tracking solutions for industrial applications." />
