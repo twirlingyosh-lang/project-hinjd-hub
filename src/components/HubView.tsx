@@ -22,6 +22,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/hooks/useSubscription';
 import { Button } from '@/components/ui/button';
 import PortfolioCard from './PortfolioCard';
+import InteractiveBeltDemo from './InteractiveBeltDemo';
 import SocialMediaLinks from './SocialMediaLinks';
 import heroImage from '@/assets/hero-beltsaver.jpg?format=webp';
 import beltCloseup from '@/assets/beltsaver-closeup.jpg?format=webp';
@@ -254,6 +255,9 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
       </div>
 
       <main className="max-w-3xl mx-auto px-6 py-12 space-y-16">
+
+        {/* Interactive BeltSaver Demo */}
+        <InteractiveBeltDemo />
         
         {/* Platform Features Grid */}
         <section>
