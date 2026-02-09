@@ -246,12 +246,12 @@ export const CRMInvoiceForm = () => {
             {/* Client */}
             <div className="space-y-2">
               <Label htmlFor="client">Client</Label>
-              <Select value={clientId} onValueChange={setClientId}>
+              <Select value={clientId || "none"} onValueChange={(v) => setClientId(v === "none" ? "" : v)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a client" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No Client</SelectItem>
+                  <SelectItem value="none">No Client</SelectItem>
                   {clients.map(client => (
                     <SelectItem key={client.id} value={client.id}>
                       {client.name}
@@ -264,12 +264,12 @@ export const CRMInvoiceForm = () => {
             {/* Deal */}
             <div className="space-y-2">
               <Label htmlFor="deal">Related Deal (Optional)</Label>
-              <Select value={dealId} onValueChange={setDealId}>
+              <Select value={dealId || "none"} onValueChange={(v) => setDealId(v === "none" ? "" : v)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Link to a deal" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No Deal</SelectItem>
+                  <SelectItem value="none">No Deal</SelectItem>
                   {deals.map(deal => (
                     <SelectItem key={deal.id} value={deal.id}>
                       {deal.title} (${deal.value.toLocaleString()})
