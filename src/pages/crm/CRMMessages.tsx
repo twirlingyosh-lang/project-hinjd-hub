@@ -168,12 +168,12 @@ export const CRMMessages = () => {
             <form onSubmit={handleSendMessage} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="client">Client</Label>
-                <Select value={clientId} onValueChange={setClientId}>
+                <Select value={clientId || "none"} onValueChange={(v) => setClientId(v === "none" ? "" : v)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select client" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">No client</SelectItem>
+                    <SelectItem value="none">No client</SelectItem>
                     {clients.map(client => (
                       <SelectItem key={client.id} value={client.id}>
                         {client.name}
