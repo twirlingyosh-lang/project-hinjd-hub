@@ -738,23 +738,23 @@ export const EquipmentDiagnostics = () => {
               </div>
 
               <div className="flex gap-2 mb-4 flex-wrap">
-                <Select value={make} onValueChange={(v) => { setMake(v); }}>
+                <Select value={make || "all"} onValueChange={(v) => { setMake(v === "all" ? "" : v); }}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Filter by make" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Makes</SelectItem>
+                    <SelectItem value="all">All Makes</SelectItem>
                     {MAKES.filter(m => m !== 'Other').map(m => (
                       <SelectItem key={m} value={m}>{m}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <Select value={equipmentType} onValueChange={(v) => { setEquipmentType(v); }}>
+                <Select value={equipmentType || "all"} onValueChange={(v) => { setEquipmentType(v === "all" ? "" : v); }}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Filter by type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Types</SelectItem>
+                    <SelectItem value="all">All Types</SelectItem>
                     {EQUIPMENT_TYPES.map(t => (
                       <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
                     ))}
