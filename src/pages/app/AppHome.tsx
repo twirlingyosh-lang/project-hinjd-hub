@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
   Layers, Wrench, Calculator, QrCode, Crown, 
-  ArrowRight, Sparkles, TrendingUp, Shield 
+  ArrowRight, Sparkles, TrendingUp, Shield, Truck 
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -22,6 +22,13 @@ const quickActions = [
     label: 'Equipment',
     description: 'Crusher & screen specs',
     color: 'bg-green-500/10 text-green-400'
+  },
+  { 
+    path: '/app/equipment-opps', 
+    icon: Truck, 
+    label: 'Equipment Opps',
+    description: 'AI diagnostics & logistics',
+    color: 'bg-amber-500/10 text-amber-400'
   },
   { 
     path: '/app/calculator', 
