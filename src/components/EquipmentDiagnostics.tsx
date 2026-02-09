@@ -592,7 +592,7 @@ export const EquipmentDiagnostics = () => {
                 className="h-auto py-3 flex flex-col items-center gap-2"
                 onClick={() => setInput("My equipment won't start. The engine cranks but doesn't fire.")}
               >
-                <Zap className="h-5 w-5 text-yellow-500" />
+                <Zap className="h-5 w-5 text-accent" />
                 <span className="text-xs">Won't Start</span>
               </Button>
               <Button
@@ -600,7 +600,7 @@ export const EquipmentDiagnostics = () => {
                 className="h-auto py-3 flex flex-col items-center gap-2"
                 onClick={() => setInput("Hydraulic system is losing power and moving slowly.")}
               >
-                <Settings className="h-5 w-5 text-blue-500" />
+                <Settings className="h-5 w-5 text-primary" />
                 <span className="text-xs">Hydraulic Issues</span>
               </Button>
               <Button
@@ -608,7 +608,7 @@ export const EquipmentDiagnostics = () => {
                 className="h-auto py-3 flex flex-col items-center gap-2"
                 onClick={() => setInput("Engine is overheating and the temp gauge is in the red.")}
               >
-                <AlertTriangle className="h-5 w-5 text-red-500" />
+                <AlertTriangle className="h-5 w-5 text-destructive" />
                 <span className="text-xs">Overheating</span>
               </Button>
               <Button
@@ -616,7 +616,7 @@ export const EquipmentDiagnostics = () => {
                 className="h-auto py-3 flex flex-col items-center gap-2"
                 onClick={() => setInput("Strange noise coming from the undercarriage/tracks.")}
               >
-                <Wrench className="h-5 w-5 text-orange-500" />
+                <Wrench className="h-5 w-5 text-muted-foreground" />
                 <span className="text-xs">Unusual Noise</span>
               </Button>
             </div>
