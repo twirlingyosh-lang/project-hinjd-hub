@@ -29,26 +29,26 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>Hinjd Global - Industrial Conveyor Diagnostics & BeltSaver® Solutions</title>
+        <title>Hinjd Global - BeltSaver® | Cox Aggs | Equipment Opps</title>
         <meta 
           name="description" 
-          content="Professional conveyor belt diagnostics and tracking solutions. BeltSaver® technology protects belt edges and eliminates tracking wander for mining and aggregate operations." 
+          content="BeltSaver® conveyor belt protection, Cox Aggs aggregate operations management, and Equipment Opps AI diagnostics. Industrial solutions for mining and aggregate industries." 
         />
         <meta 
           name="keywords" 
-          content="conveyor belt diagnostics, belt tracking, BeltSaver, industrial conveyor, belt mistracking, aggregate operations, mining conveyor" 
+          content="conveyor belt diagnostics, belt tracking, BeltSaver, Cox Aggs, Equipment Opps, industrial conveyor, belt mistracking, aggregate operations, mining conveyor" 
         />
         <link rel="canonical" href="https://hinjd-ecosystem-hub.lovable.app/" />
-        <meta property="og:title" content="Hinjd Global - Industrial Conveyor Diagnostics & BeltSaver®" />
-        <meta property="og:description" content="Professional conveyor belt diagnostics and BeltSaver® solutions. Protect your belt edges and eliminate tracking issues." />
+        <meta property="og:title" content="Hinjd Global - BeltSaver® | Cox Aggs | Equipment Opps" />
+        <meta property="og:description" content="BeltSaver® belt protection, Cox Aggs aggregate management, and Equipment Opps AI diagnostics for mining and aggregates." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://hinjd-ecosystem-hub.lovable.app/" />
         <meta property="og:image" content="https://hinjd-ecosystem-hub.lovable.app/og-hinjd-hub.jpg" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="640" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Hinjd Global - Industrial Conveyor Diagnostics" />
-        <meta name="twitter:description" content="Professional conveyor belt diagnostics and BeltSaver® solutions." />
+        <meta name="twitter:title" content="Hinjd Global - BeltSaver® | Cox Aggs | Equipment Opps" />
+        <meta name="twitter:description" content="BeltSaver® belt protection, Cox Aggs aggregate management, and Equipment Opps AI diagnostics." />
         <meta name="twitter:image" content="https://hinjd-ecosystem-hub.lovable.app/og-hinjd-hub.jpg" />
         <script type="application/ld+json">
           {JSON.stringify(organizationSchema)}
