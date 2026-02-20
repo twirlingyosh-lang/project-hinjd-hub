@@ -29,6 +29,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import DocumentUpload from './DocumentUpload';
+import SocialShareButtons from './SocialShareButtons';
 
 interface Diagnostic {
   id: string;
@@ -269,9 +270,14 @@ const DiagnosticsHistory = () => {
               </div>
             )}
 
-            {/* Delete button - only show for user's own diagnostics */}
+            {/* Share & Delete section */}
+            <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
+              <SocialShareButtons
+                title={`Belt Diagnostic: ${diag.cause}`}
+                text={`${diag.severity.toUpperCase()} severity at ${formatLocation(diag.location)}. ${diag.recommendations[0] || ''}`}
+              />
             {user && diag.user_id === user.id && (
-              <div className="flex justify-end mt-3 pt-3 border-t border-border">
+              <div>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button 
@@ -308,6 +314,7 @@ const DiagnosticsHistory = () => {
                 </AlertDialog>
               </div>
             )}
+            </div>
           </CardContent>
         </Card>
       ))}
