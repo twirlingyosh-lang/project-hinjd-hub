@@ -15,6 +15,10 @@ const Index = () => {
       "https://www.tiktok.com/@hinjd_global",
       "https://www.linkedin.com/company/hinjd-global"
     ],
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "US"
+    },
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "sales",
