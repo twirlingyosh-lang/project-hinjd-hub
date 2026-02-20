@@ -67,8 +67,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           has_access: false, 
-          reason: "user_not_found",
-          email 
+          reason: "user_not_found"
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -100,12 +99,11 @@ serve(async (req) => {
       reason = hasAccess ? "active" : isExpired ? "expired" : "inactive";
     }
 
+    // Return only access status — no PII (user_id, email) to prevent enumeration
     return new Response(
       JSON.stringify({
         has_access: hasAccess,
         reason,
-        email,
-        user_id: user.id,
         module_name,
         activated_at: moduleData?.activated_at || null,
         expires_at: moduleData?.expires_at || null,
