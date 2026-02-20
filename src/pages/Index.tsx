@@ -7,7 +7,7 @@ const Index = () => {
     "@type": "Organization",
     "name": "Hinjd Global",
     "url": "https://hinjd-ecosystem-hub.lovable.app",
-    "logo": "https://hinjd-ecosystem-hub.lovable.app/og-image.jpg",
+    "logo": "https://hinjd-ecosystem-hub.lovable.app/og-hinjd-hub.jpg",
     "description": "Industrial conveyor diagnostics and BeltSaver® technology solutions for mining, aggregates, and bulk material handling industries.",
     "sameAs": [
       "https://www.facebook.com/profile.php?id=61573858498498",
@@ -39,11 +39,13 @@ const Index = () => {
         <meta property="og:description" content="Professional conveyor belt diagnostics and BeltSaver® solutions. Protect your belt edges and eliminate tracking issues." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://hinjd-ecosystem-hub.lovable.app/" />
-        <meta property="og:image" content="https://hinjd-ecosystem-hub.lovable.app/og-image.jpg" />
+        <meta property="og:image" content="https://hinjd-ecosystem-hub.lovable.app/og-hinjd-hub.jpg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="640" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Hinjd Global - Industrial Conveyor Diagnostics" />
         <meta name="twitter:description" content="Professional conveyor belt diagnostics and BeltSaver® solutions." />
-        <meta name="twitter:image" content="https://hinjd-ecosystem-hub.lovable.app/og-image.jpg" />
+        <meta name="twitter:image" content="https://hinjd-ecosystem-hub.lovable.app/og-hinjd-hub.jpg" />
         <script type="application/ld+json">
           {JSON.stringify(organizationSchema)}
         </script>
