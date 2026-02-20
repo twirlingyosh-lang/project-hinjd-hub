@@ -16,6 +16,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import GoogleMapView from '@/components/app/GoogleMapView';
 import { useNavigate } from 'react-router-dom';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import SocialShareButtons from './SocialShareButtons';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -642,6 +643,14 @@ export const EquipmentDiagnostics = () => {
                   </Button>
                 )}
               </div>
+              {messages.length > 1 && (
+                <div className="mt-2">
+                  <SocialShareButtons
+                    title={`Equipment Diagnostic: ${make || ''} ${model || ''} ${equipmentType || ''}`.trim()}
+                    text={messages.filter(m => m.role === 'assistant').slice(-1)[0]?.content.slice(0, 150) || 'AI-powered equipment diagnosis'}
+                  />
+                </div>
+              )}
             </CardHeader>
             <CardContent className="flex-1 flex flex-col min-h-0 pb-4">
               <ScrollArea className="flex-1 pr-4" ref={scrollRef}>
