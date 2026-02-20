@@ -56,7 +56,7 @@ serve(async (req) => {
     const customerId = customers.data[0].id;
     logStep("Found Stripe customer", { customerId });
 
-    const requestOrigin = req.headers.get("origin") || allowedOrigins[0];
+    const requestOrigin = req.headers.get("origin") || 'https://hinjd-ecosystem-hub.lovable.app';
     
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: customerId,

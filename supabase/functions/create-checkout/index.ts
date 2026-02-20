@@ -70,7 +70,7 @@ serve(async (req) => {
       logStep("No existing customer, will create new one");
     }
 
-    const requestOrigin = req.headers.get("origin") || allowedOrigins[0];
+    const requestOrigin = req.headers.get("origin") || 'https://hinjd-ecosystem-hub.lovable.app';
     
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
