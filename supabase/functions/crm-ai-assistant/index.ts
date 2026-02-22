@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://esm.sh/zod@3.23.8";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -9,11 +10,11 @@ const corsHeaders = {
 const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 const LOVABLE_API_URL = 'https://ai.gateway.lovable.dev/v1/chat/completions';
 
-interface AIRequest {
-  action: 'classify_message' | 'summarize_notes' | 'suggest_next_steps' | 'generate_email' | 'analyze_sentiment';
-  content: string;
-  context?: Record<string, unknown>;
-}
+const requestSchema = z.object({
+  action: z.enum(['classify_message', 'summarize_notes', 'suggest_next_steps', 'generate_email', 'analyze_sentiment']),
+  content: z.string().min(1).max(10000),
+  context: z.record(z.unknown()).optional(),
+});
 
 const logStep = (step: string, details?: unknown) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -110,7 +111,6 @@ serve(async (req) => {
   try {
     logStep('Function started');
 
-    // Verify user authentication
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(
@@ -139,7 +139,18 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    const { action, content, context }: AIRequest = await req.json();
+    // Validate input
+    const body = await req.json();
+    const parseResult = requestSchema.safeParse(body);
+    if (!parseResult.success) {
+      logStep('Validation failed', parseResult.error.flatten());
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid request', details: parseResult.error.flatten() }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { action, content, context } = parseResult.data;
     logStep('Processing action', { action });
 
     let result: unknown;
