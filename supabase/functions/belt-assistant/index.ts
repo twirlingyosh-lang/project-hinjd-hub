@@ -1,10 +1,20 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { z } from "https://esm.sh/zod@3.23.8";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
+
+const messageSchema = z.object({
+  role: z.enum(['user', 'assistant', 'system']),
+  content: z.string().min(1).max(10000),
+});
+
+const requestSchema = z.object({
+  messages: z.array(messageSchema).min(1).max(50),
+});
 
 const systemPrompt = `You are BeltSaver AI, an expert diagnostic assistant for conveyor belt systems. You help maintenance technicians and engineers troubleshoot belt tracking issues, mistracking problems, edge wear, spillage, and other conveyor problems.
 
@@ -61,7 +71,17 @@ serve(async (req) => {
 
     console.log('User authenticated successfully');
 
-    const { messages } = await req.json();
+    // Validate input
+    const body = await req.json();
+    const parseResult = requestSchema.safeParse(body);
+    if (!parseResult.success) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request', details: parseResult.error.flatten() }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { messages } = parseResult.data;
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
