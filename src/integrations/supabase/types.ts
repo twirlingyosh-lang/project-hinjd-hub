@@ -615,6 +615,53 @@ export type Database = {
         }
         Relationships: []
       }
+      order_manifests: {
+        Row: {
+          created_at: string
+          id: string
+          order_amount: number
+          part_name: string
+          part_number: string
+          pdf_url: string | null
+          shipping_address: string | null
+          status: string
+          transaction_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_amount?: number
+          part_name: string
+          part_number: string
+          pdf_url?: string | null
+          shipping_address?: string | null
+          status?: string
+          transaction_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_amount?: number
+          part_name?: string
+          part_number?: string
+          pdf_url?: string | null
+          shipping_address?: string | null
+          status?: string
+          transaction_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_manifests_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "hq_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
