@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { SolanaMetricsCard } from '@/components/crm/SolanaMetricsCard';
 import { HQCommandPanel } from '@/components/crm/HQCommandPanel';
 import { DiagnosticLookup } from '@/components/crm/DiagnosticLookup';
+import { ManifestViewer } from '@/components/crm/ManifestViewer';
 interface DashboardStats {
   totalClients: number;
   totalDeals: number;
@@ -243,6 +244,11 @@ export const CRMDashboard = () => {
       {/* Diagnostic Engine */}
       <div className="mt-8">
         <DiagnosticLookup />
+      </div>
+
+      {/* Moroni Hub Manifests */}
+      <div className="mt-8">
+        <ManifestViewer />
       </div>
 
       {/* Recent Deals + Solana Metrics */}
