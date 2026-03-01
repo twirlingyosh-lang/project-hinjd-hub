@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.2";
+import { z } from "https://esm.sh/zod@3.23.8";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -7,8 +8,12 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+const requestSchema = z.object({
+  email: z.string().email().max(255),
+  module_name: z.string().min(1).max(100).default("aggregate_ops"),
+});
+
 serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -33,15 +38,17 @@ serve(async (req) => {
       );
     }
 
-    // Parse request body
-    const { email, module_name = "aggregate_ops" } = await req.json();
-
-    if (!email) {
+    // Parse & validate request body
+    const body = await req.json();
+    const parseResult = requestSchema.safeParse(body);
+    if (!parseResult.success) {
       return new Response(
-        JSON.stringify({ error: "Email is required" }),
+        JSON.stringify({ error: "Invalid request", details: parseResult.error.flatten() }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    const { email, module_name } = parseResult.data;
 
     // Create Supabase admin client
     const supabaseAdmin = createClient(
