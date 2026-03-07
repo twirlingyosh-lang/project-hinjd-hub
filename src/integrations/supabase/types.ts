@@ -728,6 +728,42 @@ export type Database = {
         }
         Relationships: []
       }
+      repair_logs: {
+        Row: {
+          cost: number
+          created_at: string
+          downtime: number
+          equipment: string
+          id: string
+          issue: string
+          repair_date: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          cost?: number
+          created_at?: string
+          downtime?: number
+          equipment: string
+          id?: string
+          issue: string
+          repair_date?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          cost?: number
+          created_at?: string
+          downtime?: number
+          equipment?: string
+          id?: string
+          issue?: string
+          repair_date?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           created_at: string
@@ -757,6 +793,42 @@ export type Database = {
           started_at?: string | null
           status?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      throughput_logs: {
+        Row: {
+          created_at: string
+          crusher: string
+          hours: number
+          id: string
+          log_date: string
+          material: string
+          notes: string | null
+          tph: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          crusher: string
+          hours?: number
+          id?: string
+          log_date?: string
+          material?: string
+          notes?: string | null
+          tph?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          crusher?: string
+          hours?: number
+          id?: string
+          log_date?: string
+          material?: string
+          notes?: string | null
+          tph?: number
           user_id?: string
         }
         Relationships: []
