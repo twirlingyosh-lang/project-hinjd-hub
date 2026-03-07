@@ -1,4 +1,4 @@
-import { MapPin, Shield, Hammer, Layers, BarChart3, Settings, User, Crown, Home, LogOut } from 'lucide-react';
+import { MapPin, Shield, Hammer, Layers, BarChart3, Settings, User, Crown, Home, LogOut, Factory } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
 import { useAdminRole } from '@/hooks/useAdminRole';
@@ -24,6 +24,7 @@ const moduleItems = [
   { path: '/app/equipment-opps', icon: Hammer, label: 'Equipment Opps', description: 'Crushing, diagnostics & mapping' },
   { path: '/beltsaver', icon: Shield, label: 'BeltSaver®', description: 'Predictive wear dashboard' },
   { path: '/aggregate-opps', icon: Layers, label: 'Aggregate Opps', description: 'Logistics & production' },
+  { path: '/app/base44', icon: Factory, label: 'Cox Aggs', description: 'Aggregate operations app' },
 ];
 
 const adminItems = [
