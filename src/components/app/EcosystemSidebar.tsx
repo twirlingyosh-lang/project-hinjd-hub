@@ -21,9 +21,8 @@ import {
 
 const moduleItems = [
   { path: '/app', icon: Home, label: 'Home', description: 'Dashboard overview' },
-  { path: '/app/equipment-opps', icon: MapPin, label: 'Equipment Opps', description: 'AI diagnostics & mapping' },
+  { path: '/app/equipment-opps', icon: Hammer, label: 'Equipment Opps', description: 'Crushing, diagnostics & mapping' },
   { path: '/beltsaver', icon: Shield, label: 'BeltSaver®', description: 'Predictive wear dashboard' },
-  { path: '/app/equipment', icon: Hammer, label: 'Smash Guru', description: 'Crushing throughput' },
   { path: '/aggregate-opps', icon: Layers, label: 'Aggregate Opps', description: 'Logistics & production' },
 ];
 
