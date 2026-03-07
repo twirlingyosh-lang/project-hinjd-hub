@@ -35,6 +35,9 @@ const WorkflowsPage = lazy(() => import("./pages/app/WorkflowsPage"));
 const SnippetsPage = lazy(() => import("./pages/app/SnippetsPage"));
 const Base44AppPage = lazy(() => import("./pages/app/Base44AppPage"));
 const SettingsPage = lazy(() => import("./pages/app/SettingsPage"));
+const ElectricalPage = lazy(() => import("./pages/app/ElectricalPage"));
+const FaultCodePage = lazy(() => import("./pages/app/FaultCodePage"));
+const HydraulicsPage = lazy(() => import("./pages/app/HydraulicsPage"));
 const ReferralPage = lazy(() => import("./pages/app/ReferralPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
 
@@ -89,6 +92,9 @@ const App = () => (
                 <Route path="/app/base44" element={<Base44AppPage />} />
                 <Route path="/app/settings" element={<SettingsPage />} />
                 <Route path="/app/referral" element={<ReferralPage />} />
+                <Route path="/app/electrical" element={<ElectricalPage />} />
+                <Route path="/app/fault-codes" element={<FaultCodePage />} />
+                <Route path="/app/hydraulics" element={<HydraulicsPage />} />
                 <Route path="/blog" element={<BlogPage />} />
                 {/* CRM Routes */}
                 <Route path="/crm" element={<CRMDashboard />} />
