@@ -1,4 +1,4 @@
-import { MapPin, Shield, Hammer, Layers, BarChart3, Settings, User, Crown, Home, LogOut, Factory } from 'lucide-react';
+import { MapPin, Shield, Hammer, Layers, BarChart3, Settings, User, Crown, Home, LogOut, Factory, Zap, Search, Droplets } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
 import { useAdminRole } from '@/hooks/useAdminRole';
@@ -25,6 +25,9 @@ const moduleItems = [
   { path: '/beltsaver', icon: Shield, label: 'BeltSaver®', description: 'Predictive wear dashboard' },
   { path: '/aggregate-opps', icon: Layers, label: 'Aggregate Opps', description: 'Logistics & production' },
   { path: '/app/base44', icon: Factory, label: 'Cox Aggs', description: 'Aggregate operations app' },
+  { path: '/app/electrical', icon: Zap, label: 'Electrical', description: 'Wiring & pinouts' },
+  { path: '/app/fault-codes', icon: Search, label: 'Fault Codes', description: 'Diagnostic engine' },
+  { path: '/app/hydraulics', icon: Droplets, label: 'Hydraulics', description: 'Schematic diagrams' },
 ];
 
 const adminItems = [
