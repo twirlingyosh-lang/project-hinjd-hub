@@ -20,7 +20,7 @@ const Debug = lazy(() => import("./pages/Debug"));
 // Aggregate Tools App pages
 const AppHome = lazy(() => import("./pages/app/AppHome"));
 const MaterialsPage = lazy(() => import("./pages/app/MaterialsPage"));
-const EquipmentPage = lazy(() => import("./pages/app/EquipmentPage"));
+const EquipmentPage = lazy(() => import("./pages/app/SmashGuruPage"));
 const EquipmentOppsPage = lazy(() => import("./pages/app/EquipmentOppsPage"));
 const CalculatorPage = lazy(() => import("./pages/app/CalculatorPage"));
 const ResultsPage = lazy(() => import("./pages/app/ResultsPage"));
