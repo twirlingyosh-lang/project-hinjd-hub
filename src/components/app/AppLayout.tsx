@@ -1,146 +1,16 @@
 import { ReactNode } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Home, Layers, Calculator, Save, User, Crown, Download, Truck, ShieldCheck, Workflow } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Badge } from '@/components/ui/badge';
-import { useSubscription } from '@/hooks/useSubscription';
-import { useAdminRole } from '@/hooks/useAdminRole';
+import { EcosystemLayout } from './EcosystemLayout';
 
 interface AppLayoutProps {
   children: ReactNode;
   title?: string;
 }
 
-const navItems = [
-  { path: '/app', icon: Home, label: 'Home' },
-  { path: '/app/materials', icon: Layers, label: 'Materials' },
-  { path: '/app/workflows', icon: Workflow, label: 'Flows' },
-  { path: '/app/calculator', icon: Calculator, label: 'Calc' },
-  { path: '/app/saved', icon: Save, label: 'Saved' },
-];
-
 export const AppLayout = ({ children, title }: AppLayoutProps) => {
-  const location = useLocation();
-  const { subscription, isSubscribed, loading } = useSubscription();
-  const { isAdmin } = useAdminRole();
-
-  const getPlanDisplay = () => {
-    if (loading) return { label: '...', variant: 'secondary' as const };
-    if (!isSubscribed) return { label: 'Free', variant: 'secondary' as const };
-    
-    const planName = subscription?.plan_name?.toLowerCase() || '';
-    if (planName.includes('enterprise')) {
-      return { label: 'Enterprise', variant: 'default' as const };
-    }
-    if (planName.includes('pro')) {
-      return { label: 'Pro', variant: 'outline' as const };
-    }
-    return { label: 'Active', variant: 'secondary' as const };
-  };
-
-  const plan = getPlanDisplay();
-
   return (
-    <div className="min-h-screen bg-background flex flex-col pb-20">
-      {/* Header */}
-      {title && (
-        <header className="sticky top-0 z-40 bg-card/95 backdrop-blur border-b border-border">
-          <div className="px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-semibold">{title}</h1>
-              <Link to="/app/upgrade">
-                <Badge 
-                  variant={plan.variant} 
-                  className={cn(
-                    "text-xs cursor-pointer hover:opacity-80 transition-opacity",
-                    plan.label === 'Enterprise' && "bg-primary text-primary-foreground",
-                    plan.label === 'Pro' && "border-primary text-primary"
-                  )}
-                >
-                  {plan.label}
-                </Badge>
-              </Link>
-            </div>
-            <div className="flex items-center gap-2">
-              {isAdmin && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Link 
-                        to="/app/admin" 
-                        className="p-2 rounded-full bg-primary/20 text-primary hover:bg-primary/30 transition-colors"
-                      >
-                        <ShieldCheck size={18} />
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Admin Panel</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link 
-                      to="/app/install" 
-                      className="p-2 rounded-full bg-secondary hover:bg-secondary/80 transition-colors"
-                    >
-                      <Download size={18} />
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Install app for offline use</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <Link 
-                to="/app/upgrade" 
-                className="p-2 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-              >
-                <Crown size={18} />
-              </Link>
-              <Link 
-                to="/app/account" 
-                className="p-2 rounded-full bg-secondary hover:bg-secondary/80 transition-colors"
-              >
-                <User size={18} />
-              </Link>
-            </div>
-          </div>
-        </header>
-      )}
-
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
-        {children}
-      </main>
-
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur border-t border-border safe-area-pb">
-        <div className="flex items-center justify-around py-2">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={cn(
-                  "flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all",
-                  isActive 
-                    ? "text-primary bg-primary/10" 
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <item.icon size={20} />
-                <span className="text-[10px] font-medium">{item.label}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
-    </div>
+    <EcosystemLayout title={title}>
+      {children}
+    </EcosystemLayout>
   );
 };
 
