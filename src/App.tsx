@@ -34,6 +34,7 @@ const AdminPanel = lazy(() => import("./pages/app/AdminPanel"));
 const WorkflowsPage = lazy(() => import("./pages/app/WorkflowsPage"));
 const SnippetsPage = lazy(() => import("./pages/app/SnippetsPage"));
 const Base44AppPage = lazy(() => import("./pages/app/Base44AppPage"));
+const SettingsPage = lazy(() => import("./pages/app/SettingsPage"));
 const ReferralPage = lazy(() => import("./pages/app/ReferralPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
 
@@ -86,6 +87,7 @@ const App = () => (
                 <Route path="/app/workflows" element={<WorkflowsPage />} />
                 <Route path="/app/snippets" element={<SnippetsPage />} />
                 <Route path="/app/base44" element={<Base44AppPage />} />
+                <Route path="/app/settings" element={<SettingsPage />} />
                 <Route path="/app/referral" element={<ReferralPage />} />
                 <Route path="/blog" element={<BlogPage />} />
                 {/* CRM Routes */}

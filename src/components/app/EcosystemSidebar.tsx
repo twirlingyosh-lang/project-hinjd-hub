@@ -32,6 +32,7 @@ const adminItems = [
 ];
 
 const utilityItems = [
+  { path: '/app/settings', icon: Settings, label: 'Settings', description: 'App preferences' },
   { path: '/app/upgrade', icon: Crown, label: 'Upgrade', description: 'Plans & billing' },
   { path: '/app/account', icon: User, label: 'Account', description: 'Profile settings' },
 ];
