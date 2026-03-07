@@ -43,12 +43,12 @@ const AppHome = () => {
   const { user } = useAuth();
 
   return (
-    <AppLayout>
+    <AppLayout title="HINJD Ecosystem">
       {/* Hero Section with QR */}
       <section className="relative px-4 pt-6 pb-8 bg-gradient-to-b from-primary/5 to-transparent">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold">Aggregate Tools</h1>
+            <h1 className="text-2xl font-bold">HINJD Global Ecosystem</h1>
             <p className="text-sm text-muted-foreground">Industrial optimization suite</p>
           </div>
           {!user && (
