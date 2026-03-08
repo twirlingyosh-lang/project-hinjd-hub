@@ -3,8 +3,9 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Info, Wrench, Search } from 'lucide-react';
+import { Info, Wrench, Search, X, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { HydraulicComponent, HydraulicLine, ComponentType } from '@/data/hydraulicTypes';
 import { allSchematics, schematicCategories, SchematicCategory } from '@/data/hydraulicSchematics';
 
@@ -36,12 +37,25 @@ const LEGEND_ITEMS = [
   { label: 'Motor', color: COMPONENT_COLORS.motor },
 ];
 
+const COMPONENT_TYPE_LABELS: Record<ComponentType, string> = {
+  pump: 'Pumps',
+  valve: 'Valves',
+  cylinder: 'Cylinders',
+  motor: 'Motors',
+  filter: 'Filters',
+  reservoir: 'Reservoirs',
+  cooler: 'Coolers',
+  accumulator: 'Accumulators',
+};
+
 const HydraulicSchematic = () => {
   const [selectedCategory, setSelectedCategory] = useState<SchematicCategory | 'all'>('all');
   const [selectedBrand, setSelectedBrand] = useState('metso');
   const [selectedComponent, setSelectedComponent] = useState<HydraulicComponent | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [componentTypeFilter, setComponentTypeFilter] = useState<ComponentType | 'all'>('all');
 
+  // Deep search: matches brand name, description, component names, part numbers, cross-refs
   const filteredBrands = useMemo(() => {
     let brands = selectedCategory === 'all'
       ? allSchematics
@@ -51,12 +65,34 @@ const HydraulicSchematic = () => {
       const term = searchTerm.toLowerCase();
       brands = brands.filter(b =>
         b.name.toLowerCase().includes(term) ||
-        b.description.toLowerCase().includes(term)
+        b.description.toLowerCase().includes(term) ||
+        b.components.some(c =>
+          c.name.toLowerCase().includes(term) ||
+          c.shortName.toLowerCase().includes(term) ||
+          c.specs.partNumber?.toLowerCase().includes(term) ||
+          c.specs.manufacturer?.toLowerCase().includes(term) ||
+          c.specs.crossRef?.some(ref => ref.toLowerCase().includes(term))
+        )
+      );
+    }
+
+    if (componentTypeFilter !== 'all') {
+      brands = brands.filter(b =>
+        b.components.some(c => c.type === componentTypeFilter)
       );
     }
 
     return brands;
-  }, [selectedCategory, searchTerm]);
+  }, [selectedCategory, searchTerm, componentTypeFilter]);
+
+  const hasActiveFilters = searchTerm || componentTypeFilter !== 'all' || selectedCategory !== 'all';
+
+  const clearAllFilters = () => {
+    setSearchTerm('');
+    setComponentTypeFilter('all');
+    setSelectedCategory('all');
+    setSelectedComponent(null);
+  };
 
   const currentSchematic = allSchematics.find(s => s.id === selectedBrand) || allSchematics[0];
 
@@ -84,30 +120,65 @@ const HydraulicSchematic = () => {
   return (
     <div className="space-y-6">
       {/* Category Tabs & Search */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <Tabs
-          value={selectedCategory}
-          onValueChange={(v) => {
-            setSelectedCategory(v as SchematicCategory | 'all');
-            setSelectedComponent(null);
-          }}
-          className="flex-1"
-        >
-          <TabsList className="bg-secondary/50">
-            <TabsTrigger value="all">All Brands</TabsTrigger>
-            {schematicCategories.map(cat => (
-              <TabsTrigger key={cat.id} value={cat.id}>{cat.label}</TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search brands..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="pl-9 bg-secondary/50"
-          />
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Tabs
+            value={selectedCategory}
+            onValueChange={(v) => {
+              setSelectedCategory(v as SchematicCategory | 'all');
+              setSelectedComponent(null);
+            }}
+            className="flex-1"
+          >
+            <TabsList className="bg-secondary/50">
+              <TabsTrigger value="all">All Brands</TabsTrigger>
+              {schematicCategories.map(cat => (
+                <TabsTrigger key={cat.id} value={cat.id}>{cat.label}</TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search brand, part #, manufacturer..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="pl-9 bg-secondary/50"
+            />
+            {searchTerm && (
+              <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Component Type Filter */}
+        <div className="flex flex-wrap items-center gap-2">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground mr-1">Component:</span>
+          {(['all', 'pump', 'valve', 'cylinder', 'motor', 'filter', 'reservoir', 'cooler'] as const).map(type => (
+            <Button
+              key={type}
+              size="sm"
+              variant={componentTypeFilter === type ? 'default' : 'outline'}
+              className="h-7 text-xs px-2.5"
+              onClick={() => setComponentTypeFilter(type)}
+            >
+              {type === 'all' ? 'All' : COMPONENT_TYPE_LABELS[type]}
+            </Button>
+          ))}
+          {hasActiveFilters && (
+            <Button size="sm" variant="ghost" className="h-7 text-xs text-muted-foreground ml-auto" onClick={clearAllFilters}>
+              <X className="h-3 w-3 mr-1" /> Clear filters
+            </Button>
+          )}
+        </div>
+
+        {/* Results count */}
+        <div className="text-xs text-muted-foreground">
+          Showing {filteredBrands.length} of {allSchematics.length} schematics
+          {searchTerm && <span> matching "<span className="text-foreground font-medium">{searchTerm}</span>"</span>}
         </div>
       </div>
 
