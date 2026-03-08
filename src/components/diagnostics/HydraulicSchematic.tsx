@@ -120,30 +120,65 @@ const HydraulicSchematic = () => {
   return (
     <div className="space-y-6">
       {/* Category Tabs & Search */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <Tabs
-          value={selectedCategory}
-          onValueChange={(v) => {
-            setSelectedCategory(v as SchematicCategory | 'all');
-            setSelectedComponent(null);
-          }}
-          className="flex-1"
-        >
-          <TabsList className="bg-secondary/50">
-            <TabsTrigger value="all">All Brands</TabsTrigger>
-            {schematicCategories.map(cat => (
-              <TabsTrigger key={cat.id} value={cat.id}>{cat.label}</TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search brands..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="pl-9 bg-secondary/50"
-          />
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Tabs
+            value={selectedCategory}
+            onValueChange={(v) => {
+              setSelectedCategory(v as SchematicCategory | 'all');
+              setSelectedComponent(null);
+            }}
+            className="flex-1"
+          >
+            <TabsList className="bg-secondary/50">
+              <TabsTrigger value="all">All Brands</TabsTrigger>
+              {schematicCategories.map(cat => (
+                <TabsTrigger key={cat.id} value={cat.id}>{cat.label}</TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search brand, part #, manufacturer..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="pl-9 bg-secondary/50"
+            />
+            {searchTerm && (
+              <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Component Type Filter */}
+        <div className="flex flex-wrap items-center gap-2">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground mr-1">Component:</span>
+          {(['all', 'pump', 'valve', 'cylinder', 'motor', 'filter', 'reservoir', 'cooler'] as const).map(type => (
+            <Button
+              key={type}
+              size="sm"
+              variant={componentTypeFilter === type ? 'default' : 'outline'}
+              className="h-7 text-xs px-2.5"
+              onClick={() => setComponentTypeFilter(type)}
+            >
+              {type === 'all' ? 'All' : COMPONENT_TYPE_LABELS[type]}
+            </Button>
+          ))}
+          {hasActiveFilters && (
+            <Button size="sm" variant="ghost" className="h-7 text-xs text-muted-foreground ml-auto" onClick={clearAllFilters}>
+              <X className="h-3 w-3 mr-1" /> Clear filters
+            </Button>
+          )}
+        </div>
+
+        {/* Results count */}
+        <div className="text-xs text-muted-foreground">
+          Showing {filteredBrands.length} of {allSchematics.length} schematics
+          {searchTerm && <span> matching "<span className="text-foreground font-medium">{searchTerm}</span>"</span>}
         </div>
       </div>
 
