@@ -108,6 +108,36 @@ export default function TroubleshootingPage() {
         />
       </div>
 
+      {/* Decision Tree Quick Launch */}
+      <div className="grid gap-4 sm:grid-cols-2 mb-6">
+        <Card
+          className="p-5 bg-card hover:bg-muted/50 cursor-pointer transition-colors group border-primary/20"
+          onClick={() => navigate('/app/crusher-diagnostic')}
+        >
+          <div className="flex items-center gap-3">
+            <TreeDeciduous className="w-8 h-8 text-primary" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-foreground">Crusher Decision Tree</h3>
+              <p className="text-sm text-muted-foreground">Interactive YES/NO diagnostic for crushers</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+          </div>
+        </Card>
+        <Card
+          className="p-5 bg-card hover:bg-muted/50 cursor-pointer transition-colors group border-primary/20"
+          onClick={() => navigate('/app/screener-diagnostic')}
+        >
+          <div className="flex items-center gap-3">
+            <TreeDeciduous className="w-8 h-8 text-primary" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-foreground">Screener Decision Tree</h3>
+              <p className="text-sm text-muted-foreground">Interactive YES/NO diagnostic for screeners</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+          </div>
+        </Card>
+      </div>
+
       <Tabs defaultValue="all">
         <TabsList className="mb-4">
           <TabsTrigger value="all">All</TabsTrigger>
