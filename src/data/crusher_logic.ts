@@ -7,11 +7,11 @@ export interface DiagnosticNode {
 
 export const CrusherDiagnostics: Record<string, DiagnosticNode> = {
   root: {
-    question: "Is the crusher receiving power?",
-    yes_node: "power_yes",
-    no_node: "power_no",
+    question: "Is the machine powered on?",
+    yes_node: "check_faults",
+    no_node: "check_breaker",
   },
-  power_no: {
+  check_breaker: {
     question: "Is the main breaker tripped?",
     yes_node: "breaker_tripped",
     no_node: "check_supply",
@@ -30,11 +30,111 @@ export const CrusherDiagnostics: Record<string, DiagnosticNode> = {
   check_supply: {
     action: "🔌 No incoming power. Check utility feed, transfer switch, and generator status. Verify voltage at main disconnect.",
   },
-  power_yes: {
+  check_faults: {
+    question: "Are there any fault codes on the PLC?",
+    yes_node: "consult_manual",
+    no_node: "check_hydraulics",
+  },
+  consult_manual: {
+    action: "📖 Fault code detected. Record the code, cross-reference with the OEM manual, and follow the prescribed corrective action before restarting.",
+  },
+
+  // === Hydraulic System Branch ===
+  check_hydraulics: {
+    question: "Is the hydraulic system pressurized?",
+    yes_node: "hyd_pressure_ok",
+    no_node: "hyd_no_pressure",
+  },
+  hyd_no_pressure: {
+    question: "Is the hydraulic pump running?",
+    yes_node: "hyd_pump_running_no_pressure",
+    no_node: "hyd_pump_not_running",
+  },
+  hyd_pump_not_running: {
+    question: "Is the pump motor getting power?",
+    yes_node: "hyd_pump_seized",
+    no_node: "hyd_pump_electrical",
+  },
+  hyd_pump_electrical: {
+    action: "⚡ No power to hydraulic pump motor. Check pump motor starter, overloads, and control wiring. Verify PLC output for pump start command.",
+  },
+  hyd_pump_seized: {
+    action: "🔧 Pump motor energized but not turning. Possible seized pump or coupling failure. Lock out, disconnect coupling, and try to rotate pump shaft by hand.",
+  },
+  hyd_pump_running_no_pressure: {
+    question: "Is the hydraulic reservoir oil level adequate?",
+    yes_node: "hyd_oil_ok_no_pressure",
+    no_node: "hyd_low_oil",
+  },
+  hyd_low_oil: {
+    action: "🛢️ Low hydraulic oil. Refill to proper level with correct fluid grade. Inspect for leaks at cylinders, hoses, fittings, and pump seals before restarting.",
+  },
+  hyd_oil_ok_no_pressure: {
+    question: "Is the relief valve set correctly?",
+    yes_node: "hyd_internal_failure",
+    no_node: "hyd_relief_valve",
+  },
+  hyd_relief_valve: {
+    action: "⚙️ Relief valve may be stuck open or set too low. Adjust to manufacturer spec. If stuck, remove, clean, or replace the valve cartridge.",
+  },
+  hyd_internal_failure: {
+    action: "🚨 Pump running, oil level OK, relief set — likely internal pump wear or failure. Pull pump, inspect vanes/gears/pistons. Replace pump assembly.",
+  },
+  hyd_pressure_ok: {
+    question: "Are hydraulic cylinders responding correctly?",
+    yes_node: "hyd_system_good",
+    no_node: "hyd_cylinder_issue",
+  },
+  hyd_cylinder_issue: {
+    question: "Is the cylinder drifting or moving slowly?",
+    yes_node: "hyd_cylinder_drift",
+    no_node: "hyd_cylinder_stuck",
+  },
+  hyd_cylinder_drift: {
+    question: "Does the cylinder hold when the valve is centered?",
+    yes_node: "hyd_valve_leak",
+    no_node: "hyd_seal_failure",
+  },
+  hyd_valve_leak: {
+    action: "🔄 Directional valve leaking internally. Replace or rebuild the spool valve. Check for contamination in hydraulic fluid.",
+  },
+  hyd_seal_failure: {
+    action: "🔩 Cylinder seal failure — cylinder drifts with valve centered. Remove cylinder, replace piston seals and rod seal. Check rod for scoring.",
+  },
+  hyd_cylinder_stuck: {
+    question: "Is the solenoid valve energizing?",
+    yes_node: "hyd_valve_stuck",
+    no_node: "hyd_solenoid_fault",
+  },
+  hyd_solenoid_fault: {
+    action: "⚡ Solenoid not energizing. Check PLC output, solenoid coil resistance, and connector wiring. Replace coil if open circuit.",
+  },
+  hyd_valve_stuck: {
+    action: "🔧 Valve solenoid energized but spool not shifting. Possible contamination or spool seizure. Remove valve, clean or replace. Flush system and change filters.",
+  },
+  hyd_system_good: {
+    question: "Is the hydraulic oil temperature normal (<150°F)?",
+    yes_node: "hyd_all_clear",
+    no_node: "hyd_overtemp",
+  },
+  hyd_overtemp: {
+    question: "Is the oil cooler fan running?",
+    yes_node: "hyd_cooler_blocked",
+    no_node: "hyd_cooler_fan",
+  },
+  hyd_cooler_fan: {
+    action: "🌡️ Cooler fan not running. Check fan motor, thermostat switch, and wiring. Clean cooler core of debris.",
+  },
+  hyd_cooler_blocked: {
+    action: "🌡️ Fan running but oil still hot. Clean cooler fins, check for restricted flow. Verify oil viscosity grade. Consider adding auxiliary cooling.",
+  },
+  hyd_all_clear: {
     question: "Is the crusher motor running?",
     yes_node: "motor_running",
     no_node: "motor_not_running",
   },
+
+  // === Motor & Operation Branch ===
   motor_not_running: {
     question: "Is the E-Stop engaged?",
     yes_node: "estop_engaged",
