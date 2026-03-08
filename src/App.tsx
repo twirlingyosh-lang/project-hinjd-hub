@@ -39,6 +39,7 @@ const ElectricalPage = lazy(() => import("./pages/app/ElectricalPage"));
 const FaultCodePage = lazy(() => import("./pages/app/FaultCodePage"));
 const HydraulicsPage = lazy(() => import("./pages/app/HydraulicsPage"));
 const TroubleshootingPage = lazy(() => import("./pages/app/TroubleshootingPage"));
+const CrusherDiagnosticPage = lazy(() => import("./pages/app/CrusherDiagnosticPage"));
 const ReferralPage = lazy(() => import("./pages/app/ReferralPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
 
