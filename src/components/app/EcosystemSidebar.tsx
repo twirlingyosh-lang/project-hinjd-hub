@@ -28,6 +28,7 @@ const moduleItems = [
   { path: '/app/electrical', icon: Zap, label: 'Electrical', description: 'Wiring & pinouts' },
   { path: '/app/fault-codes', icon: Search, label: 'Fault Codes', description: 'Diagnostic engine' },
   { path: '/app/hydraulics', icon: Droplets, label: 'Hydraulics', description: 'Schematic diagrams' },
+  { path: '/app/troubleshooting', icon: ClipboardCheck, label: 'Troubleshooting', description: 'Step-by-step guides' },
 ];
 
 const adminItems = [
