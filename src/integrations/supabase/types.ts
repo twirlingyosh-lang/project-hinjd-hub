@@ -662,6 +662,36 @@ export type Database = {
           },
         ]
       }
+      orders: {
+        Row: {
+          created_at: string
+          id: string
+          part_name: string | null
+          part_price: number | null
+          shipping_address: string | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          part_name?: string | null
+          part_price?: number | null
+          shipping_address?: string | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          part_name?: string | null
+          part_price?: number | null
+          shipping_address?: string | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -829,6 +859,39 @@ export type Database = {
           material?: string
           notes?: string | null
           tph?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number | null
+          created_at: string
+          customer_email: string | null
+          id: string
+          split_business: number | null
+          split_scholarship: number | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          customer_email?: string | null
+          id?: string
+          split_business?: number | null
+          split_scholarship?: number | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          customer_email?: string | null
+          id?: string
+          split_business?: number | null
+          split_scholarship?: number | null
+          status?: string | null
           user_id?: string
         }
         Relationships: []
