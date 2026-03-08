@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/app/AppLayout';
 import { TroubleshootingGuide } from '@/components/diagnostics/TroubleshootingGuide';
 import { equipmentList, TroubleshootingIssue } from '@/data/troubleshootingData';
@@ -6,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, AlertTriangle, ChevronRight } from 'lucide-react';
+import { Search, AlertTriangle, ChevronRight, TreeDeciduous } from 'lucide-react';
 
 const severityColors: Record<string, string> = {
   low: 'bg-green-500/20 text-green-400 border-green-500/30',
@@ -19,6 +20,7 @@ export default function TroubleshootingPage() {
   const [selectedEquipment, setSelectedEquipment] = useState<string | null>(null);
   const [selectedIssue, setSelectedIssue] = useState<TroubleshootingIssue | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   const equipment = selectedEquipment
     ? equipmentList.find(e => e.id === selectedEquipment)
@@ -104,6 +106,36 @@ export default function TroubleshootingPage() {
           onChange={e => setSearchQuery(e.target.value)}
           className="pl-10"
         />
+      </div>
+
+      {/* Decision Tree Quick Launch */}
+      <div className="grid gap-4 sm:grid-cols-2 mb-6">
+        <Card
+          className="p-5 bg-card hover:bg-muted/50 cursor-pointer transition-colors group border-primary/20"
+          onClick={() => navigate('/app/crusher-diagnostic')}
+        >
+          <div className="flex items-center gap-3">
+            <TreeDeciduous className="w-8 h-8 text-primary" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-foreground">Crusher Decision Tree</h3>
+              <p className="text-sm text-muted-foreground">Interactive YES/NO diagnostic for crushers</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+          </div>
+        </Card>
+        <Card
+          className="p-5 bg-card hover:bg-muted/50 cursor-pointer transition-colors group border-primary/20"
+          onClick={() => navigate('/app/screener-diagnostic')}
+        >
+          <div className="flex items-center gap-3">
+            <TreeDeciduous className="w-8 h-8 text-primary" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-foreground">Screener Decision Tree</h3>
+              <p className="text-sm text-muted-foreground">Interactive YES/NO diagnostic for screeners</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+          </div>
+        </Card>
       </div>
 
       <Tabs defaultValue="all">
