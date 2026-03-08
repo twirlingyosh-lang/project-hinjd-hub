@@ -20,6 +20,7 @@ export default function TroubleshootingPage() {
   const [selectedEquipment, setSelectedEquipment] = useState<string | null>(null);
   const [selectedIssue, setSelectedIssue] = useState<TroubleshootingIssue | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   const equipment = selectedEquipment
     ? equipmentList.find(e => e.id === selectedEquipment)
