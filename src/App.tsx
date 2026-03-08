@@ -100,6 +100,7 @@ const App = () => (
                 <Route path="/app/hydraulics" element={<HydraulicsPage />} />
                 <Route path="/app/troubleshooting" element={<TroubleshootingPage />} />
                 <Route path="/app/crusher-diagnostic" element={<CrusherDiagnosticPage />} />
+                <Route path="/app/screener-diagnostic" element={<ScreenerDiagnosticPage />} />
                 <Route path="/blog" element={<BlogPage />} />
                 {/* CRM Routes */}
                 <Route path="/crm" element={<CRMDashboard />} />
