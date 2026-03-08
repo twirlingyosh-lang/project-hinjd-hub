@@ -3,13 +3,15 @@ import { ScreenerDiagnostics } from "@/data/screener_logic";
 import { DiagnosticNode } from "@/data/crusher_logic";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, RotateCcw } from "lucide-react";
+import { ArrowLeft, RotateCcw, Save, Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useSaveDiagnostic } from "@/hooks/useSaveDiagnostic";
 
 const ScreenerDiagnosticPage = () => {
   const [node, setNode] = useState<DiagnosticNode>(ScreenerDiagnostics.root);
   const [history, setHistory] = useState<DiagnosticNode[]>([]);
   const navigate = useNavigate();
+  const { save, saving, saved, resetSaved } = useSaveDiagnostic("screener");
 
   const goTo = (key: string) => {
     setHistory((h) => [...h, node]);
@@ -26,6 +28,7 @@ const ScreenerDiagnosticPage = () => {
   const reset = () => {
     setNode(ScreenerDiagnostics.root);
     setHistory([]);
+    resetSaved();
   };
 
   return (
@@ -46,7 +49,7 @@ const ScreenerDiagnosticPage = () => {
         <Card className="border-2 border-primary/40 bg-primary/5">
           <CardContent className="p-6 md:p-10">
             <p className="text-xl md:text-3xl font-semibold leading-relaxed">{node.action}</p>
-            <div className="flex gap-3 mt-8">
+            <div className="flex flex-wrap gap-3 mt-8">
               {history.length > 0 && (
                 <Button variant="secondary" size="lg" onClick={goBack}>
                   <ArrowLeft className="h-4 w-4 mr-1" /> Back
@@ -54,6 +57,18 @@ const ScreenerDiagnosticPage = () => {
               )}
               <Button size="lg" onClick={reset}>
                 <RotateCcw className="h-4 w-4 mr-1" /> Start Over
+              </Button>
+              <Button
+                size="lg"
+                variant={saved ? "secondary" : "default"}
+                disabled={saving || saved}
+                onClick={() => save(history, node)}
+              >
+                {saved ? (
+                  <><Check className="h-4 w-4 mr-1" /> Saved</>
+                ) : (
+                  <><Save className="h-4 w-4 mr-1" /> {saving ? "Saving..." : "Save Result"}</>
+                )}
               </Button>
             </div>
           </CardContent>
