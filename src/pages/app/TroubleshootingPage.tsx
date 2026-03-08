@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/app/AppLayout';
 import { TroubleshootingGuide } from '@/components/diagnostics/TroubleshootingGuide';
 import { equipmentList, TroubleshootingIssue } from '@/data/troubleshootingData';
@@ -6,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, AlertTriangle, ChevronRight } from 'lucide-react';
+import { Search, AlertTriangle, ChevronRight, TreeDeciduous } from 'lucide-react';
 
 const severityColors: Record<string, string> = {
   low: 'bg-green-500/20 text-green-400 border-green-500/30',
