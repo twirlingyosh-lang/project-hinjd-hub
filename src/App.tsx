@@ -40,6 +40,7 @@ const FaultCodePage = lazy(() => import("./pages/app/FaultCodePage"));
 const HydraulicsPage = lazy(() => import("./pages/app/HydraulicsPage"));
 const TroubleshootingPage = lazy(() => import("./pages/app/TroubleshootingPage"));
 const CrusherDiagnosticPage = lazy(() => import("./pages/app/CrusherDiagnosticPage"));
+const ScreenerDiagnosticPage = lazy(() => import("./pages/app/ScreenerDiagnosticPage"));
 const ReferralPage = lazy(() => import("./pages/app/ReferralPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
 
@@ -99,6 +100,7 @@ const App = () => (
                 <Route path="/app/hydraulics" element={<HydraulicsPage />} />
                 <Route path="/app/troubleshooting" element={<TroubleshootingPage />} />
                 <Route path="/app/crusher-diagnostic" element={<CrusherDiagnosticPage />} />
+                <Route path="/app/screener-diagnostic" element={<ScreenerDiagnosticPage />} />
                 <Route path="/blog" element={<BlogPage />} />
                 {/* CRM Routes */}
                 <Route path="/crm" element={<CRMDashboard />} />
