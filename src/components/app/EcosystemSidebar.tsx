@@ -1,4 +1,4 @@
-import { MapPin, Shield, Hammer, Layers, BarChart3, Settings, User, Crown, Home, LogOut, Factory, Zap, Search, Droplets } from 'lucide-react';
+import { MapPin, Shield, Hammer, Layers, BarChart3, Settings, User, Crown, Home, LogOut, Factory, Zap, Search, Droplets, ClipboardCheck } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
 import { useAdminRole } from '@/hooks/useAdminRole';
