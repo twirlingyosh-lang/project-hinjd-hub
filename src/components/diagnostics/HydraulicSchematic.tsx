@@ -3,8 +3,9 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Info, Wrench, Search } from 'lucide-react';
+import { Info, Wrench, Search, X, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { HydraulicComponent, HydraulicLine, ComponentType } from '@/data/hydraulicTypes';
 import { allSchematics, schematicCategories, SchematicCategory } from '@/data/hydraulicSchematics';
 
@@ -36,12 +37,25 @@ const LEGEND_ITEMS = [
   { label: 'Motor', color: COMPONENT_COLORS.motor },
 ];
 
+const COMPONENT_TYPE_LABELS: Record<ComponentType, string> = {
+  pump: 'Pumps',
+  valve: 'Valves',
+  cylinder: 'Cylinders',
+  motor: 'Motors',
+  filter: 'Filters',
+  reservoir: 'Reservoirs',
+  cooler: 'Coolers',
+  accumulator: 'Accumulators',
+};
+
 const HydraulicSchematic = () => {
   const [selectedCategory, setSelectedCategory] = useState<SchematicCategory | 'all'>('all');
   const [selectedBrand, setSelectedBrand] = useState('metso');
   const [selectedComponent, setSelectedComponent] = useState<HydraulicComponent | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [componentTypeFilter, setComponentTypeFilter] = useState<ComponentType | 'all'>('all');
 
+  // Deep search: matches brand name, description, component names, part numbers, cross-refs
   const filteredBrands = useMemo(() => {
     let brands = selectedCategory === 'all'
       ? allSchematics
@@ -51,12 +65,34 @@ const HydraulicSchematic = () => {
       const term = searchTerm.toLowerCase();
       brands = brands.filter(b =>
         b.name.toLowerCase().includes(term) ||
-        b.description.toLowerCase().includes(term)
+        b.description.toLowerCase().includes(term) ||
+        b.components.some(c =>
+          c.name.toLowerCase().includes(term) ||
+          c.shortName.toLowerCase().includes(term) ||
+          c.specs.partNumber?.toLowerCase().includes(term) ||
+          c.specs.manufacturer?.toLowerCase().includes(term) ||
+          c.specs.crossRef?.some(ref => ref.toLowerCase().includes(term))
+        )
+      );
+    }
+
+    if (componentTypeFilter !== 'all') {
+      brands = brands.filter(b =>
+        b.components.some(c => c.type === componentTypeFilter)
       );
     }
 
     return brands;
-  }, [selectedCategory, searchTerm]);
+  }, [selectedCategory, searchTerm, componentTypeFilter]);
+
+  const hasActiveFilters = searchTerm || componentTypeFilter !== 'all' || selectedCategory !== 'all';
+
+  const clearAllFilters = () => {
+    setSearchTerm('');
+    setComponentTypeFilter('all');
+    setSelectedCategory('all');
+    setSelectedComponent(null);
+  };
 
   const currentSchematic = allSchematics.find(s => s.id === selectedBrand) || allSchematics[0];
 
