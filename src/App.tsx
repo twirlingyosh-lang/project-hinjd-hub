@@ -98,6 +98,7 @@ const App = () => (
                 <Route path="/app/fault-codes" element={<FaultCodePage />} />
                 <Route path="/app/hydraulics" element={<HydraulicsPage />} />
                 <Route path="/app/troubleshooting" element={<TroubleshootingPage />} />
+                <Route path="/app/crusher-diagnostic" element={<CrusherDiagnosticPage />} />
                 <Route path="/blog" element={<BlogPage />} />
                 {/* CRM Routes */}
                 <Route path="/crm" element={<CRMDashboard />} />
