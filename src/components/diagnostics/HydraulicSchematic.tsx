@@ -64,6 +64,38 @@ const HydraulicSchematic = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [componentTypeFilter, setComponentTypeFilter] = useState<ComponentType | 'all'>('all');
 
+  const [partLookupTerm, setPartLookupTerm] = useState('');
+  const [highlightedComponentId, setHighlightedComponentId] = useState<string | null>(null);
+
+  // Part number quick-lookup across ALL schematics
+  const partLookupResults = useMemo<PartLookupResult[]>(() => {
+    if (!partLookupTerm || partLookupTerm.length < 2) return [];
+    const term = partLookupTerm.toLowerCase();
+    const results: PartLookupResult[] = [];
+    for (const schematic of allSchematics) {
+      for (const comp of schematic.components) {
+        if (comp.specs.partNumber?.toLowerCase().includes(term)) {
+          results.push({ schematicId: schematic.id, schematicName: schematic.name, category: schematic.category, component: comp, matchType: 'oem', matchedValue: comp.specs.partNumber });
+        }
+        comp.specs.crossRef?.forEach(ref => {
+          if (ref.toLowerCase().includes(term)) {
+            results.push({ schematicId: schematic.id, schematicName: schematic.name, category: schematic.category, component: comp, matchType: 'crossRef', matchedValue: ref });
+          }
+        });
+      }
+    }
+    return results;
+  }, [partLookupTerm]);
+
+  const handlePartLookupSelect = useCallback((result: PartLookupResult) => {
+    setSelectedBrand(result.schematicId);
+    setSelectedComponent(result.component);
+    setHighlightedComponentId(result.component.id);
+    setPartLookupTerm('');
+    // Auto-clear highlight after 3 seconds
+    setTimeout(() => setHighlightedComponentId(null), 3000);
+  }, []);
+
   // Deep search: matches brand name, description, component names, part numbers, cross-refs
   const filteredBrands = useMemo(() => {
     let brands = selectedCategory === 'all'
