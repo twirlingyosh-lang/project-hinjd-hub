@@ -133,7 +133,7 @@ export const GoogleMapView = ({
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
-    libraries: ['places'],
+    libraries: LIBRARIES,
   });
 
   const dealersWithCoords = dealers.filter(d => d.latitude && d.longitude);
