@@ -33,9 +33,8 @@ import quarryAerial from '@/assets/quarry-aerial.jpg?format=webp';
 import smashGuruThumb from '@/assets/smash-guru-thumb.jpg?format=webp';
 import yardageProThumb from '@/assets/yardage-pro-thumb.jpg?format=webp';
 import coxAggsThumb from '@/assets/cox-aggs-thumb.jpg?format=webp';
-import { useEffect, useRef, useState, lazy, Suspense } from 'react';
-
-const HeroParticles = lazy(() => import('./3d/HeroParticles'));
+import { useEffect, useRef, useState } from 'react';
+import HeroParticles from './3d/HeroParticles';
 
 interface HubViewProps {
   onNavigateToApp?: () => void;
