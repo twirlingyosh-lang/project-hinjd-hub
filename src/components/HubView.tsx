@@ -164,6 +164,9 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
           fetchPriority="high"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/30" />
+        <Suspense fallback={null}>
+          <HeroParticles />
+        </Suspense>
         
         {/* Auth Bar */}
         <div className="absolute top-4 right-4 z-10">
