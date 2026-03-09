@@ -90,7 +90,8 @@ const mapContainerStyle = {
   minHeight: '400px',
 };
 
-const defaultCenter = { lat: 40.5, lng: -111.9 }; // Salt Lake area
+const defaultCenter = { lat: 40.5, lng: -111.9 };
+const LIBRARIES: ("places")[] = ['places'];
 
 // HINJD Dark map style
 const darkMapStyle = [
