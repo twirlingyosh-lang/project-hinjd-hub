@@ -24,7 +24,7 @@ import { Button } from '@/components/ui/button';
 import PortfolioCard from './PortfolioCard';
 // import ConveyorBelt3D from './3d/ConveyorBelt3D';
 // import EquipmentModel3D from './3d/EquipmentModel3D';
-// import Globe3D from './3d/Globe3D';
+import InteractiveGlobeMap from './InteractiveGlobeMap';
 import LeadCaptureForm from './LeadCaptureForm';
 import SocialMediaLinks from './SocialMediaLinks';
 import heroImage from '@/assets/hero-beltsaver.jpg?format=webp';
