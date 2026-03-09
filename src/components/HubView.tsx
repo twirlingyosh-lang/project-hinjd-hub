@@ -22,7 +22,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/hooks/useSubscription';
 import { Button } from '@/components/ui/button';
 import PortfolioCard from './PortfolioCard';
-import InteractiveBeltDemo from './InteractiveBeltDemo';
+import ConveyorBelt3D from './3d/ConveyorBelt3D';
+import EquipmentModel3D from './3d/EquipmentModel3D';
+import Globe3D from './3d/Globe3D';
 import LeadCaptureForm from './LeadCaptureForm';
 import SocialMediaLinks from './SocialMediaLinks';
 import heroImage from '@/assets/hero-beltsaver.jpg?format=webp';
@@ -31,7 +33,9 @@ import quarryAerial from '@/assets/quarry-aerial.jpg?format=webp';
 import smashGuruThumb from '@/assets/smash-guru-thumb.jpg?format=webp';
 import yardageProThumb from '@/assets/yardage-pro-thumb.jpg?format=webp';
 import coxAggsThumb from '@/assets/cox-aggs-thumb.jpg?format=webp';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, lazy, Suspense } from 'react';
+
+const HeroParticles = lazy(() => import('./3d/HeroParticles'));
 
 interface HubViewProps {
   onNavigateToApp?: () => void;
