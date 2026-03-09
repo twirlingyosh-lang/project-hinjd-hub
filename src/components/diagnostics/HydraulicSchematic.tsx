@@ -1,13 +1,14 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Info, Wrench, Search, X, Filter, Hash, ArrowRight } from 'lucide-react';
+import { Info, Wrench, Search, X, Filter, Hash, ArrowRight, Printer, Download } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { HydraulicComponent, HydraulicLine, ComponentType } from '@/data/hydraulicTypes';
 import { allSchematics, schematicCategories, SchematicCategory } from '@/data/hydraulicSchematics';
+import { toast } from 'sonner';
 
 interface PartLookupResult {
   schematicId: string;
