@@ -443,8 +443,8 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
         {/* 3D Equipment Model - Disabled due to React 19 compatibility */}
         {/* <EquipmentModel3D /> */}
 
-        {/* 3D Globe - Disabled due to React 19 compatibility */}
-        {/* <Globe3D /> */}
+        {/* Interactive Dealer Map */}
+        <InteractiveGlobeMap />
 
         {/* Lead Capture / Free Diagnostic Trial */}
         <LeadCaptureForm />
