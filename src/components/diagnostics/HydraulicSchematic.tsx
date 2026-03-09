@@ -1,13 +1,22 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Info, Wrench, Search, X, Filter } from 'lucide-react';
+import { Info, Wrench, Search, X, Filter, Hash, ArrowRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { HydraulicComponent, HydraulicLine, ComponentType } from '@/data/hydraulicTypes';
 import { allSchematics, schematicCategories, SchematicCategory } from '@/data/hydraulicSchematics';
+
+interface PartLookupResult {
+  schematicId: string;
+  schematicName: string;
+  category: string;
+  component: HydraulicComponent;
+  matchType: 'oem' | 'crossRef';
+  matchedValue: string;
+}
 
 const COMPONENT_COLORS: Record<ComponentType, string> = {
   pump: 'hsl(200, 80%, 50%)',
