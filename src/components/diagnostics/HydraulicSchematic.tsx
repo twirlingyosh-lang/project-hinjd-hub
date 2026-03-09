@@ -394,7 +394,7 @@ const HydraulicSchematic = () => {
 
           {/* SVG Schematic */}
           <div className="border border-border/30 rounded-lg p-4 bg-slate-900/95 overflow-auto">
-            <svg viewBox="0 0 620 560" className="w-full h-auto min-w-[600px]">
+            <svg ref={svgRef} viewBox="0 0 620 560" className="w-full h-auto min-w-[600px]">
               <defs>
                 <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
                   <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="0.5"/>
