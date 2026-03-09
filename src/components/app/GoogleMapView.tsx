@@ -90,7 +90,8 @@ const mapContainerStyle = {
   minHeight: '400px',
 };
 
-const defaultCenter = { lat: 40.5, lng: -111.9 }; // Salt Lake area
+const defaultCenter = { lat: 40.5, lng: -111.9 };
+const LIBRARIES: ("places")[] = ['places'];
 
 // HINJD Dark map style
 const darkMapStyle = [
@@ -132,7 +133,7 @@ export const GoogleMapView = ({
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
-    libraries: ['places'],
+    libraries: LIBRARIES,
   });
 
   const dealersWithCoords = dealers.filter(d => d.latitude && d.longitude);
