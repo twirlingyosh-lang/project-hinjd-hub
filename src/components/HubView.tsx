@@ -22,9 +22,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/hooks/useSubscription';
 import { Button } from '@/components/ui/button';
 import PortfolioCard from './PortfolioCard';
-import ConveyorBelt3D from './3d/ConveyorBelt3D';
-import EquipmentModel3D from './3d/EquipmentModel3D';
-import Globe3D from './3d/Globe3D';
+// import ConveyorBelt3D from './3d/ConveyorBelt3D';
+// import EquipmentModel3D from './3d/EquipmentModel3D';
+// import Globe3D from './3d/Globe3D';
 import LeadCaptureForm from './LeadCaptureForm';
 import SocialMediaLinks from './SocialMediaLinks';
 import heroImage from '@/assets/hero-beltsaver.jpg?format=webp';
@@ -33,9 +33,8 @@ import quarryAerial from '@/assets/quarry-aerial.jpg?format=webp';
 import smashGuruThumb from '@/assets/smash-guru-thumb.jpg?format=webp';
 import yardageProThumb from '@/assets/yardage-pro-thumb.jpg?format=webp';
 import coxAggsThumb from '@/assets/cox-aggs-thumb.jpg?format=webp';
-import { useEffect, useRef, useState, lazy, Suspense } from 'react';
-
-const HeroParticles = lazy(() => import('./3d/HeroParticles'));
+import { useEffect, useRef, useState } from 'react';
+// import HeroParticles from './3d/HeroParticles';
 
 interface HubViewProps {
   onNavigateToApp?: () => void;
@@ -164,9 +163,7 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
           fetchPriority="high"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/30" />
-        <Suspense fallback={null}>
-          <HeroParticles />
-        </Suspense>
+        {/* <HeroParticles /> - Disabled due to React 19 compatibility */}
         
         {/* Auth Bar */}
         <div className="absolute top-4 right-4 z-10">
@@ -264,9 +261,8 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
 
       <main className="max-w-3xl mx-auto px-6 py-12 space-y-16">
 
-        {/* Interactive BeltSaver Demo */}
-        <ConveyorBelt3D />
-        
+        {/* Interactive BeltSaver Demo - Disabled due to React 19 compatibility */}
+        {/* <ConveyorBelt3D /> */}
         {/* Platform Features Grid */}
         <section>
           <div className="text-center mb-8">
@@ -444,11 +440,11 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
           </div>
         </section>
 
-        {/* 3D Equipment Model */}
-        <EquipmentModel3D />
+        {/* 3D Equipment Model - Disabled due to React 19 compatibility */}
+        {/* <EquipmentModel3D /> */}
 
-        {/* 3D Globe */}
-        <Globe3D />
+        {/* 3D Globe - Disabled due to React 19 compatibility */}
+        {/* <Globe3D /> */}
 
         {/* Lead Capture / Free Diagnostic Trial */}
         <LeadCaptureForm />
