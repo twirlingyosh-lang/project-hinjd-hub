@@ -221,6 +221,64 @@ const HydraulicSchematic = () => {
           Showing {filteredBrands.length} of {allSchematics.length} schematics
           {searchTerm && <span> matching "<span className="text-foreground font-medium">{searchTerm}</span>"</span>}
         </div>
+
+        {/* Part Number Quick Lookup */}
+        <Card className="border-primary/30 bg-primary/5">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Hash className="h-4 w-4 text-primary" />
+              <h4 className="font-semibold text-sm">Part Number Quick Lookup</h4>
+              <span className="text-xs text-muted-foreground">— Search across all schematics</span>
+            </div>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Enter part number (e.g. A4VG71, 4474-638...)"
+                value={partLookupTerm}
+                onChange={e => setPartLookupTerm(e.target.value)}
+                className="pl-9 bg-background"
+              />
+              {partLookupTerm && (
+                <button onClick={() => setPartLookupTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            {partLookupTerm.length >= 2 && (
+              <div className="mt-3 max-h-60 overflow-y-auto space-y-1">
+                {partLookupResults.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-3">No parts found matching "{partLookupTerm}"</p>
+                ) : (
+                  <>
+                    <p className="text-xs text-muted-foreground mb-2">{partLookupResults.length} result{partLookupResults.length !== 1 ? 's' : ''} found</p>
+                    {partLookupResults.map((result, idx) => (
+                      <button
+                        key={`${result.schematicId}-${result.component.id}-${idx}`}
+                        onClick={() => handlePartLookupSelect(result)}
+                        className="w-full flex items-center gap-3 p-2.5 rounded-md bg-background hover:bg-accent border border-border/50 text-left transition-colors"
+                      >
+                        <div className="h-8 w-8 rounded flex items-center justify-center shrink-0" style={{ backgroundColor: COMPONENT_COLORS[result.component.type] }}>
+                          <span className="text-[10px] font-bold text-white">{result.component.type.slice(0, 3).toUpperCase()}</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{result.component.name}</p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {result.schematicName}
+                            <Badge variant="outline" className="ml-1.5 text-[9px] px-1 py-0">{result.matchType === 'oem' ? 'OEM' : 'X-REF'}</Badge>
+                          </p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-xs font-mono font-bold text-primary">{result.matchedValue}</p>
+                        </div>
+                        <ArrowRight className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      </button>
+                    ))}
+                  </>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       <Card className="border-border/50">
