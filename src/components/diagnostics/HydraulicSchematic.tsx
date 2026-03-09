@@ -192,7 +192,7 @@ const HydraulicSchematic = () => {
     toast.success('Print dialog opened');
   }, [buildExportSvgString, currentSchematic]);
 
-
+  const getLineCoords = (line: HydraulicLine) => {
     const fromComp = currentSchematic.components.find(c => c.id === line.from);
     const toComp = currentSchematic.components.find(c => c.id === line.to);
     if (!fromComp || !toComp) return null;
