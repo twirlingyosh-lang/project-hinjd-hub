@@ -24,7 +24,7 @@ import { Button } from '@/components/ui/button';
 import PortfolioCard from './PortfolioCard';
 // import ConveyorBelt3D from './3d/ConveyorBelt3D';
 // import EquipmentModel3D from './3d/EquipmentModel3D';
-// import Globe3D from './3d/Globe3D';
+import InteractiveGlobeMap from './InteractiveGlobeMap';
 import LeadCaptureForm from './LeadCaptureForm';
 import SocialMediaLinks from './SocialMediaLinks';
 import heroImage from '@/assets/hero-beltsaver.jpg?format=webp';
@@ -443,8 +443,8 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
         {/* 3D Equipment Model - Disabled due to React 19 compatibility */}
         {/* <EquipmentModel3D /> */}
 
-        {/* 3D Globe - Disabled due to React 19 compatibility */}
-        {/* <Globe3D /> */}
+        {/* Interactive Dealer Map */}
+        <InteractiveGlobeMap />
 
         {/* Lead Capture / Free Diagnostic Trial */}
         <LeadCaptureForm />
