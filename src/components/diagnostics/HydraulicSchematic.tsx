@@ -350,6 +350,13 @@ const HydraulicSchematic = () => {
                 </p>
               </div>
             </div>
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="outline" className="gap-1.5" onClick={handleExportPNG}>
+                <Download className="h-3.5 w-3.5" /> PNG
+              </Button>
+              <Button size="sm" variant="outline" className="gap-1.5" onClick={handlePrint}>
+                <Printer className="h-3.5 w-3.5" /> Print
+              </Button>
             <Select value={selectedBrand} onValueChange={(v) => { setSelectedBrand(v); setSelectedComponent(null); }}>
               <SelectTrigger className="w-[220px] bg-secondary/50">
                 <SelectValue placeholder="Select brand" />
