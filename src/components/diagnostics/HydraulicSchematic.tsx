@@ -1,13 +1,22 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Info, Wrench, Search, X, Filter } from 'lucide-react';
+import { Info, Wrench, Search, X, Filter, Hash, ArrowRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { HydraulicComponent, HydraulicLine, ComponentType } from '@/data/hydraulicTypes';
 import { allSchematics, schematicCategories, SchematicCategory } from '@/data/hydraulicSchematics';
+
+interface PartLookupResult {
+  schematicId: string;
+  schematicName: string;
+  category: string;
+  component: HydraulicComponent;
+  matchType: 'oem' | 'crossRef';
+  matchedValue: string;
+}
 
 const COMPONENT_COLORS: Record<ComponentType, string> = {
   pump: 'hsl(200, 80%, 50%)',
@@ -54,6 +63,38 @@ const HydraulicSchematic = () => {
   const [selectedComponent, setSelectedComponent] = useState<HydraulicComponent | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [componentTypeFilter, setComponentTypeFilter] = useState<ComponentType | 'all'>('all');
+
+  const [partLookupTerm, setPartLookupTerm] = useState('');
+  const [highlightedComponentId, setHighlightedComponentId] = useState<string | null>(null);
+
+  // Part number quick-lookup across ALL schematics
+  const partLookupResults = useMemo<PartLookupResult[]>(() => {
+    if (!partLookupTerm || partLookupTerm.length < 2) return [];
+    const term = partLookupTerm.toLowerCase();
+    const results: PartLookupResult[] = [];
+    for (const schematic of allSchematics) {
+      for (const comp of schematic.components) {
+        if (comp.specs.partNumber?.toLowerCase().includes(term)) {
+          results.push({ schematicId: schematic.id, schematicName: schematic.name, category: schematic.category, component: comp, matchType: 'oem', matchedValue: comp.specs.partNumber });
+        }
+        comp.specs.crossRef?.forEach(ref => {
+          if (ref.toLowerCase().includes(term)) {
+            results.push({ schematicId: schematic.id, schematicName: schematic.name, category: schematic.category, component: comp, matchType: 'crossRef', matchedValue: ref });
+          }
+        });
+      }
+    }
+    return results;
+  }, [partLookupTerm]);
+
+  const handlePartLookupSelect = useCallback((result: PartLookupResult) => {
+    setSelectedBrand(result.schematicId);
+    setSelectedComponent(result.component);
+    setHighlightedComponentId(result.component.id);
+    setPartLookupTerm('');
+    // Auto-clear highlight after 3 seconds
+    setTimeout(() => setHighlightedComponentId(null), 3000);
+  }, []);
 
   // Deep search: matches brand name, description, component names, part numbers, cross-refs
   const filteredBrands = useMemo(() => {
@@ -180,6 +221,64 @@ const HydraulicSchematic = () => {
           Showing {filteredBrands.length} of {allSchematics.length} schematics
           {searchTerm && <span> matching "<span className="text-foreground font-medium">{searchTerm}</span>"</span>}
         </div>
+
+        {/* Part Number Quick Lookup */}
+        <Card className="border-primary/30 bg-primary/5">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Hash className="h-4 w-4 text-primary" />
+              <h4 className="font-semibold text-sm">Part Number Quick Lookup</h4>
+              <span className="text-xs text-muted-foreground">— Search across all schematics</span>
+            </div>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Enter part number (e.g. A4VG71, 4474-638...)"
+                value={partLookupTerm}
+                onChange={e => setPartLookupTerm(e.target.value)}
+                className="pl-9 bg-background"
+              />
+              {partLookupTerm && (
+                <button onClick={() => setPartLookupTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            {partLookupTerm.length >= 2 && (
+              <div className="mt-3 max-h-60 overflow-y-auto space-y-1">
+                {partLookupResults.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-3">No parts found matching "{partLookupTerm}"</p>
+                ) : (
+                  <>
+                    <p className="text-xs text-muted-foreground mb-2">{partLookupResults.length} result{partLookupResults.length !== 1 ? 's' : ''} found</p>
+                    {partLookupResults.map((result, idx) => (
+                      <button
+                        key={`${result.schematicId}-${result.component.id}-${idx}`}
+                        onClick={() => handlePartLookupSelect(result)}
+                        className="w-full flex items-center gap-3 p-2.5 rounded-md bg-background hover:bg-accent border border-border/50 text-left transition-colors"
+                      >
+                        <div className="h-8 w-8 rounded flex items-center justify-center shrink-0" style={{ backgroundColor: COMPONENT_COLORS[result.component.type] }}>
+                          <span className="text-[10px] font-bold text-white">{result.component.type.slice(0, 3).toUpperCase()}</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{result.component.name}</p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {result.schematicName}
+                            <Badge variant="outline" className="ml-1.5 text-[9px] px-1 py-0">{result.matchType === 'oem' ? 'OEM' : 'X-REF'}</Badge>
+                          </p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-xs font-mono font-bold text-primary">{result.matchedValue}</p>
+                        </div>
+                        <ArrowRight className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      </button>
+                    ))}
+                  </>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       <Card className="border-border/50">
@@ -244,6 +343,14 @@ const HydraulicSchematic = () => {
                     <feMergeNode in="SourceGraphic"/>
                   </feMerge>
                 </filter>
+                <filter id="highlight-glow">
+                  <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
               </defs>
               <rect width="100%" height="100%" fill="url(#grid)" />
 
@@ -276,13 +383,29 @@ const HydraulicSchematic = () => {
               {/* Components */}
               {currentSchematic.components.map((comp) => {
                 const isSelected = selectedComponent?.id === comp.id;
+                const isHighlighted = highlightedComponentId === comp.id;
                 return (
                   <g
                     key={comp.id}
                     className="cursor-pointer transition-opacity"
                     onClick={() => setSelectedComponent(isSelected ? null : comp)}
-                    filter={isSelected ? 'url(#glow)' : undefined}
+                    filter={isHighlighted ? 'url(#highlight-glow)' : isSelected ? 'url(#glow)' : undefined}
                   >
+                    {isHighlighted && (
+                      <rect
+                        x={comp.x - 4}
+                        y={comp.y - 4}
+                        width={comp.width + 8}
+                        height={comp.height + 8}
+                        rx="8"
+                        fill="none"
+                        stroke="hsl(45, 100%, 60%)"
+                        strokeWidth="2.5"
+                        opacity="0.9"
+                      >
+                        <animate attributeName="opacity" values="0.9;0.3;0.9" dur="1s" repeatCount="indefinite" />
+                      </rect>
+                    )}
                     <rect
                       x={comp.x}
                       y={comp.y}
@@ -290,8 +413,8 @@ const HydraulicSchematic = () => {
                       height={comp.height}
                       rx="6"
                       fill={COMPONENT_COLORS[comp.type]}
-                      stroke={isSelected ? '#fff' : 'rgba(255,255,255,0.2)'}
-                      strokeWidth={isSelected ? 2.5 : 1}
+                      stroke={isHighlighted ? 'hsl(45, 100%, 60%)' : isSelected ? '#fff' : 'rgba(255,255,255,0.2)'}
+                      strokeWidth={isHighlighted ? 3 : isSelected ? 2.5 : 1}
                       opacity={0.9}
                     />
                     {comp.type === 'pump' && (
