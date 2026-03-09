@@ -444,6 +444,12 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
           </div>
         </section>
 
+        {/* 3D Equipment Model */}
+        <EquipmentModel3D />
+
+        {/* 3D Globe */}
+        <Globe3D />
+
         {/* Lead Capture / Free Diagnostic Trial */}
         <LeadCaptureForm />
       </main>
