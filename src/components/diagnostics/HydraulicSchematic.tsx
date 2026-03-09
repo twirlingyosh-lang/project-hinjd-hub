@@ -383,13 +383,29 @@ const HydraulicSchematic = () => {
               {/* Components */}
               {currentSchematic.components.map((comp) => {
                 const isSelected = selectedComponent?.id === comp.id;
+                const isHighlighted = highlightedComponentId === comp.id;
                 return (
                   <g
                     key={comp.id}
                     className="cursor-pointer transition-opacity"
                     onClick={() => setSelectedComponent(isSelected ? null : comp)}
-                    filter={isSelected ? 'url(#glow)' : undefined}
+                    filter={isHighlighted ? 'url(#highlight-glow)' : isSelected ? 'url(#glow)' : undefined}
                   >
+                    {isHighlighted && (
+                      <rect
+                        x={comp.x - 4}
+                        y={comp.y - 4}
+                        width={comp.width + 8}
+                        height={comp.height + 8}
+                        rx="8"
+                        fill="none"
+                        stroke="hsl(45, 100%, 60%)"
+                        strokeWidth="2.5"
+                        opacity="0.9"
+                      >
+                        <animate attributeName="opacity" values="0.9;0.3;0.9" dur="1s" repeatCount="indefinite" />
+                      </rect>
+                    )}
                     <rect
                       x={comp.x}
                       y={comp.y}
@@ -397,8 +413,8 @@ const HydraulicSchematic = () => {
                       height={comp.height}
                       rx="6"
                       fill={COMPONENT_COLORS[comp.type]}
-                      stroke={isSelected ? '#fff' : 'rgba(255,255,255,0.2)'}
-                      strokeWidth={isSelected ? 2.5 : 1}
+                      stroke={isHighlighted ? 'hsl(45, 100%, 60%)' : isSelected ? '#fff' : 'rgba(255,255,255,0.2)'}
+                      strokeWidth={isHighlighted ? 3 : isSelected ? 2.5 : 1}
                       opacity={0.9}
                     />
                     {comp.type === 'pump' && (
