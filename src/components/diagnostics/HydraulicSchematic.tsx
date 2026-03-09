@@ -139,7 +139,60 @@ const HydraulicSchematic = () => {
 
   const currentSchematic = allSchematics.find(s => s.id === selectedBrand) || allSchematics[0];
 
-  const getLineCoords = (line: HydraulicLine) => {
+  const buildExportSvgString = useCallback(() => {
+    if (!svgRef.current) return null;
+    const svgClone = svgRef.current.cloneNode(true) as SVGSVGElement;
+    svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    svgClone.setAttribute('width', '1240');
+    svgClone.setAttribute('height', '1120');
+    const bgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    bgRect.setAttribute('width', '100%');
+    bgRect.setAttribute('height', '100%');
+    bgRect.setAttribute('fill', '#0f172a');
+    svgClone.insertBefore(bgRect, svgClone.firstChild);
+    return new XMLSerializer().serializeToString(svgClone);
+  }, []);
+
+  const handleExportPNG = useCallback(async () => {
+    const svgString = buildExportSvgString();
+    if (!svgString) return;
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1240;
+      canvas.height = 1120;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      const img = new Image();
+      const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => { ctx.drawImage(img, 0, 0); URL.revokeObjectURL(url); resolve(); };
+        img.onerror = reject;
+        img.src = url;
+      });
+      const pngUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `${currentSchematic.name.replace(/\s+/g, '-')}-hydraulic-schematic.png`;
+      link.href = pngUrl;
+      link.click();
+      toast.success('Schematic exported as PNG');
+    } catch { toast.error('Failed to export schematic'); }
+  }, [buildExportSvgString, currentSchematic.name]);
+
+  const handlePrint = useCallback(() => {
+    const svgString = buildExportSvgString();
+    if (!svgString) return;
+    const rows = currentSchematic.components.map(c =>
+      `<tr><td style="padding:4px 8px;border:1px solid #ddd">${c.name}</td><td style="padding:4px 8px;border:1px solid #ddd">${c.type}</td><td style="padding:4px 8px;border:1px solid #ddd;font-family:monospace">${c.specs.partNumber || '—'}</td><td style="padding:4px 8px;border:1px solid #ddd">${c.specs.manufacturer || '—'}</td><td style="padding:4px 8px;border:1px solid #ddd">${c.specs.pressure || '—'}</td><td style="padding:4px 8px;border:1px solid #ddd">${c.specs.flow || '—'}</td></tr>`
+    ).join('');
+    const w = window.open('', '_blank');
+    if (!w) { toast.error('Pop-up blocked — allow pop-ups to print'); return; }
+    w.document.write(`<!DOCTYPE html><html><head><title>${currentSchematic.name} Hydraulic Schematic</title><style>body{font-family:Arial,sans-serif;margin:40px;color:#333}h1{font-size:22px;margin-bottom:4px}.sub{color:#666;font-size:14px;margin-bottom:24px}.svg-wrap{background:#0f172a;border-radius:8px;padding:16px;margin-bottom:24px}svg{width:100%;height:auto}table{border-collapse:collapse;width:100%;font-size:12px;margin-top:8px}th{background:#f1f5f9;padding:6px 8px;border:1px solid #ddd;text-align:left;font-weight:600}.ft{margin-top:32px;font-size:11px;color:#999;border-top:1px solid #eee;padding-top:12px}@media print{body{margin:20px}}</style></head><body><h1>${currentSchematic.name} Hydraulic System</h1><p class="sub">${currentSchematic.description}</p><div class="svg-wrap">${svgString}</div><h2 style="font-size:16px;margin-top:24px">Component Details</h2><table><thead><tr><th>Component</th><th>Type</th><th>Part Number</th><th>Manufacturer</th><th>Pressure</th><th>Flow</th></tr></thead><tbody>${rows}</tbody></table><div class="ft">Generated from HINJD Ecosystem Hub — ${new Date().toLocaleDateString()}</div><script>window.onload=function(){window.print()}<\/script></body></html>`);
+    w.document.close();
+    toast.success('Print dialog opened');
+  }, [buildExportSvgString, currentSchematic]);
+
+
     const fromComp = currentSchematic.components.find(c => c.id === line.from);
     const toComp = currentSchematic.components.find(c => c.id === line.to);
     if (!fromComp || !toComp) return null;
