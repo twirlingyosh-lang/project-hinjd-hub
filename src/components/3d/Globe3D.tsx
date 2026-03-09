@@ -71,10 +71,9 @@ const GlobeWireframe = () => {
       {/* Grid lines */}
       {gridLines.map((pts, i) => {
         const geo = new THREE.BufferGeometry().setFromPoints(pts);
+        const mat = new THREE.LineBasicMaterial({ color: '#f59e0b', transparent: true, opacity: 0.15 });
         return (
-          <line key={i} geometry={geo}>
-            <lineBasicMaterial color="#f59e0b" transparent opacity={0.15} />
-          </line>
+          <primitive key={i} object={new THREE.Line(geo, mat)} />
         );
       })}
 
