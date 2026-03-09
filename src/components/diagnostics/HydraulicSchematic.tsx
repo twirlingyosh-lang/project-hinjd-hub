@@ -378,6 +378,7 @@ const HydraulicSchematic = () => {
                 )}
               </SelectContent>
             </Select>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
