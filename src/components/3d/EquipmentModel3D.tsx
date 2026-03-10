@@ -185,8 +185,8 @@ function buildConveyor(): THREE.Group {
   });
 
   // Skirt boards
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.06, 0.3), stdMat(0x4a4a4a, 0.6)), { position: new THREE.Vector3(-0.5, 0.95, 0.45) }));
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.06, 0.3), stdMat(0x4a4a4a, 0.6)), { position: new THREE.Vector3(-0.5, -0.95, 0.45) }));
+  addMesh(g, new THREE.BoxGeometry(3.0, 0.06, 0.3), stdMat(0x4a4a4a, 0.6), -0.5, 0.95, 0.45);
+  addMesh(g, new THREE.BoxGeometry(3.0, 0.06, 0.3), stdMat(0x4a4a4a, 0.6), -0.5, -0.95, 0.45);
 
   // Material chunks on belt
   for (let i = 0; i < 8; i++) {
