@@ -67,8 +67,8 @@ function buildScreener(): THREE.Group {
   }
 
   // Side panels
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(3.5, 1.4, 0.08), stdMat(0x555555, 0.7)), { position: new THREE.Vector3(0, 0, 1.0) }));
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(3.5, 1.4, 0.08), stdMat(0x555555, 0.7)), { position: new THREE.Vector3(0, 0, -1.0) }));
+  addMesh(g, new THREE.BoxGeometry(3.5, 1.4, 0.08), stdMat(0x555555, 0.7), 0, 0, 1.0);
+  addMesh(g, new THREE.BoxGeometry(3.5, 1.4, 0.08), stdMat(0x555555, 0.7), 0, 0, -1.0);
 
   // Eccentric shaft
   const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 2.4, 12), accentMat());
