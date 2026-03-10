@@ -7,7 +7,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAdminRole } from '@/hooks/useAdminRole';
 import { 
   Shield, DollarSign, GraduationCap, Users, Activity,
-  AlertTriangle, TrendingUp, Wallet, ArrowUpRight, Radio
+  AlertTriangle, TrendingUp, Wallet, ArrowUpRight, Radio,
+  Clock, Landmark, Zap, PieChart as PieChartIcon
 } from 'lucide-react';
 import { 
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
