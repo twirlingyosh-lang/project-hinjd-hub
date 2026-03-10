@@ -439,8 +439,7 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
           </div>
         </section>
 
-        {/* 3D Equipment Model - Disabled due to React 19 compatibility */}
-        {/* <EquipmentModel3D /> */}
+        <EquipmentModel3D />
 
         {/* Interactive Dealer Map */}
         <InteractiveGlobeMap />
