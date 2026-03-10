@@ -261,8 +261,7 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
 
       <main className="max-w-3xl mx-auto px-6 py-12 space-y-16">
 
-        {/* Interactive BeltSaver Demo - Disabled due to React 19 compatibility */}
-        {/* <ConveyorBelt3D /> */}
+        <ConveyorBelt3D />
         {/* Platform Features Grid */}
         <section>
           <div className="text-center mb-8">
