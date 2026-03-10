@@ -7,7 +7,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAdminRole } from '@/hooks/useAdminRole';
 import { 
   Shield, DollarSign, GraduationCap, Users, Activity,
-  AlertTriangle, TrendingUp, Wallet, ArrowUpRight, Radio
+  AlertTriangle, TrendingUp, Wallet, ArrowUpRight, Radio,
+  Clock, Landmark, Zap, PieChart as PieChartIcon
 } from 'lucide-react';
 import { 
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
@@ -272,6 +273,75 @@ export const HQCommandPanel = () => {
                 <p className="text-2xl font-bold text-primary">{formatCurrency(metrics?.scholarshipFund || 0)}</p>
               )}
               <p className="text-xs text-muted-foreground mt-1">20% of transactions</p>
+            </div>
+          </div>
+
+          {/* Capital Pipeline */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 mb-1">
+              <Zap className="h-4 w-4 text-primary" />
+              <span className="font-medium text-sm">Capital Pipeline</span>
+              <Badge variant="outline" className="border-primary/50 text-primary text-[10px] ml-auto">ACTIVE</Badge>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="p-4 rounded-lg bg-card border border-border relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-bl-full" />
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="h-4 w-4 text-amber-500" />
+                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Pending Settlement</span>
+                </div>
+                <p className="text-2xl font-bold text-amber-500">$99,600</p>
+                <p className="text-xs text-muted-foreground mt-1">Rio Tinto / Kennecott industrial block</p>
+                <Badge className="mt-2 bg-amber-500/10 text-amber-500 border-amber-500/30 text-[10px]">AWAITING CLEARANCE</Badge>
+              </div>
+              <div className="p-4 rounded-lg bg-card border border-border relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-bl-full" />
+                <div className="flex items-center gap-2 mb-2">
+                  <Landmark className="h-4 w-4 text-emerald-500" />
+                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">State Grant</span>
+                </div>
+                <p className="text-2xl font-bold text-emerald-500">$312,000</p>
+                <p className="text-xs text-muted-foreground mt-1">Utah REDI Grant — 52 technicians</p>
+                <Badge className="mt-2 bg-emerald-500/10 text-emerald-500 border-emerald-500/30 text-[10px]">WINDOW: FEB 1</Badge>
+              </div>
+            </div>
+            <div className="p-3 rounded-lg bg-muted/30 border border-border">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Combined Pipeline</span>
+                <span className="font-bold text-foreground">$411,600</span>
+              </div>
+            </div>
+          </div>
+
+          {/* 80/20 Profit Split Model */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 mb-1">
+              <PieChartIcon className="h-4 w-4 text-primary" />
+              <span className="font-medium text-sm">Vanguard Profit Split (80/20)</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-4 rounded-lg border border-border bg-card">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-3 h-3 rounded-full bg-blue-500" />
+                  <span className="text-xs text-muted-foreground">Business (80%)</span>
+                </div>
+                <p className="text-xl font-bold text-blue-500">$1,600</p>
+                <p className="text-xs text-muted-foreground mt-1">Net to Josh per milestone</p>
+                <div className="mt-3 w-full bg-muted rounded-full h-2">
+                  <div className="bg-blue-500 h-2 rounded-full" style={{ width: '80%' }} />
+                </div>
+              </div>
+              <div className="p-4 rounded-lg border border-primary/30 bg-gradient-to-br from-primary/5 to-transparent">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-3 h-3 rounded-full bg-primary" />
+                  <span className="text-xs text-muted-foreground">Scholarship (20%)</span>
+                </div>
+                <p className="text-xl font-bold text-primary">$400</p>
+                <p className="text-xs text-muted-foreground mt-1">Per milestone allocation</p>
+                <div className="mt-3 w-full bg-muted rounded-full h-2">
+                  <div className="bg-primary h-2 rounded-full" style={{ width: '20%' }} />
+                </div>
+              </div>
             </div>
           </div>
 
