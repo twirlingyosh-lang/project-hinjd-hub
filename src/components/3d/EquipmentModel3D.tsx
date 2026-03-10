@@ -16,30 +16,28 @@ const stdMat = (color: number, metalness = 0.8, roughness = 0.3) =>
 const accentMat = () =>
   new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.9, roughness: 0.1, emissive: 0xf59e0b, emissiveIntensity: 0.15 });
 
+function addMesh(group: THREE.Group, geo: THREE.BufferGeometry, mat: THREE.Material, x: number, y: number, z: number, name?: string): THREE.Mesh {
+  const m = new THREE.Mesh(geo, mat);
+  m.position.set(x, y, z);
+  if (name) m.name = name;
+  group.add(m);
+  return m;
+}
+
 function buildCrusher(): THREE.Group {
   const g = new THREE.Group();
   g.scale.setScalar(0.8);
-  // Body
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(2, 1.5, 1.5), stdMat(0x4a4a4a)), { position: new THREE.Vector3(0, 0, 0) }));
-  // Feed opening
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.5, 1.3), stdMat(0x333333, 0.6, 0.4)), { position: new THREE.Vector3(0, 1, 0) }));
-  // Hopper walls
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 1.4), stdMat(0x555555, 0.7)), { position: new THREE.Vector3(-0.95, 1.5, 0) }));
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 1.4), stdMat(0x555555, 0.7)), { position: new THREE.Vector3(0.95, 1.5, 0) }));
-  // Flywheel
-  const fw = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.15, 20), accentMat());
-  fw.position.set(1.2, 0.3, 0); fw.rotation.x = Math.PI / 2;
-  fw.name = 'flywheel';
-  g.add(fw);
-  // Base
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.3, 1.8), stdMat(0x3a3a3a, 0.5, 0.5)), { position: new THREE.Vector3(0, -1, 0) }));
-  // Discharge
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.6, 0.3), stdMat(0x444444, 0.6, 0.4)), { position: new THREE.Vector3(0, -0.6, 0.9) }));
-  // Toggle plate detail
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.2, 1.0), stdMat(0x666666, 0.7, 0.25)), { position: new THREE.Vector3(-0.6, 0.2, 0) }));
-  // Jaw liner plates
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.0, 1.2), stdMat(0x5a5a5a, 0.85, 0.2)), { position: new THREE.Vector3(0.5, 0.3, 0) }));
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.0, 1.2), stdMat(0x5a5a5a, 0.85, 0.2)), { position: new THREE.Vector3(-0.4, 0.3, 0) }));
+  addMesh(g, new THREE.BoxGeometry(2, 1.5, 1.5), stdMat(0x4a4a4a), 0, 0, 0);
+  addMesh(g, new THREE.BoxGeometry(1.8, 0.5, 1.3), stdMat(0x333333, 0.6, 0.4), 0, 1, 0);
+  addMesh(g, new THREE.BoxGeometry(0.1, 1, 1.4), stdMat(0x555555, 0.7), -0.95, 1.5, 0);
+  addMesh(g, new THREE.BoxGeometry(0.1, 1, 1.4), stdMat(0x555555, 0.7), 0.95, 1.5, 0);
+  const fw = addMesh(g, new THREE.CylinderGeometry(0.5, 0.5, 0.15, 20), accentMat(), 1.2, 0.3, 0, 'flywheel');
+  fw.rotation.x = Math.PI / 2;
+  addMesh(g, new THREE.BoxGeometry(2.4, 0.3, 1.8), stdMat(0x3a3a3a, 0.5, 0.5), 0, -1, 0);
+  addMesh(g, new THREE.BoxGeometry(1.2, 0.6, 0.3), stdMat(0x444444, 0.6, 0.4), 0, -0.6, 0.9);
+  addMesh(g, new THREE.BoxGeometry(0.08, 1.2, 1.0), stdMat(0x666666, 0.7, 0.25), -0.6, 0.2, 0);
+  addMesh(g, new THREE.BoxGeometry(0.12, 1.0, 1.2), stdMat(0x5a5a5a, 0.85, 0.2), 0.5, 0.3, 0);
+  addMesh(g, new THREE.BoxGeometry(0.12, 1.0, 1.2), stdMat(0x5a5a5a, 0.85, 0.2), -0.4, 0.3, 0);
   return g;
 }
 
@@ -69,8 +67,8 @@ function buildScreener(): THREE.Group {
   }
 
   // Side panels
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(3.5, 1.4, 0.08), stdMat(0x555555, 0.7)), { position: new THREE.Vector3(0, 0, 1.0) }));
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(3.5, 1.4, 0.08), stdMat(0x555555, 0.7)), { position: new THREE.Vector3(0, 0, -1.0) }));
+  addMesh(g, new THREE.BoxGeometry(3.5, 1.4, 0.08), stdMat(0x555555, 0.7), 0, 0, 1.0);
+  addMesh(g, new THREE.BoxGeometry(3.5, 1.4, 0.08), stdMat(0x555555, 0.7), 0, 0, -1.0);
 
   // Eccentric shaft
   const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 2.4, 12), accentMat());
@@ -120,8 +118,8 @@ function buildConveyor(): THREE.Group {
   g.scale.setScalar(0.65);
 
   // Side stringers
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(5.5, 0.08, 0.5), stdMat(0x4a4a4a)), { position: new THREE.Vector3(0, 1.0, 0) }));
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(5.5, 0.08, 0.5), stdMat(0x4a4a4a)), { position: new THREE.Vector3(0, -1.0, 0) }));
+  addMesh(g, new THREE.BoxGeometry(5.5, 0.08, 0.5), stdMat(0x4a4a4a), 0, 1.0, 0);
+  addMesh(g, new THREE.BoxGeometry(5.5, 0.08, 0.5), stdMat(0x4a4a4a), 0, -1.0, 0);
 
   // Belt (flat top surface)
   const belt = new THREE.Mesh(new THREE.BoxGeometry(5.0, 1.8, 0.06), stdMat(0x2a2a2a, 0.1, 0.85));
@@ -187,8 +185,8 @@ function buildConveyor(): THREE.Group {
   });
 
   // Skirt boards
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.06, 0.3), stdMat(0x4a4a4a, 0.6)), { position: new THREE.Vector3(-0.5, 0.95, 0.45) }));
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.06, 0.3), stdMat(0x4a4a4a, 0.6)), { position: new THREE.Vector3(-0.5, -0.95, 0.45) }));
+  addMesh(g, new THREE.BoxGeometry(3.0, 0.06, 0.3), stdMat(0x4a4a4a, 0.6), -0.5, 0.95, 0.45);
+  addMesh(g, new THREE.BoxGeometry(3.0, 0.06, 0.3), stdMat(0x4a4a4a, 0.6), -0.5, -0.95, 0.45);
 
   // Material chunks on belt
   for (let i = 0; i < 8; i++) {
