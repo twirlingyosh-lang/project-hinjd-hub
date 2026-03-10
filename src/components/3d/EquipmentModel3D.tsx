@@ -118,8 +118,8 @@ function buildConveyor(): THREE.Group {
   g.scale.setScalar(0.65);
 
   // Side stringers
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(5.5, 0.08, 0.5), stdMat(0x4a4a4a)), { position: new THREE.Vector3(0, 1.0, 0) }));
-  g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(5.5, 0.08, 0.5), stdMat(0x4a4a4a)), { position: new THREE.Vector3(0, -1.0, 0) }));
+  addMesh(g, new THREE.BoxGeometry(5.5, 0.08, 0.5), stdMat(0x4a4a4a), 0, 1.0, 0);
+  addMesh(g, new THREE.BoxGeometry(5.5, 0.08, 0.5), stdMat(0x4a4a4a), 0, -1.0, 0);
 
   // Belt (flat top surface)
   const belt = new THREE.Mesh(new THREE.BoxGeometry(5.0, 1.8, 0.06), stdMat(0x2a2a2a, 0.1, 0.85));
