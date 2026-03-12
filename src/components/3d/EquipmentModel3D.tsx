@@ -260,6 +260,7 @@ const EquipmentModel3D = () => {
 
     const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 100);
     camera.position.set(4, 3, 5);
+    sceneRef.current.camera = camera;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(container.clientWidth, container.clientHeight);
