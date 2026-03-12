@@ -375,6 +375,7 @@ const EquipmentModel3D = () => {
       renderer.domElement.removeEventListener('pointerdown', onDown);
       renderer.domElement.removeEventListener('pointerup', onUp);
       renderer.domElement.removeEventListener('pointermove', onMove);
+      renderer.domElement.removeEventListener('pointerleave', onLeave);
       renderer.dispose();
       scene.traverse((obj) => {
         if (obj instanceof THREE.Mesh) {
