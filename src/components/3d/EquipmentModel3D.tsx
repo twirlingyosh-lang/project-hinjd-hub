@@ -415,6 +415,17 @@ const EquipmentModel3D = () => {
         <div className="relative">
           <div ref={containerRef} className="h-72 sm:h-80 cursor-grab active:cursor-grabbing" />
 
+          {/* Part tooltip */}
+          {tooltip && (
+            <div
+              className="absolute pointer-events-none z-20 max-w-[200px] px-3 py-2 rounded-lg bg-background/95 border border-primary/30 shadow-lg backdrop-blur-sm"
+              style={{ left: Math.min(tooltip.x, 180), top: Math.max(tooltip.y - 60, 8) }}
+            >
+              <p className="text-[11px] font-bold text-primary leading-tight">{tooltip.name}</p>
+              <p className="text-[9px] text-muted-foreground leading-snug mt-0.5">{tooltip.description}</p>
+            </div>
+          )}
+
           {/* Nav arrows */}
           <button
             onClick={() => cycleType(-1)}
