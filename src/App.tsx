@@ -102,6 +102,7 @@ const App = () => (
                 <Route path="/app/troubleshooting" element={<TroubleshootingPage />} />
                 <Route path="/app/crusher-diagnostic" element={<CrusherDiagnosticPage />} />
                 <Route path="/app/screener-diagnostic" element={<ScreenerDiagnosticPage />} />
+                <Route path="/app/3d-viewer" element={<ThreeDViewerPage />} />
                 <Route path="/blog" element={<BlogPage />} />
                 {/* CRM Routes */}
                 <Route path="/crm" element={<CRMDashboard />} />
