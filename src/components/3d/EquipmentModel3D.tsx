@@ -2,6 +2,21 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
+const PART_INFO: Record<string, { name: string; description: string }> = {
+  flywheel: { name: 'Flywheel', description: 'Stores rotational energy to maintain jaw momentum through the crushing stroke' },
+  head_pulley: { name: 'Head / Drive Pulley', description: 'Drives the belt via friction; powered by the gearbox motor' },
+  tail_pulley: { name: 'Tail Pulley', description: 'Provides belt tension and return-side tracking at the loading end' },
+  eccentric_shaft: { name: 'Eccentric Shaft', description: 'Converts motor rotation into linear vibration for the screen decks' },
+  deck_0: { name: 'Top Deck', description: 'Coarsest screen media — scalps oversize material first' },
+  deck_1: { name: 'Middle Deck', description: 'Intermediate sizing — separates mid-range aggregate' },
+  deck_2: { name: 'Bottom Deck', description: 'Finest screen media — produces spec sand and fines' },
+  idler_0: { name: 'Troughing Idler (Center)', description: 'Supports and shapes the belt into a trough for material containment' },
+  'idler_-1': { name: 'Troughing Idler', description: 'Carries belt load between head and tail pulleys' },
+  idler_1: { name: 'Troughing Idler', description: 'Carries belt load between head and tail pulleys' },
+  'idler_-2': { name: 'Troughing Idler (Tail)', description: 'Supports belt near the loading zone' },
+  idler_2: { name: 'Troughing Idler (Head)', description: 'Supports belt near the discharge zone' },
+};
+
 type EquipmentType = 'crusher' | 'screener' | 'conveyor';
 
 const EQUIPMENT_INFO: Record<EquipmentType, { label: string; description: string }> = {
