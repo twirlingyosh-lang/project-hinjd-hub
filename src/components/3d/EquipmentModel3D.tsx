@@ -2,6 +2,21 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
+const PART_INFO: Record<string, { name: string; description: string }> = {
+  flywheel: { name: 'Flywheel', description: 'Stores rotational energy to maintain jaw momentum through the crushing stroke' },
+  head_pulley: { name: 'Head / Drive Pulley', description: 'Drives the belt via friction; powered by the gearbox motor' },
+  tail_pulley: { name: 'Tail Pulley', description: 'Provides belt tension and return-side tracking at the loading end' },
+  eccentric_shaft: { name: 'Eccentric Shaft', description: 'Converts motor rotation into linear vibration for the screen decks' },
+  deck_0: { name: 'Top Deck', description: 'Coarsest screen media — scalps oversize material first' },
+  deck_1: { name: 'Middle Deck', description: 'Intermediate sizing — separates mid-range aggregate' },
+  deck_2: { name: 'Bottom Deck', description: 'Finest screen media — produces spec sand and fines' },
+  idler_0: { name: 'Troughing Idler (Center)', description: 'Supports and shapes the belt into a trough for material containment' },
+  'idler_-1': { name: 'Troughing Idler', description: 'Carries belt load between head and tail pulleys' },
+  idler_1: { name: 'Troughing Idler', description: 'Carries belt load between head and tail pulleys' },
+  'idler_-2': { name: 'Troughing Idler (Tail)', description: 'Supports belt near the loading zone' },
+  idler_2: { name: 'Troughing Idler (Head)', description: 'Supports belt near the discharge zone' },
+};
+
 type EquipmentType = 'crusher' | 'screener' | 'conveyor';
 
 const EQUIPMENT_INFO: Record<EquipmentType, { label: string; description: string }> = {
@@ -211,8 +226,11 @@ const TYPES: EquipmentType[] = ['crusher', 'screener', 'conveyor'];
 
 const EquipmentModel3D = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const sceneRef = useRef<{ scene: THREE.Scene; model: THREE.Group | null; autoRot: number }>({ scene: new THREE.Scene(), model: null, autoRot: 0 });
+  const sceneRef = useRef<{ scene: THREE.Scene; camera: THREE.PerspectiveCamera | null; model: THREE.Group | null; autoRot: number }>({ scene: new THREE.Scene(), camera: null, model: null, autoRot: 0 });
   const [activeType, setActiveType] = useState<EquipmentType>('crusher');
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; description: string } | null>(null);
+  const raycaster = useRef(new THREE.Raycaster());
+  const pointer = useRef(new THREE.Vector2());
 
   // Swap model when type changes
   const swapModel = useCallback((type: EquipmentType) => {
@@ -242,6 +260,7 @@ const EquipmentModel3D = () => {
 
     const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 100);
     camera.position.set(4, 3, 5);
+    sceneRef.current.camera = camera;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(container.clientWidth, container.clientHeight);
@@ -268,13 +287,46 @@ const EquipmentModel3D = () => {
     const onDown = (e: PointerEvent) => { isDragging = true; prevX = e.clientX; };
     const onUp = () => { isDragging = false; };
     const onMove = (e: PointerEvent) => {
-      if (!isDragging) return;
-      sceneRef.current.autoRot += (e.clientX - prevX) * 0.005;
-      prevX = e.clientX;
+      if (isDragging) {
+        sceneRef.current.autoRot += (e.clientX - prevX) * 0.005;
+        prevX = e.clientX;
+        setTooltip(null);
+        return;
+      }
+      // Raycasting for tooltip
+      const rect = renderer.domElement.getBoundingClientRect();
+      pointer.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.current.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.current.setFromCamera(pointer.current, camera);
+      const model = sceneRef.current.model;
+      if (model) {
+        const intersects = raycaster.current.intersectObjects(model.children, true);
+        let found = false;
+        for (const hit of intersects) {
+          let obj: THREE.Object3D | null = hit.object;
+          while (obj && obj !== model) {
+            if (obj.name && PART_INFO[obj.name]) {
+              const info = PART_INFO[obj.name];
+              setTooltip({ x: e.clientX - rect.left, y: e.clientY - rect.top, name: info.name, description: info.description });
+              renderer.domElement.style.cursor = 'pointer';
+              found = true;
+              break;
+            }
+            obj = obj.parent;
+          }
+          if (found) break;
+        }
+        if (!found) {
+          setTooltip(null);
+          renderer.domElement.style.cursor = isDragging ? 'grabbing' : 'grab';
+        }
+      }
     };
+    const onLeave = () => { setTooltip(null); };
     renderer.domElement.addEventListener('pointerdown', onDown);
     renderer.domElement.addEventListener('pointerup', onUp);
     renderer.domElement.addEventListener('pointermove', onMove);
+    renderer.domElement.addEventListener('pointerleave', onLeave);
 
     const clock = new THREE.Clock();
     let animId: number;
@@ -323,6 +375,7 @@ const EquipmentModel3D = () => {
       renderer.domElement.removeEventListener('pointerdown', onDown);
       renderer.domElement.removeEventListener('pointerup', onUp);
       renderer.domElement.removeEventListener('pointermove', onMove);
+      renderer.domElement.removeEventListener('pointerleave', onLeave);
       renderer.dispose();
       scene.traverse((obj) => {
         if (obj instanceof THREE.Mesh) {
@@ -361,6 +414,17 @@ const EquipmentModel3D = () => {
       <div className="bg-card border border-border rounded-2xl overflow-hidden">
         <div className="relative">
           <div ref={containerRef} className="h-72 sm:h-80 cursor-grab active:cursor-grabbing" />
+
+          {/* Part tooltip */}
+          {tooltip && (
+            <div
+              className="absolute pointer-events-none z-20 max-w-[200px] px-3 py-2 rounded-lg bg-background/95 border border-primary/30 shadow-lg backdrop-blur-sm"
+              style={{ left: Math.min(tooltip.x, 180), top: Math.max(tooltip.y - 60, 8) }}
+            >
+              <p className="text-[11px] font-bold text-primary leading-tight">{tooltip.name}</p>
+              <p className="text-[9px] text-muted-foreground leading-snug mt-0.5">{tooltip.description}</p>
+            </div>
+          )}
 
           {/* Nav arrows */}
           <button
