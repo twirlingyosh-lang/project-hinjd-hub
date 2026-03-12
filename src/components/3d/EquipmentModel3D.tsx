@@ -287,13 +287,46 @@ const EquipmentModel3D = () => {
     const onDown = (e: PointerEvent) => { isDragging = true; prevX = e.clientX; };
     const onUp = () => { isDragging = false; };
     const onMove = (e: PointerEvent) => {
-      if (!isDragging) return;
-      sceneRef.current.autoRot += (e.clientX - prevX) * 0.005;
-      prevX = e.clientX;
+      if (isDragging) {
+        sceneRef.current.autoRot += (e.clientX - prevX) * 0.005;
+        prevX = e.clientX;
+        setTooltip(null);
+        return;
+      }
+      // Raycasting for tooltip
+      const rect = renderer.domElement.getBoundingClientRect();
+      pointer.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.current.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.current.setFromCamera(pointer.current, camera);
+      const model = sceneRef.current.model;
+      if (model) {
+        const intersects = raycaster.current.intersectObjects(model.children, true);
+        let found = false;
+        for (const hit of intersects) {
+          let obj: THREE.Object3D | null = hit.object;
+          while (obj && obj !== model) {
+            if (obj.name && PART_INFO[obj.name]) {
+              const info = PART_INFO[obj.name];
+              setTooltip({ x: e.clientX - rect.left, y: e.clientY - rect.top, name: info.name, description: info.description });
+              renderer.domElement.style.cursor = 'pointer';
+              found = true;
+              break;
+            }
+            obj = obj.parent;
+          }
+          if (found) break;
+        }
+        if (!found) {
+          setTooltip(null);
+          renderer.domElement.style.cursor = isDragging ? 'grabbing' : 'grab';
+        }
+      }
     };
+    const onLeave = () => { setTooltip(null); };
     renderer.domElement.addEventListener('pointerdown', onDown);
     renderer.domElement.addEventListener('pointerup', onUp);
     renderer.domElement.addEventListener('pointermove', onMove);
+    renderer.domElement.addEventListener('pointerleave', onLeave);
 
     const clock = new THREE.Clock();
     let animId: number;
