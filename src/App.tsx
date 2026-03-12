@@ -42,6 +42,7 @@ const TroubleshootingPage = lazy(() => import("./pages/app/TroubleshootingPage")
 const CrusherDiagnosticPage = lazy(() => import("./pages/app/CrusherDiagnosticPage"));
 const ScreenerDiagnosticPage = lazy(() => import("./pages/app/ScreenerDiagnosticPage"));
 const ReferralPage = lazy(() => import("./pages/app/ReferralPage"));
+const ThreeDViewerPage = lazy(() => import("./pages/app/ThreeDViewerPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
 
 // CRM pages
