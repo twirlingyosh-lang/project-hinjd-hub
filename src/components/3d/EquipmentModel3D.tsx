@@ -226,8 +226,11 @@ const TYPES: EquipmentType[] = ['crusher', 'screener', 'conveyor'];
 
 const EquipmentModel3D = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const sceneRef = useRef<{ scene: THREE.Scene; model: THREE.Group | null; autoRot: number }>({ scene: new THREE.Scene(), model: null, autoRot: 0 });
+  const sceneRef = useRef<{ scene: THREE.Scene; camera: THREE.PerspectiveCamera | null; model: THREE.Group | null; autoRot: number }>({ scene: new THREE.Scene(), camera: null, model: null, autoRot: 0 });
   const [activeType, setActiveType] = useState<EquipmentType>('crusher');
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; description: string } | null>(null);
+  const raycaster = useRef(new THREE.Raycaster());
+  const pointer = useRef(new THREE.Vector2());
 
   // Swap model when type changes
   const swapModel = useCallback((type: EquipmentType) => {
