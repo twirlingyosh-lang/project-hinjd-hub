@@ -93,7 +93,8 @@ const ThreeDViewerPage = () => {
     container.appendChild(renderer.domElement);
 
     // Lighting — brighter for fullscreen
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambient);
     const d1 = new THREE.DirectionalLight(0xffffff, 1.2);
     d1.position.set(8, 8, 5);
     d1.castShadow = true;
@@ -104,6 +105,7 @@ const ThreeDViewerPage = () => {
     const rim = new THREE.DirectionalLight(0xf59e0b, 0.3);
     rim.position.set(-2, 1, 5);
     scene.add(rim);
+    lightsRef.current = { ambient, d1, d2, rim };
     const spot = new THREE.SpotLight(0xffffff, 0.6, 30, 0.5, 0.5);
     spot.position.set(0, 8, 0);
     scene.add(spot);
