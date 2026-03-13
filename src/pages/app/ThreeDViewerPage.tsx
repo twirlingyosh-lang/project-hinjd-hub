@@ -71,6 +71,34 @@ const ThreeDViewerPage = () => {
     }
   }, [showGrid]);
 
+  // Wireframe toggle
+  useEffect(() => {
+    const model = modelRef.current;
+    if (!model) return;
+    model.traverse((child) => {
+      if (child instanceof THREE.Mesh && child.material) {
+        const mat = child.material as THREE.MeshStandardMaterial;
+        mat.wireframe = wireframe;
+      }
+    });
+  }, [wireframe, activeType]);
+
+  // Lighting presets
+  useEffect(() => {
+    const lights = lightsRef.current;
+    if (!lights) return;
+    const presets = {
+      studio: { ambient: { color: 0xffffff, intensity: 0.6 }, d1: { color: 0xffffff, intensity: 1.2 }, d2: { color: 0x6495ed, intensity: 0.4 }, rim: { color: 0xf59e0b, intensity: 0.3 } },
+      warm: { ambient: { color: 0xfff0e0, intensity: 0.5 }, d1: { color: 0xffb347, intensity: 1.4 }, d2: { color: 0xff8c00, intensity: 0.5 }, rim: { color: 0xff6600, intensity: 0.4 } },
+      cool: { ambient: { color: 0xe0f0ff, intensity: 0.5 }, d1: { color: 0x87ceeb, intensity: 1.0 }, d2: { color: 0x4169e1, intensity: 0.6 }, rim: { color: 0x00bfff, intensity: 0.3 } },
+    };
+    const p = presets[lightPreset];
+    lights.ambient.color.setHex(p.ambient.color); lights.ambient.intensity = p.ambient.intensity;
+    lights.d1.color.setHex(p.d1.color); lights.d1.intensity = p.d1.intensity;
+    lights.d2.color.setHex(p.d2.color); lights.d2.intensity = p.d2.intensity;
+    lights.rim.color.setHex(p.rim.color); lights.rim.intensity = p.rim.intensity;
+  }, [lightPreset]);
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
