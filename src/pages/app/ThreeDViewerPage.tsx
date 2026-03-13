@@ -425,6 +425,43 @@ const ThreeDViewerPage = () => {
             >
               {showGrid ? <Eye size={16} /> : <EyeOff size={16} />}
             </button>
+            <button
+              onClick={() => setWireframe(!wireframe)}
+              className={`w-9 h-9 rounded-lg border backdrop-blur-sm flex items-center justify-center transition-colors ${
+                wireframe ? 'bg-primary/15 border-primary/40 text-primary' : 'bg-card/80 border-border text-muted-foreground hover:text-foreground hover:bg-card'
+              }`}
+              title="Wireframe"
+            >
+              <Box size={16} />
+            </button>
+            <div className="h-px bg-border my-0.5" />
+            <button
+              onClick={() => setLightPreset('studio')}
+              className={`w-9 h-9 rounded-lg border backdrop-blur-sm flex items-center justify-center transition-colors ${
+                lightPreset === 'studio' ? 'bg-primary/15 border-primary/40 text-primary' : 'bg-card/80 border-border text-muted-foreground hover:text-foreground hover:bg-card'
+              }`}
+              title="Studio Lighting"
+            >
+              <Lightbulb size={16} />
+            </button>
+            <button
+              onClick={() => setLightPreset('warm')}
+              className={`w-9 h-9 rounded-lg border backdrop-blur-sm flex items-center justify-center transition-colors ${
+                lightPreset === 'warm' ? 'bg-primary/15 border-primary/40 text-primary' : 'bg-card/80 border-border text-muted-foreground hover:text-foreground hover:bg-card'
+              }`}
+              title="Warm Lighting"
+            >
+              <Sun size={16} />
+            </button>
+            <button
+              onClick={() => setLightPreset('cool')}
+              className={`w-9 h-9 rounded-lg border backdrop-blur-sm flex items-center justify-center transition-colors ${
+                lightPreset === 'cool' ? 'bg-primary/15 border-primary/40 text-primary' : 'bg-card/80 border-border text-muted-foreground hover:text-foreground hover:bg-card'
+              }`}
+              title="Cool Lighting"
+            >
+              <Snowflake size={16} />
+            </button>
           </div>
 
           {/* Parts panel (bottom-left) */}
