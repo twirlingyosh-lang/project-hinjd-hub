@@ -24,7 +24,10 @@ const ThreeDViewerPage = () => {
   const [showGrid, setShowGrid] = useState(true);
   const [autoRotate, setAutoRotate] = useState(true);
   const [selectedPart, setSelectedPart] = useState<string | null>(null);
+  const [wireframe, setWireframe] = useState(false);
+  const [lightPreset, setLightPreset] = useState<'studio' | 'warm' | 'cool'>('studio');
 
+  const lightsRef = useRef<{ ambient: THREE.AmbientLight; d1: THREE.DirectionalLight; d2: THREE.DirectionalLight; rim: THREE.DirectionalLight } | null>(null);
   const raycaster = useRef(new THREE.Raycaster());
   const pointer = useRef(new THREE.Vector2());
   const gridRef = useRef<THREE.GridHelper | null>(null);
