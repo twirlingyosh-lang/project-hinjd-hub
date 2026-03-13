@@ -2,7 +2,7 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, RotateCcw, ZoomIn, ZoomOut, Maximize2, Move3D, Info, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, RotateCcw, ZoomIn, ZoomOut, Maximize2, Move3D, Info, Eye, EyeOff, Box, Sun, Snowflake, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   EquipmentType, EQUIPMENT_INFO, TYPES, BUILDERS, PART_INFO,
@@ -24,7 +24,10 @@ const ThreeDViewerPage = () => {
   const [showGrid, setShowGrid] = useState(true);
   const [autoRotate, setAutoRotate] = useState(true);
   const [selectedPart, setSelectedPart] = useState<string | null>(null);
+  const [wireframe, setWireframe] = useState(false);
+  const [lightPreset, setLightPreset] = useState<'studio' | 'warm' | 'cool'>('studio');
 
+  const lightsRef = useRef<{ ambient: THREE.AmbientLight; d1: THREE.DirectionalLight; d2: THREE.DirectionalLight; rim: THREE.DirectionalLight } | null>(null);
   const raycaster = useRef(new THREE.Raycaster());
   const pointer = useRef(new THREE.Vector2());
   const gridRef = useRef<THREE.GridHelper | null>(null);
@@ -68,6 +71,34 @@ const ThreeDViewerPage = () => {
     }
   }, [showGrid]);
 
+  // Wireframe toggle
+  useEffect(() => {
+    const model = modelRef.current;
+    if (!model) return;
+    model.traverse((child) => {
+      if (child instanceof THREE.Mesh && child.material) {
+        const mat = child.material as THREE.MeshStandardMaterial;
+        mat.wireframe = wireframe;
+      }
+    });
+  }, [wireframe, activeType]);
+
+  // Lighting presets
+  useEffect(() => {
+    const lights = lightsRef.current;
+    if (!lights) return;
+    const presets = {
+      studio: { ambient: { color: 0xffffff, intensity: 0.6 }, d1: { color: 0xffffff, intensity: 1.2 }, d2: { color: 0x6495ed, intensity: 0.4 }, rim: { color: 0xf59e0b, intensity: 0.3 } },
+      warm: { ambient: { color: 0xfff0e0, intensity: 0.5 }, d1: { color: 0xffb347, intensity: 1.4 }, d2: { color: 0xff8c00, intensity: 0.5 }, rim: { color: 0xff6600, intensity: 0.4 } },
+      cool: { ambient: { color: 0xe0f0ff, intensity: 0.5 }, d1: { color: 0x87ceeb, intensity: 1.0 }, d2: { color: 0x4169e1, intensity: 0.6 }, rim: { color: 0x00bfff, intensity: 0.3 } },
+    };
+    const p = presets[lightPreset];
+    lights.ambient.color.setHex(p.ambient.color); lights.ambient.intensity = p.ambient.intensity;
+    lights.d1.color.setHex(p.d1.color); lights.d1.intensity = p.d1.intensity;
+    lights.d2.color.setHex(p.d2.color); lights.d2.intensity = p.d2.intensity;
+    lights.rim.color.setHex(p.rim.color); lights.rim.intensity = p.rim.intensity;
+  }, [lightPreset]);
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -90,7 +121,8 @@ const ThreeDViewerPage = () => {
     container.appendChild(renderer.domElement);
 
     // Lighting — brighter for fullscreen
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambient);
     const d1 = new THREE.DirectionalLight(0xffffff, 1.2);
     d1.position.set(8, 8, 5);
     d1.castShadow = true;
@@ -101,6 +133,7 @@ const ThreeDViewerPage = () => {
     const rim = new THREE.DirectionalLight(0xf59e0b, 0.3);
     rim.position.set(-2, 1, 5);
     scene.add(rim);
+    lightsRef.current = { ambient, d1, d2, rim };
     const spot = new THREE.SpotLight(0xffffff, 0.6, 30, 0.5, 0.5);
     spot.position.set(0, 8, 0);
     scene.add(spot);
@@ -391,6 +424,43 @@ const ThreeDViewerPage = () => {
               title="Toggle Grid"
             >
               {showGrid ? <Eye size={16} /> : <EyeOff size={16} />}
+            </button>
+            <button
+              onClick={() => setWireframe(!wireframe)}
+              className={`w-9 h-9 rounded-lg border backdrop-blur-sm flex items-center justify-center transition-colors ${
+                wireframe ? 'bg-primary/15 border-primary/40 text-primary' : 'bg-card/80 border-border text-muted-foreground hover:text-foreground hover:bg-card'
+              }`}
+              title="Wireframe"
+            >
+              <Box size={16} />
+            </button>
+            <div className="h-px bg-border my-0.5" />
+            <button
+              onClick={() => setLightPreset('studio')}
+              className={`w-9 h-9 rounded-lg border backdrop-blur-sm flex items-center justify-center transition-colors ${
+                lightPreset === 'studio' ? 'bg-primary/15 border-primary/40 text-primary' : 'bg-card/80 border-border text-muted-foreground hover:text-foreground hover:bg-card'
+              }`}
+              title="Studio Lighting"
+            >
+              <Lightbulb size={16} />
+            </button>
+            <button
+              onClick={() => setLightPreset('warm')}
+              className={`w-9 h-9 rounded-lg border backdrop-blur-sm flex items-center justify-center transition-colors ${
+                lightPreset === 'warm' ? 'bg-primary/15 border-primary/40 text-primary' : 'bg-card/80 border-border text-muted-foreground hover:text-foreground hover:bg-card'
+              }`}
+              title="Warm Lighting"
+            >
+              <Sun size={16} />
+            </button>
+            <button
+              onClick={() => setLightPreset('cool')}
+              className={`w-9 h-9 rounded-lg border backdrop-blur-sm flex items-center justify-center transition-colors ${
+                lightPreset === 'cool' ? 'bg-primary/15 border-primary/40 text-primary' : 'bg-card/80 border-border text-muted-foreground hover:text-foreground hover:bg-card'
+              }`}
+              title="Cool Lighting"
+            >
+              <Snowflake size={16} />
             </button>
           </div>
 
