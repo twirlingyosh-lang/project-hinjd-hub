@@ -2,7 +2,7 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, RotateCcw, ZoomIn, ZoomOut, Maximize2, Move3D, Info, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, RotateCcw, ZoomIn, ZoomOut, Maximize2, Move3D, Info, Eye, EyeOff, Box, Sun, Snowflake, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   EquipmentType, EQUIPMENT_INFO, TYPES, BUILDERS, PART_INFO,
