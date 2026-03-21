@@ -15,6 +15,7 @@ const ConveyorMaintenance = lazy(() => import("./pages/ConveyorMaintenance"));
 const ContentGeneratorPage = lazy(() => import("./pages/ContentGeneratorPage"));
 const AggregateOpps = lazy(() => import("./pages/AggregateOpps"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const Debug = lazy(() => import("./pages/Debug"));
 
 // Aggregate Tools App pages
@@ -76,6 +77,7 @@ const App = () => (
                 <Route path="/conveyor-maintenance" element={<ConveyorMaintenance />} />
                 <Route path="/content-generator" element={<ContentGeneratorPage />} />
                 <Route path="/aggregate-opps" element={<AggregateOpps />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/debug" element={<Debug />} />
                 {/* Aggregate Tools App Routes */}
                 <Route path="/app" element={<AppHome />} />
