@@ -133,7 +133,7 @@ export default function EquipmentMasterMap() {
     return { ...base, mapTypeId: 'terrain', styles: [], tilt: 45 };
   }, [mapStyle]);
 
-  if (loadError) {
+  if (loadError || mapRenderError) {
     return <FleetFallbackTable nodes={nodes} isLoading={isLoading} />;
   }
 
