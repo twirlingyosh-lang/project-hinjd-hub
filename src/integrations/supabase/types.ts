@@ -498,6 +498,48 @@ export type Database = {
         }
         Relationships: []
       }
+      equipment_master: {
+        Row: {
+          current_spec_task: string | null
+          equipment_type: string | null
+          last_maintenance: string | null
+          lat: number | null
+          lng: number | null
+          model: string | null
+          node_id: string
+          runtime_hours: number | null
+          status: string | null
+          telemetry: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          current_spec_task?: string | null
+          equipment_type?: string | null
+          last_maintenance?: string | null
+          lat?: number | null
+          lng?: number | null
+          model?: string | null
+          node_id: string
+          runtime_hours?: number | null
+          status?: string | null
+          telemetry?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          current_spec_task?: string | null
+          equipment_type?: string | null
+          last_maintenance?: string | null
+          lat?: number | null
+          lng?: number | null
+          model?: string | null
+          node_id?: string
+          runtime_hours?: number | null
+          status?: string | null
+          telemetry?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       equipment_parts: {
         Row: {
           avg_price: number | null
