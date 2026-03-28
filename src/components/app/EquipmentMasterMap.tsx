@@ -93,6 +93,7 @@ export default function EquipmentMasterMap() {
   const [activeNode, setActiveNode] = useState<string | null>(null);
   const [showLayerMenu, setShowLayerMenu] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [mapRenderError, setMapRenderError] = useState(false);
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
