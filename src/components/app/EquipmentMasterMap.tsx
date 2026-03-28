@@ -309,3 +309,61 @@ function TelemetryPopup({ node }: { node: EquipmentNode }) {
     </div>
   );
 }
+
+function FleetFallbackTable({ nodes, isLoading }: { nodes: EquipmentNode[]; isLoading: boolean }) {
+  const STATUS_DOT: Record<string, string> = {
+    Operational: 'bg-green-500',
+    'In-Transit': 'bg-blue-500',
+    Idle: 'bg-yellow-500',
+    Warning: 'bg-orange-500',
+    Maintenance: 'bg-red-500',
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full bg-muted/50 rounded-lg">
+        <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-full overflow-auto bg-background rounded-lg border border-border">
+      <div className="p-4 border-b border-border flex items-center gap-2">
+        <AlertTriangle className="h-4 w-4 text-primary" />
+        <p className="text-sm text-muted-foreground">Map unavailable — showing fleet data as table</p>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-border bg-muted/30">
+              <th className="text-left p-3 font-semibold text-muted-foreground">Node</th>
+              <th className="text-left p-3 font-semibold text-muted-foreground">Type</th>
+              <th className="text-left p-3 font-semibold text-muted-foreground">Model</th>
+              <th className="text-left p-3 font-semibold text-muted-foreground">Status</th>
+              <th className="text-left p-3 font-semibold text-muted-foreground">Task</th>
+              <th className="text-right p-3 font-semibold text-muted-foreground">Hours</th>
+            </tr>
+          </thead>
+          <tbody>
+            {nodes.map(node => (
+              <tr key={node.node_id} className="border-b border-border/50 hover:bg-muted/20 transition-colors">
+                <td className="p-3 font-mono font-bold text-primary">{node.node_id}</td>
+                <td className="p-3">{node.equipment_type}</td>
+                <td className="p-3 text-muted-foreground">{node.model}</td>
+                <td className="p-3">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className={cn('w-2 h-2 rounded-full', STATUS_DOT[node.status || ''] || 'bg-muted')} />
+                    {node.status}
+                  </span>
+                </td>
+                <td className="p-3 text-muted-foreground max-w-[200px] truncate">{node.current_spec_task}</td>
+                <td className="p-3 text-right font-mono">{node.runtime_hours?.toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
