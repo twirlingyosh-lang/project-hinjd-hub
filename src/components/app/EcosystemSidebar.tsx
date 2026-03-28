@@ -1,4 +1,4 @@
-import { MapPin, Shield, Hammer, Layers, BarChart3, Settings, User, Crown, Home, LogOut, Factory, Zap, Search, Droplets, ClipboardCheck } from 'lucide-react';
+import { MapPin, Shield, Hammer, Layers, BarChart3, Settings, User, Crown, Home, LogOut, Factory, Zap, Search, Droplets, ClipboardCheck, Map } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
 import { useAdminRole } from '@/hooks/useAdminRole';
@@ -29,6 +29,7 @@ const moduleItems = [
   { path: '/app/fault-codes', icon: Search, label: 'Fault Codes', description: 'Diagnostic engine' },
   { path: '/app/hydraulics', icon: Droplets, label: 'Hydraulics', description: 'Schematic diagrams' },
   { path: '/app/troubleshooting', icon: ClipboardCheck, label: 'Troubleshooting', description: 'Step-by-step guides' },
+  { path: '/app/fleet-map', icon: Map, label: 'Fleet Map', description: 'Live equipment telemetry' },
 ];
 
 const adminItems = [

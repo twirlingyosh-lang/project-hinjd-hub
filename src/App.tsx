@@ -44,6 +44,7 @@ const CrusherDiagnosticPage = lazy(() => import("./pages/app/CrusherDiagnosticPa
 const ScreenerDiagnosticPage = lazy(() => import("./pages/app/ScreenerDiagnosticPage"));
 const ReferralPage = lazy(() => import("./pages/app/ReferralPage"));
 const ThreeDViewerPage = lazy(() => import("./pages/app/ThreeDViewerPage"));
+const FleetMapPage = lazy(() => import("./pages/app/FleetMapPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
 
 // CRM pages
@@ -105,6 +106,7 @@ const App = () => (
                 <Route path="/app/crusher-diagnostic" element={<CrusherDiagnosticPage />} />
                 <Route path="/app/screener-diagnostic" element={<ScreenerDiagnosticPage />} />
                 <Route path="/app/3d-viewer" element={<ThreeDViewerPage />} />
+                <Route path="/app/fleet-map" element={<FleetMapPage />} />
                 <Route path="/blog" element={<BlogPage />} />
                 {/* CRM Routes */}
                 <Route path="/crm" element={<CRMDashboard />} />
