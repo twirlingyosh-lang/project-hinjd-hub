@@ -131,12 +131,8 @@ export default function EquipmentMasterMap() {
     return { ...base, mapTypeId: 'terrain', styles: [], tilt: 45 };
   }, [mapStyle]);
 
-  if (loadError) {
-    return (
-      <div className="flex items-center justify-center h-full bg-muted/50 rounded-lg">
-        <p className="text-muted-foreground">Failed to load Google Maps</p>
-      </div>
-    );
+  if (loadError || !import.meta.env.VITE_GOOGLE_MAPS_API_KEY) {
+    return <FleetFallbackTable nodes={nodes} isLoading={isLoading} />;
   }
 
   if (!isLoaded || isLoading) {
