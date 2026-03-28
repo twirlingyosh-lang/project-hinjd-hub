@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Layers, Satellite, Mountain, MapPin, Activity, Clock, Wrench, Gauge, Fuel, Zap, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEquipmentMaster, EquipmentNode } from '@/hooks/useEquipmentMaster';
+import { GOOGLE_MAPS_API_KEY } from '@/lib/googleMapsConfig';
 
 const LIBRARIES: ("places")[] = ['places'];
 
@@ -94,7 +95,7 @@ export default function EquipmentMasterMap() {
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
   const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
     libraries: LIBRARIES,
   });
 
@@ -131,7 +132,7 @@ export default function EquipmentMasterMap() {
     return { ...base, mapTypeId: 'terrain', styles: [], tilt: 45 };
   }, [mapStyle]);
 
-  if (loadError || !import.meta.env.VITE_GOOGLE_MAPS_API_KEY) {
+  if (loadError) {
     return <FleetFallbackTable nodes={nodes} isLoading={isLoading} />;
   }
 

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Layers, Satellite, Mountain, MapPin, Navigation, Clock, Route, Package, AlertTriangle, CheckCircle, Plus, X, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { GOOGLE_MAPS_API_KEY } from '@/lib/googleMapsConfig';
 import { useDealerInventory, DealerInventorySummary } from '@/hooks/useDealerInventory';
 
 interface Dealer {
@@ -132,7 +133,7 @@ export const GoogleMapView = ({
   const { summaries, getStatusColor, getStatusLabel, isLoading: inventoryLoading } = useDealerInventory(dealerIds);
 
   const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
     libraries: LIBRARIES,
   });
 
