@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface EquipmentNode {
@@ -15,9 +16,31 @@ export interface EquipmentNode {
   updated_at: string | null;
 }
 
+const QUERY_KEY = ['equipment-master'];
+
 export function useEquipmentMaster() {
+  const queryClient = useQueryClient();
+
+  // Subscribe to realtime changes
+  useEffect(() => {
+    const channel = supabase
+      .channel('equipment-master-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'equipment_master' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   return useQuery({
-    queryKey: ['equipment-master'],
+    queryKey: QUERY_KEY,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('equipment_master' as any)
@@ -26,6 +49,5 @@ export function useEquipmentMaster() {
       if (error) throw error;
       return (data as unknown as EquipmentNode[]) ?? [];
     },
-    refetchInterval: 30000, // refresh every 30s for live feel
   });
 }
