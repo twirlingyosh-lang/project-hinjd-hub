@@ -93,6 +93,7 @@ export default function EquipmentMasterMap() {
   const [activeNode, setActiveNode] = useState<string | null>(null);
   const [showLayerMenu, setShowLayerMenu] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [mapRenderError, setMapRenderError] = useState(false);
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
@@ -132,7 +133,7 @@ export default function EquipmentMasterMap() {
     return { ...base, mapTypeId: 'terrain', styles: [], tilt: 45 };
   }, [mapStyle]);
 
-  if (loadError) {
+  if (loadError || mapRenderError) {
     return <FleetFallbackTable nodes={nodes} isLoading={isLoading} />;
   }
 
@@ -154,6 +155,7 @@ export default function EquipmentMasterMap() {
         center={defaultCenter}
         zoom={14}
         options={getMapOptions()}
+        onTilesLoaded={() => setMapRenderError(false)}
       >
         {nodesWithCoords.map(node => (
           <Marker
