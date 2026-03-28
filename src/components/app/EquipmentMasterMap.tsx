@@ -155,6 +155,7 @@ export default function EquipmentMasterMap() {
         center={defaultCenter}
         zoom={14}
         options={getMapOptions()}
+        onTilesLoaded={() => setMapRenderError(false)}
       >
         {nodesWithCoords.map(node => (
           <Marker
