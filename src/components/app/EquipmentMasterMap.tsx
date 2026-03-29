@@ -194,6 +194,32 @@ export default function EquipmentMasterMap() {
         )}
       </GoogleMap>
 
+      {/* Search Bar */}
+      <div className="absolute top-4 left-4 z-10 w-64">
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Input
+            placeholder="Search node ID, type, model..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            className="pl-8 pr-8 h-9 text-xs bg-background/90 backdrop-blur-sm border-border shadow-lg"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+        {searchQuery && (
+          <p className="mt-1 text-[10px] text-muted-foreground bg-background/80 backdrop-blur-sm rounded px-2 py-0.5">
+            {filteredNodes.length} of {nodes.length} units
+          </p>
+        )}
+      </div>
+
       {/* Layer Switcher */}
       <div className="absolute top-4 right-4 z-10">
         <div className="relative">
