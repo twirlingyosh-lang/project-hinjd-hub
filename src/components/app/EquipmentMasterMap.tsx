@@ -94,6 +94,7 @@ export default function EquipmentMasterMap() {
   const [activeNode, setActiveNode] = useState<string | null>(null);
   const [showLayerMenu, setShowLayerMenu] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [mapRenderError, setMapRenderError] = useState(false);
 
   const { isLoaded, loadError } = useJsApiLoader({
