@@ -349,18 +349,18 @@ export const HQCommandPanel = () => {
           <div className="grid grid-cols-3 gap-4">
             <div className="p-3 rounded-lg bg-muted/50 text-center">
               <Users className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-              <p className="text-lg font-semibold">{loading ? <Skeleton className="h-6 w-8 mx-auto" /> : metrics?.totalUsers}</p>
-              <p className="text-xs text-muted-foreground">Total Users</p>
+              <span className="block text-lg font-semibold">{loading ? <Skeleton className="h-6 w-8 mx-auto" /> : metrics?.totalUsers}</span>
+              <span className="block text-xs text-muted-foreground">Total Users</span>
             </div>
             <div className="p-3 rounded-lg bg-muted/50 text-center">
               <Activity className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-              <p className="text-lg font-semibold">{loading ? <Skeleton className="h-6 w-8 mx-auto" /> : metrics?.totalDiagnostics}</p>
-              <p className="text-xs text-muted-foreground">Diagnostics Run</p>
+              <span className="block text-lg font-semibold">{loading ? <Skeleton className="h-6 w-8 mx-auto" /> : metrics?.totalDiagnostics}</span>
+              <span className="block text-xs text-muted-foreground">Diagnostics Run</span>
             </div>
             <div className="p-3 rounded-lg bg-muted/50 text-center">
               <TrendingUp className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-              <p className="text-lg font-semibold">{loading ? <Skeleton className="h-6 w-8 mx-auto" /> : metrics?.activeDeals}</p>
-              <p className="text-xs text-muted-foreground">Active Deals</p>
+              <span className="block text-lg font-semibold">{loading ? <Skeleton className="h-6 w-8 mx-auto" /> : metrics?.activeDeals}</span>
+              <span className="block text-xs text-muted-foreground">Active Deals</span>
             </div>
           </div>
 
