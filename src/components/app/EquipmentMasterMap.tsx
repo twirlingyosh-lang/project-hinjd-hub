@@ -102,10 +102,19 @@ export default function EquipmentMasterMap() {
     libraries: LIBRARIES,
   });
 
-  const filteredNodes = useMemo(
-    () => statusFilter ? nodes.filter(n => n.status === statusFilter) : nodes,
-    [nodes, statusFilter]
-  );
+  const filteredNodes = useMemo(() => {
+    let result = nodes;
+    if (statusFilter) result = result.filter(n => n.status === statusFilter);
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(n =>
+        n.node_id.toLowerCase().includes(q) ||
+        (n.equipment_type?.toLowerCase().includes(q)) ||
+        (n.model?.toLowerCase().includes(q))
+      );
+    }
+    return result;
+  }, [nodes, statusFilter, searchQuery]);
 
   const nodesWithCoords = useMemo(
     () => filteredNodes.filter(n => n.lat != null && n.lng != null),
