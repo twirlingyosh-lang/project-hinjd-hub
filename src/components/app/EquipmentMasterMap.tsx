@@ -1,7 +1,8 @@
 import { useState, useCallback, useMemo } from 'react';
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
 import { Badge } from '@/components/ui/badge';
-import { Layers, Satellite, Mountain, MapPin, Activity, Clock, Wrench, Gauge, Fuel, Zap, AlertTriangle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Layers, Satellite, Mountain, MapPin, Activity, Clock, Wrench, Gauge, Fuel, Zap, AlertTriangle, Search, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEquipmentMaster, EquipmentNode } from '@/hooks/useEquipmentMaster';
 import { GOOGLE_MAPS_API_KEY } from '@/lib/googleMapsConfig';
@@ -93,6 +94,7 @@ export default function EquipmentMasterMap() {
   const [activeNode, setActiveNode] = useState<string | null>(null);
   const [showLayerMenu, setShowLayerMenu] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [mapRenderError, setMapRenderError] = useState(false);
 
   const { isLoaded, loadError } = useJsApiLoader({
@@ -100,10 +102,19 @@ export default function EquipmentMasterMap() {
     libraries: LIBRARIES,
   });
 
-  const filteredNodes = useMemo(
-    () => statusFilter ? nodes.filter(n => n.status === statusFilter) : nodes,
-    [nodes, statusFilter]
-  );
+  const filteredNodes = useMemo(() => {
+    let result = nodes;
+    if (statusFilter) result = result.filter(n => n.status === statusFilter);
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(n =>
+        n.node_id.toLowerCase().includes(q) ||
+        (n.equipment_type?.toLowerCase().includes(q)) ||
+        (n.model?.toLowerCase().includes(q))
+      );
+    }
+    return result;
+  }, [nodes, statusFilter, searchQuery]);
 
   const nodesWithCoords = useMemo(
     () => filteredNodes.filter(n => n.lat != null && n.lng != null),
@@ -182,6 +193,32 @@ export default function EquipmentMasterMap() {
           ) : null
         )}
       </GoogleMap>
+
+      {/* Search Bar */}
+      <div className="absolute top-4 left-4 z-10 w-64">
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Input
+            placeholder="Search node ID, type, model..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            className="pl-8 pr-8 h-9 text-xs bg-background/90 backdrop-blur-sm border-border shadow-lg"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+        {searchQuery && (
+          <p className="mt-1 text-[10px] text-muted-foreground bg-background/80 backdrop-blur-sm rounded px-2 py-0.5">
+            {filteredNodes.length} of {nodes.length} units
+          </p>
+        )}
+      </div>
 
       {/* Layer Switcher */}
       <div className="absolute top-4 right-4 z-10">
