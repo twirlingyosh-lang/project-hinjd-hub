@@ -1,7 +1,8 @@
 import { useState, useCallback, useMemo } from 'react';
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
 import { Badge } from '@/components/ui/badge';
-import { Layers, Satellite, Mountain, MapPin, Activity, Clock, Wrench, Gauge, Fuel, Zap, AlertTriangle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Layers, Satellite, Mountain, MapPin, Activity, Clock, Wrench, Gauge, Fuel, Zap, AlertTriangle, Search, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEquipmentMaster, EquipmentNode } from '@/hooks/useEquipmentMaster';
 import { GOOGLE_MAPS_API_KEY } from '@/lib/googleMapsConfig';
