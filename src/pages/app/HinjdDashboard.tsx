@@ -655,6 +655,11 @@ export default function HinjdDashboard() {
             {/* Right Column: Performance & Actions */}
             <div className="lg:col-span-2 space-y-6">
               <PerformanceChart totalWealth={metrics?.total_wealth || 0} />
+              <FleetRevenueDashboard
+                fleetUnits={fleetUnits}
+                isAdmin={isAdmin}
+                onRefresh={handleRefresh}
+              />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <QuickActions 
                   onAddWealth={() => setShowAddWealth(true)}
