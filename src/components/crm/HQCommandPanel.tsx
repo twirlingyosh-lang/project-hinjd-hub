@@ -498,6 +498,7 @@ export const HQCommandPanel = () => {
               </p>
             </div>
           )}
+        </CardContent>
       </Card>
 
       {/* Analytics Charts */}
