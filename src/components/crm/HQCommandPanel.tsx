@@ -3,12 +3,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useAdminRole } from '@/hooks/useAdminRole';
+import { toast } from 'sonner';
 import { 
   Shield, DollarSign, GraduationCap, Users, Activity,
   AlertTriangle, TrendingUp, Wallet, ArrowUpRight, Radio,
-  Clock, Landmark, Zap, PieChart as PieChartIcon
+  Clock, Landmark, Zap, PieChart as PieChartIcon, Loader2, CheckCircle
 } from 'lucide-react';
 import { 
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
