@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
+import { FleetRevenueDashboard } from '@/components/fleet/FleetRevenueDashboard';
 
 const ExecutiveSummary = ({ 
   totalWealth, 
@@ -503,6 +504,7 @@ export default function HinjdDashboard() {
   const { toast } = useToast();
   const { 
     metrics, 
+    fleetUnits,
     activities, 
     solanaData, 
     loading, 
@@ -653,6 +655,11 @@ export default function HinjdDashboard() {
             {/* Right Column: Performance & Actions */}
             <div className="lg:col-span-2 space-y-6">
               <PerformanceChart totalWealth={metrics?.total_wealth || 0} />
+              <FleetRevenueDashboard
+                fleetUnits={fleetUnits}
+                isAdmin={isAdmin}
+                onRefresh={handleRefresh}
+              />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <QuickActions 
                   onAddWealth={() => setShowAddWealth(true)}
