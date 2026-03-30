@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
+import { FleetRevenueDashboard } from '@/components/fleet/FleetRevenueDashboard';
 
 const ExecutiveSummary = ({ 
   totalWealth, 
