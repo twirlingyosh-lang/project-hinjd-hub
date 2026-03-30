@@ -504,6 +504,7 @@ export default function HinjdDashboard() {
   const { toast } = useToast();
   const { 
     metrics, 
+    fleetUnits,
     activities, 
     solanaData, 
     loading, 
