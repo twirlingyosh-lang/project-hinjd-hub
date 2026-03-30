@@ -384,23 +384,110 @@ export const HQCommandPanel = () => {
                 {loading ? <Skeleton className="h-6 w-20" /> : formatCurrency(metrics?.businessRevenue || 0)}
               </p>
             </div>
-            <Button className="w-full" variant="outline" disabled>
-              <ArrowUpRight className="mr-2 h-4 w-4" />
-              Withdraw Funds (Coming Soon)
-            </Button>
-            <p className="text-xs text-muted-foreground text-center mt-2">
-              Payout workflow requires Stripe Connect setup
-            </p>
-          </div>
+            <Dialog open={withdrawOpen} onOpenChange={(open) => {
+              setWithdrawOpen(open);
+              if (!open) { setLastPayout(null); setWithdrawAmount(''); }
+            }}>
+              <DialogTrigger asChild>
+                <Button className="w-full" variant="outline">
+                  <ArrowUpRight className="mr-2 h-4 w-4" />
+                  Withdraw Funds
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Wallet className="h-5 w-5" /> Withdraw Funds
+                  </DialogTitle>
+                  <DialogDescription>
+                    Initiate a payout from your Stripe balance to your connected account.
+                  </DialogDescription>
+                </DialogHeader>
 
-          {(metrics?.totalRevenue || 0) === 0 && (
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
-              <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0" />
-              <p className="text-sm text-yellow-500">
-                No transactions recorded yet. Revenue will appear here once orders are processed.
-              </p>
-            </div>
-          )}
+                {lastPayout ? (
+                  <div className="py-6 text-center space-y-3">
+                    <CheckCircle className="h-12 w-12 text-green-500 mx-auto" />
+                    <p className="text-lg font-semibold">Payout Initiated</p>
+                    <p className="text-sm text-muted-foreground">
+                      ${lastPayout.amount.toFixed(2)} → {withdrawDest === 'bank' ? 'Sutton Bank' : 'Cash App'}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Est. arrival: {lastPayout.arrival}</p>
+                    <Badge variant="outline" className="text-xs">{lastPayout.id}</Badge>
+                  </div>
+                ) : (
+                  <div className="space-y-4 py-2">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Amount (USD)</label>
+                      <Input
+                        type="number"
+                        min="1"
+                        step="0.01"
+                        placeholder="500.00"
+                        value={withdrawAmount}
+                        onChange={(e) => setWithdrawAmount(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Destination</label>
+                      <Select value={withdrawDest} onValueChange={(v) => setWithdrawDest(v as 'bank' | 'cashapp')}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="bank">Sutton Bank (Primary)</SelectItem>
+                          <SelectItem value="cashapp">Cash App</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )}
+
+                {!lastPayout && (
+                  <DialogFooter>
+                    <Button
+                      disabled={withdrawing || !withdrawAmount || Number(withdrawAmount) <= 0}
+                      onClick={async () => {
+                        setWithdrawing(true);
+                        try {
+                          const { data: { session } } = await supabase.auth.getSession();
+                          if (!session) throw new Error('Not authenticated');
+
+                          const res = await supabase.functions.invoke('withdraw-funds', {
+                            body: { amount: Number(withdrawAmount), destination: withdrawDest },
+                          });
+
+                          if (res.error) throw new Error(res.error.message);
+                          const result = res.data;
+                          if (result.error) throw new Error(result.error);
+
+                          setLastPayout({
+                            id: result.payout_id,
+                            amount: result.amount,
+                            arrival: result.estimated_arrival,
+                          });
+                          toast.success(`Payout of $${result.amount.toFixed(2)} initiated`);
+                          fetchHQMetrics();
+                        } catch (err: any) {
+                          toast.error(err.message || 'Withdrawal failed');
+                        } finally {
+                          setWithdrawing(false);
+                        }
+                      }}
+                      className="w-full"
+                    >
+                      {withdrawing ? (
+                        <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</>
+                      ) : (
+                        <><ArrowUpRight className="mr-2 h-4 w-4" /> Withdraw ${withdrawAmount || '0'}</>
+                      )}
+                    </Button>
+                  </DialogFooter>
+                )}
+              </DialogContent>
+            </Dialog>
+            <p className="text-xs text-muted-foreground text-center mt-2">
+              Payouts are sent to your connected Stripe external account
+            </p>
         </CardContent>
       </Card>
 
