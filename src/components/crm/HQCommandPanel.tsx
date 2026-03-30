@@ -488,7 +488,16 @@ export const HQCommandPanel = () => {
             <p className="text-xs text-muted-foreground text-center mt-2">
               Payouts are sent to your connected Stripe external account
             </p>
-        </CardContent>
+          </div>
+
+          {(metrics?.totalRevenue || 0) === 0 && (
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+              <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0" />
+              <p className="text-sm text-yellow-500">
+                No transactions recorded yet. Revenue will appear here once orders are processed.
+              </p>
+            </div>
+          )}
       </Card>
 
       {/* Analytics Charts */}
