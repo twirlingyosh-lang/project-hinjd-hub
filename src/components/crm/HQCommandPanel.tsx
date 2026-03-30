@@ -166,6 +166,11 @@ export const HQCommandPanel = () => {
   const [metrics, setMetrics] = useState<HQMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [isLive, setIsLive] = useState(false);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [withdrawDest, setWithdrawDest] = useState<'bank' | 'cashapp'>('bank');
+  const [withdrawing, setWithdrawing] = useState(false);
+  const [lastPayout, setLastPayout] = useState<{ id: string; amount: number; arrival: string } | null>(null);
 
   const fetchHQMetrics = useCallback(async () => {
     try {
