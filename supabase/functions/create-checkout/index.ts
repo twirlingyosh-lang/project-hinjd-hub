@@ -9,8 +9,8 @@ const corsHeaders = {
 
 // Hardcoded Stripe price IDs
 const PRICE_IDS = {
-  pro: "price_1SkSvRApXzGOpOgg3YvtNViL",
-  enterprise: "price_1SkSvKApXzGOpOgg8flgnodS",
+  pro: "price_1TE7rIB2N13DcggIPO18gyqS",
+  enterprise: "price_1TE7rJB2N13DcggIaHopPNNX",
 };
 
 const logStep = (step: string, details?: Record<string, unknown>) => {
