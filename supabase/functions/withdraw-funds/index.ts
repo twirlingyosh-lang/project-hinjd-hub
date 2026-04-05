@@ -16,15 +16,17 @@ serve(async (req) => {
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
 
-    const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-    );
-
     // Authenticate user
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("No authorization header");
     const token = authHeader.replace("Bearer ", "");
+
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
     const { data: { user } } = await supabaseClient.auth.getUser(token);
     if (!user) throw new Error("Not authenticated");
 
@@ -51,10 +53,14 @@ serve(async (req) => {
 
     if (amountCents > availableAmount) {
       return new Response(JSON.stringify({
-        error: `Insufficient Stripe balance. Available: $${(availableAmount / 100).toFixed(2)}`
+        success: false,
+        code: 'INSUFFICIENT_BALANCE',
+        error: `Insufficient Stripe balance. Available: $${(availableAmount / 100).toFixed(2)}`,
+        available_balance: availableAmount / 100,
+        requested_amount: amount,
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 400,
+        status: 200,
       });
     }
 
