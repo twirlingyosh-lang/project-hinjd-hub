@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { supabase } from '@/integrations/supabase/client';
 import { useAdminRole } from '@/hooks/useAdminRole';
 import { toast } from 'sonner';
+import type { FunctionsHttpError } from '@supabase/supabase-js';
 import { 
   Shield, DollarSign, GraduationCap, Users, Activity,
   AlertTriangle, TrendingUp, Wallet, ArrowUpRight, Radio,
@@ -171,6 +172,7 @@ export const HQCommandPanel = () => {
   const [withdrawDest, setWithdrawDest] = useState<'bank' | 'cashapp'>('bank');
   const [withdrawing, setWithdrawing] = useState(false);
   const [lastPayout, setLastPayout] = useState<{ id: string; amount: number; arrival: string } | null>(null);
+  const [withdrawError, setWithdrawError] = useState<string | null>(null);
 
   const fetchHQMetrics = useCallback(async () => {
     try {
@@ -386,7 +388,11 @@ export const HQCommandPanel = () => {
             </div>
             <Dialog open={withdrawOpen} onOpenChange={(open) => {
               setWithdrawOpen(open);
-              if (!open) { setLastPayout(null); setWithdrawAmount(''); }
+              if (!open) {
+                setLastPayout(null);
+                setWithdrawAmount('');
+                setWithdrawError(null);
+              }
             }}>
               <DialogTrigger asChild>
                 <Button className="w-full" variant="outline">
@@ -416,6 +422,11 @@ export const HQCommandPanel = () => {
                   </div>
                 ) : (
                   <div className="space-y-4 py-2">
+                    {withdrawError && (
+                      <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                        {withdrawError}
+                      </div>
+                    )}
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Amount (USD)</label>
                       <Input
@@ -448,6 +459,7 @@ export const HQCommandPanel = () => {
                       disabled={withdrawing || !withdrawAmount || Number(withdrawAmount) <= 0}
                       onClick={async () => {
                         setWithdrawing(true);
+                        setWithdrawError(null);
                         try {
                           const { data: { session } } = await supabase.auth.getSession();
                           if (!session) throw new Error('Not authenticated');
@@ -456,9 +468,26 @@ export const HQCommandPanel = () => {
                             body: { amount: Number(withdrawAmount), destination: withdrawDest },
                           });
 
-                          if (res.error) throw new Error(res.error.message);
+                          if (res.error) {
+                            const httpError = res.error as FunctionsHttpError & { context?: Response | string };
+                            let functionMessage = res.error.message;
+
+                            if (httpError.context instanceof Response) {
+                              try {
+                                const payload = await httpError.context.clone().json();
+                                functionMessage = payload?.error || functionMessage;
+                              } catch {
+                                // no-op
+                              }
+                            }
+
+                            throw new Error(functionMessage);
+                          }
+
                           const result = res.data;
-                          if (result.error) throw new Error(result.error);
+                          if (result?.success === false || result?.error) {
+                            throw new Error(result.error || 'Withdrawal failed');
+                          }
 
                           setLastPayout({
                             id: result.payout_id,
@@ -468,7 +497,9 @@ export const HQCommandPanel = () => {
                           toast.success(`Payout of $${result.amount.toFixed(2)} initiated`);
                           fetchHQMetrics();
                         } catch (err: any) {
-                          toast.error(err.message || 'Withdrawal failed');
+                          const message = err.message || 'Withdrawal failed';
+                          setWithdrawError(message);
+                          toast.error(message);
                         } finally {
                           setWithdrawing(false);
                         }
