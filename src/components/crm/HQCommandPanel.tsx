@@ -462,6 +462,7 @@ export const HQCommandPanel = () => {
                       onClick={async () => {
                         setWithdrawing(true);
                         setWithdrawError(null);
+                        log('info', 'Withdraw', `Initiating $${withdrawAmount} to ${withdrawDest}...`);
                         try {
                           const { data: { session } } = await supabase.auth.getSession();
                           if (!session) throw new Error('Not authenticated');
