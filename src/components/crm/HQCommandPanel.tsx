@@ -483,7 +483,7 @@ export const HQCommandPanel = () => {
                                 // no-op
                               }
                             }
-
+                            log('error', 'Withdraw', `Edge fn: ${functionMessage}`);
                             throw new Error(functionMessage);
                           }
 
