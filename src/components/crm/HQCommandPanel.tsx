@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAdminRole } from '@/hooks/useAdminRole';
 import { toast } from 'sonner';
 import type { FunctionsHttpError } from '@supabase/supabase-js';
+import { useDebugLog } from '@/components/DebugLogPanel';
 import { 
   Shield, DollarSign, GraduationCap, Users, Activity,
   AlertTriangle, TrendingUp, Wallet, ArrowUpRight, Radio,
@@ -164,6 +165,7 @@ const HQAnalyticsCharts = ({ metrics }: { metrics: HQMetrics | null }) => {
 
 export const HQCommandPanel = () => {
   const { isAdmin, loading: adminLoading } = useAdminRole();
+  const { log } = useDebugLog();
   const [metrics, setMetrics] = useState<HQMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [isLive, setIsLive] = useState(false);
@@ -460,6 +462,7 @@ export const HQCommandPanel = () => {
                       onClick={async () => {
                         setWithdrawing(true);
                         setWithdrawError(null);
+                        log('info', 'Withdraw', `Initiating $${withdrawAmount} to ${withdrawDest}...`);
                         try {
                           const { data: { session } } = await supabase.auth.getSession();
                           if (!session) throw new Error('Not authenticated');
@@ -480,7 +483,7 @@ export const HQCommandPanel = () => {
                                 // no-op
                               }
                             }
-
+                            log('error', 'Withdraw', `Edge fn: ${functionMessage}`);
                             throw new Error(functionMessage);
                           }
 
@@ -494,10 +497,12 @@ export const HQCommandPanel = () => {
                             amount: result.amount,
                             arrival: result.estimated_arrival,
                           });
+                          log('success', 'Withdraw', `Payout ${result.payout_id} — $${result.amount.toFixed(2)}`);
                           toast.success(`Payout of $${result.amount.toFixed(2)} initiated`);
                           fetchHQMetrics();
                         } catch (err: any) {
                           const message = err.message || 'Withdrawal failed';
+                          log('error', 'Withdraw', message);
                           setWithdrawError(message);
                           toast.error(message);
                         } finally {
