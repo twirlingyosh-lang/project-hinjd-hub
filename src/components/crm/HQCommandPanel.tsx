@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAdminRole } from '@/hooks/useAdminRole';
 import { toast } from 'sonner';
 import type { FunctionsHttpError } from '@supabase/supabase-js';
+import { useDebugLog } from '@/components/DebugLogPanel';
 import { 
   Shield, DollarSign, GraduationCap, Users, Activity,
   AlertTriangle, TrendingUp, Wallet, ArrowUpRight, Radio,
@@ -164,6 +165,7 @@ const HQAnalyticsCharts = ({ metrics }: { metrics: HQMetrics | null }) => {
 
 export const HQCommandPanel = () => {
   const { isAdmin, loading: adminLoading } = useAdminRole();
+  const { log } = useDebugLog();
   const [metrics, setMetrics] = useState<HQMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [isLive, setIsLive] = useState(false);
