@@ -3,6 +3,7 @@ import { DollarSign, TrendingUp, Truck, CreditCard, Loader2, Zap, ArrowUpRight }
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useDebugLog } from '@/components/DebugLogPanel';
 
 interface FleetUnit {
   id: string;
@@ -22,6 +23,7 @@ interface FleetRevenueDashboardProps {
 
 export function FleetRevenueDashboard({ fleetUnits, isAdmin, onRefresh }: FleetRevenueDashboardProps) {
   const { toast } = useToast();
+  const { log } = useDebugLog();
   const [collectingId, setCollectingId] = useState<string | null>(null);
   const [autoDepositing, setAutoDepositing] = useState(false);
 
@@ -31,6 +33,7 @@ export function FleetRevenueDashboard({ fleetUnits, isAdmin, onRefresh }: FleetR
 
   const handleCollectPayment = async (unit: FleetUnit) => {
     setCollectingId(unit.id);
+    log('info', 'FleetPayment', `Collecting payment for ${unit.unit_name} ($${unit.monthly_revenue})...`);
     try {
       const { data, error } = await supabase.functions.invoke('fleet-collect-payment', {
         body: {
@@ -40,12 +43,19 @@ export function FleetRevenueDashboard({ fleetUnits, isAdmin, onRefresh }: FleetR
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        log('error', 'FleetPayment', `Edge function error: ${error.message}`);
+        throw error;
+      }
       if (data?.url) {
+        log('success', 'FleetPayment', `Payment URL received for ${unit.unit_name}`);
         window.open(data.url, '_blank');
         toast({ title: 'Payment page opened', description: `Collecting $${(unit.monthly_revenue || 0).toFixed(2)} for ${unit.unit_name}` });
+      } else {
+        log('error', 'FleetPayment', `No URL in response: ${JSON.stringify(data)}`);
       }
     } catch (err: any) {
+      log('error', 'FleetPayment', err.message || String(err));
       toast({ title: 'Payment failed', description: err.message, variant: 'destructive' });
     } finally {
       setCollectingId(null);
@@ -54,15 +64,21 @@ export function FleetRevenueDashboard({ fleetUnits, isAdmin, onRefresh }: FleetR
 
   const handleAutoDeposit = async () => {
     setAutoDepositing(true);
+    log('info', 'AutoDeposit', 'Starting fleet auto-deposit...');
     try {
       const { data, error } = await supabase.functions.invoke('fleet-auto-deposit');
-      if (error) throw error;
+      if (error) {
+        log('error', 'AutoDeposit', `Edge function error: ${error.message}`);
+        throw error;
+      }
+      log('success', 'AutoDeposit', `Deposited $${(data?.total_deposited || 0).toFixed(2)} from ${data?.users_processed || 0} user(s)`);
       toast({
         title: 'Fleet Revenue Deposited',
         description: `$${(data?.total_deposited || 0).toFixed(2)} deposited from ${data?.users_processed || 0} user(s)`,
       });
       onRefresh();
     } catch (err: any) {
+      log('error', 'AutoDeposit', err.message || String(err));
       toast({ title: 'Auto-deposit failed', description: err.message, variant: 'destructive' });
     } finally {
       setAutoDepositing(false);
