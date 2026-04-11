@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { DebugLogProvider } from "@/components/DebugLogPanel";
 
 const isDynamicImportFetchError = (error: unknown) => {
   const message = error instanceof Error ? error.message : String(error);
@@ -101,6 +102,7 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <AuthProvider>
+          <DebugLogProvider>
           <Toaster />
           <Sonner />
           <BrowserRouter>
@@ -165,6 +167,7 @@ const App = () => (
               </Routes>
             </Suspense>
           </BrowserRouter>
+          </DebugLogProvider>
         </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
