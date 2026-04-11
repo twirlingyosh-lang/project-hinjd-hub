@@ -497,10 +497,12 @@ export const HQCommandPanel = () => {
                             amount: result.amount,
                             arrival: result.estimated_arrival,
                           });
+                          log('success', 'Withdraw', `Payout ${result.payout_id} — $${result.amount.toFixed(2)}`);
                           toast.success(`Payout of $${result.amount.toFixed(2)} initiated`);
                           fetchHQMetrics();
                         } catch (err: any) {
                           const message = err.message || 'Withdrawal failed';
+                          log('error', 'Withdraw', message);
                           setWithdrawError(message);
                           toast.error(message);
                         } finally {
