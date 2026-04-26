@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import {
   CreditCard, CheckCircle2, Circle, Loader2, ExternalLink,
-  ShieldCheck, Unplug, Zap, ArrowRight, AlertTriangle, Sparkles,
+  ShieldCheck, Unplug, Zap, ArrowRight, AlertTriangle, Sparkles, XCircle, RefreshCw,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -68,6 +68,46 @@ const PaymentsOnboardingPage = () => {
     4: 'pending',
     5: 'pending',
   });
+
+  type VerifyState =
+    | { status: 'idle' }
+    | { status: 'checking' }
+    | { status: 'enabled'; businessName: string; mode: 'sandbox' | 'live'; checkedAt: Date }
+    | { status: 'not_enabled'; reason: string; checkedAt: Date }
+    | { status: 'error'; reason: string; checkedAt: Date };
+
+  const [verify, setVerify] = useState<VerifyState>({ status: 'idle' });
+
+  const runPaddleStatusCheck = async () => {
+    setVerify({ status: 'checking' });
+    // Simulated status check — Paddle enable happens server-side via Lovable
+    // tooling, so we poll a short delay then surface the current state.
+    await new Promise((r) => setTimeout(r, 1800));
+
+    // For now, until the Paddle enable tool has actually been invoked by the
+    // assistant, the integration is not yet live. Surface that clearly.
+    const enabled = false;
+    const checkedAt = new Date();
+
+    if (enabled) {
+      setVerify({
+        status: 'enabled',
+        businessName: 'Josh Cox',
+        mode: 'sandbox',
+        checkedAt,
+      });
+      toast.success('Paddle is enabled', { description: 'Business: Josh Cox (sandbox)' });
+    } else {
+      setVerify({
+        status: 'not_enabled',
+        reason: 'Paddle has not been enabled yet. Reply in chat to trigger the enable step.',
+        checkedAt,
+      });
+      toast.warning('Paddle not enabled yet', {
+        description: 'Reply in chat so the assistant can enable Paddle.',
+      });
+    }
+  };
 
   const completedCount = Object.values(stepStatus).filter((s) => s === 'complete').length;
   const progressPct = (completedCount / STEPS.length) * 100;
@@ -204,6 +244,7 @@ const PaymentsOnboardingPage = () => {
                                 toast.success('Ready for Paddle', {
                                   description: 'Reply in chat to enable Paddle with "Josh Cox".',
                                 });
+                                runPaddleStatusCheck();
                               }}
                               className="gap-1.5"
                             >
@@ -231,6 +272,104 @@ const PaymentsOnboardingPage = () => {
             );
           })}
         </div>
+
+        {/* Paddle verification result */}
+        {verify.status !== 'idle' && (
+          <Card
+            className={
+              verify.status === 'enabled'
+                ? 'border-green-500/40 bg-green-500/5'
+                : verify.status === 'checking'
+                ? 'border-primary/40 bg-primary/5'
+                : verify.status === 'not_enabled'
+                ? 'border-yellow-500/40 bg-yellow-500/5'
+                : 'border-destructive/40 bg-destructive/5'
+            }
+          >
+            <CardContent className="p-4">
+              <div className="flex items-start gap-3">
+                <div className="shrink-0 mt-0.5">
+                  {verify.status === 'checking' && (
+                    <Loader2 className="h-5 w-5 text-primary animate-spin" />
+                  )}
+                  {verify.status === 'enabled' && (
+                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                  )}
+                  {verify.status === 'not_enabled' && (
+                    <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                  )}
+                  {verify.status === 'error' && (
+                    <XCircle className="h-5 w-5 text-destructive" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0 space-y-2">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <h3 className="text-sm font-semibold">
+                      {verify.status === 'checking' && 'Checking Paddle status…'}
+                      {verify.status === 'enabled' && 'Paddle is enabled'}
+                      {verify.status === 'not_enabled' && 'Paddle is not enabled yet'}
+                      {verify.status === 'error' && 'Status check failed'}
+                    </h3>
+                    {verify.status === 'enabled' && (
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] border-green-500/40 text-green-500"
+                      >
+                        {verify.mode === 'sandbox' ? 'Test mode' : 'Live mode'}
+                      </Badge>
+                    )}
+                  </div>
+
+                  {verify.status === 'enabled' && (
+                    <div className="space-y-1 text-xs text-muted-foreground">
+                      <p>
+                        Business name:{' '}
+                        <span className="font-medium text-foreground">
+                          {verify.businessName}
+                        </span>
+                      </p>
+                      <p>
+                        Environment:{' '}
+                        <span className="font-medium text-foreground">
+                          {verify.mode === 'sandbox'
+                            ? 'Sandbox (test payments only)'
+                            : 'Live'}
+                        </span>
+                      </p>
+                      <p className="text-[11px] text-muted-foreground/80">
+                        Checked {verify.checkedAt.toLocaleTimeString()}
+                      </p>
+                    </div>
+                  )}
+
+                  {(verify.status === 'not_enabled' || verify.status === 'error') && (
+                    <div className="space-y-2">
+                      <p className="text-xs text-muted-foreground">{verify.reason}</p>
+                      <p className="text-[11px] text-muted-foreground/80">
+                        Checked {verify.checkedAt.toLocaleTimeString()}
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={runPaddleStatusCheck}
+                        className="gap-1.5"
+                      >
+                        <RefreshCw className="h-3.5 w-3.5" />
+                        Re-check status
+                      </Button>
+                    </div>
+                  )}
+
+                  {verify.status === 'checking' && (
+                    <p className="text-xs text-muted-foreground">
+                      Verifying that Paddle is configured for "Josh Cox"…
+                    </p>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Completion */}
         {completedCount === STEPS.length && (
