@@ -71,6 +71,7 @@ const WorkflowsPage = lazyWithRetry(() => import("./pages/app/WorkflowsPage"), "
 const SnippetsPage = lazyWithRetry(() => import("./pages/app/SnippetsPage"), "lazy-retry:snippets");
 const Base44AppPage = lazyWithRetry(() => import("./pages/app/Base44AppPage"), "lazy-retry:base44");
 const SettingsPage = lazyWithRetry(() => import("./pages/app/SettingsPage"), "lazy-retry:settings");
+const PaymentsOnboardingPage = lazyWithRetry(() => import("./pages/app/PaymentsOnboardingPage"), "lazy-retry:payments-onboarding");
 const ElectricalPage = lazyWithRetry(() => import("./pages/app/ElectricalPage"), "lazy-retry:electrical");
 const FaultCodePage = lazyWithRetry(() => import("./pages/app/FaultCodePage"), "lazy-retry:fault-codes");
 const HydraulicsPage = lazyWithRetry(() => import("./pages/app/HydraulicsPage"), "lazy-retry:hydraulics");
@@ -134,6 +135,7 @@ const App = () => (
                 <Route path="/app/snippets" element={<SnippetsPage />} />
                 <Route path="/app/base44" element={<Base44AppPage />} />
                 <Route path="/app/settings" element={<SettingsPage />} />
+                <Route path="/app/payments-onboarding" element={<PaymentsOnboardingPage />} />
                 <Route path="/app/referral" element={<ReferralPage />} />
                 <Route path="/app/electrical" element={<ElectricalPage />} />
                 <Route path="/app/fault-codes" element={<FaultCodePage />} />
