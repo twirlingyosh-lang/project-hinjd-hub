@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { 
   Bell, Moon, Sun, Globe, Shield, Database, 
-  Smartphone, Eye, Volume2, Zap, Server
+  Smartphone, Eye, Volume2, Zap, Server, CreditCard, ChevronRight
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAdminRole } from '@/hooks/useAdminRole';
@@ -50,7 +50,26 @@ const SettingsPage = () => {
   return (
     <AppLayout title="Settings">
       <div className="p-4 md:p-6 max-w-3xl mx-auto space-y-6">
-        
+
+        {/* Payments Onboarding */}
+        <Link to="/app/payments-onboarding" className="block">
+          <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-transparent hover:border-primary/50 transition-colors">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <CreditCard className="h-5 w-5 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold">Payments Onboarding</p>
+                  <Badge variant="outline" className="text-[10px] border-primary/40 text-primary">New</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">Guided Stripe → Paddle migration with status checks</p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+            </CardContent>
+          </Card>
+        </Link>
+
         {/* Notifications */}
         <Card>
           <CardHeader>
