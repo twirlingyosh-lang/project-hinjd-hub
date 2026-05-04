@@ -388,9 +388,31 @@ const PaymentsOnboardingPage = () => {
                   )}
 
                   {verify.status === 'checking' && (
-                    <p className="text-xs text-muted-foreground">
-                      Verifying that Paddle is configured for "Josh Cox"…
-                    </p>
+                    <div className="space-y-2">
+                      <p className="text-xs text-muted-foreground">
+                        Verifying that Paddle is configured for "Josh Cox"…
+                      </p>
+                      {polling && (
+                        <p className="text-[11px] text-muted-foreground/80">
+                          Attempt {pollAttempt} of {MAX_POLLS} — auto re-checks every {POLL_INTERVAL_MS / 1000}s.
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Chat prompt helper */}
+                  {(verify.status === 'checking' || verify.status === 'not_enabled') && (
+                    <div className="rounded-md border border-border bg-background/60 p-3 space-y-2">
+                      <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+                        <MessageSquare className="h-3 w-3" />
+                        Send this in Lovable chat
+                      </div>
+                      <p className="text-xs leading-relaxed text-foreground/90">{CHAT_PROMPT}</p>
+                      <Button size="sm" variant="outline" onClick={copyChatPrompt} className="gap-1.5">
+                        <Copy className="h-3.5 w-3.5" />
+                        Copy prompt
+                      </Button>
+                    </div>
                   )}
                 </div>
               </div>
