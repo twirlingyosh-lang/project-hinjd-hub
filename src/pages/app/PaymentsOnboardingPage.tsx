@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import {
   CreditCard, CheckCircle2, Circle, Loader2, ExternalLink,
-  ShieldCheck, Unplug, Zap, ArrowRight, AlertTriangle, Sparkles, XCircle, RefreshCw,
+  ShieldCheck, Unplug, Zap, ArrowRight, AlertTriangle, Sparkles, XCircle, RefreshCw, Copy, MessageSquare,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -77,36 +77,62 @@ const PaymentsOnboardingPage = () => {
     | { status: 'error'; reason: string; checkedAt: Date };
 
   const [verify, setVerify] = useState<VerifyState>({ status: 'idle' });
+  const [pollAttempt, setPollAttempt] = useState(0);
+  const [polling, setPolling] = useState(false);
+
+  const CHAT_PROMPT =
+    'Enable Paddle payments for my account using business name "Josh Cox" and confirm I accept Paddle\'s Terms, Privacy Policy, and Acceptable Use Policy.';
+  const MAX_POLLS = 10;
+  const POLL_INTERVAL_MS = 6000;
+
+  const checkPaddleEnabled = async (): Promise<boolean> => {
+    // Placeholder for a real backend probe. Until the assistant invokes the
+    // Paddle enable tool the integration is not live, so this returns false.
+    await new Promise((r) => setTimeout(r, 1200));
+    return false;
+  };
+
+  const copyChatPrompt = async () => {
+    try {
+      await navigator.clipboard.writeText(CHAT_PROMPT);
+      toast.success('Prompt copied', { description: 'Paste it into the Lovable chat to enable Paddle.' });
+    } catch {
+      toast.error('Could not copy', { description: 'Select the prompt manually and copy it.' });
+    }
+  };
+
+  const pollUntilEnabled = async () => {
+    setPolling(true);
+    for (let attempt = 1; attempt <= MAX_POLLS; attempt++) {
+      setPollAttempt(attempt);
+      setVerify({ status: 'checking' });
+      const enabled = await checkPaddleEnabled();
+      const checkedAt = new Date();
+      if (enabled) {
+        setVerify({ status: 'enabled', businessName: 'Josh Cox', mode: 'sandbox', checkedAt });
+        toast.success('Paddle is enabled', { description: 'Business: Josh Cox (sandbox)' });
+        setPolling(false);
+        return;
+      }
+      if (attempt < MAX_POLLS) {
+        await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+      } else {
+        setVerify({
+          status: 'not_enabled',
+          reason: `Paddle still not enabled after ${MAX_POLLS} checks. Send the prompt above in chat, then re-check.`,
+          checkedAt,
+        });
+        toast.warning('Status check timed out', {
+          description: 'Reply in chat with the copied prompt so the assistant can enable Paddle.',
+        });
+      }
+    }
+    setPolling(false);
+  };
 
   const runPaddleStatusCheck = async () => {
-    setVerify({ status: 'checking' });
-    // Simulated status check — Paddle enable happens server-side via Lovable
-    // tooling, so we poll a short delay then surface the current state.
-    await new Promise((r) => setTimeout(r, 1800));
-
-    // For now, until the Paddle enable tool has actually been invoked by the
-    // assistant, the integration is not yet live. Surface that clearly.
-    const enabled = false;
-    const checkedAt = new Date();
-
-    if (enabled) {
-      setVerify({
-        status: 'enabled',
-        businessName: 'Josh Cox',
-        mode: 'sandbox',
-        checkedAt,
-      });
-      toast.success('Paddle is enabled', { description: 'Business: Josh Cox (sandbox)' });
-    } else {
-      setVerify({
-        status: 'not_enabled',
-        reason: 'Paddle has not been enabled yet. Reply in chat to trigger the enable step.',
-        checkedAt,
-      });
-      toast.warning('Paddle not enabled yet', {
-        description: 'Reply in chat so the assistant can enable Paddle.',
-      });
-    }
+    if (polling) return;
+    await pollUntilEnabled();
   };
 
   const completedCount = Object.values(stepStatus).filter((s) => s === 'complete').length;
@@ -241,8 +267,9 @@ const PaymentsOnboardingPage = () => {
                               disabled={!isActive}
                               onClick={() => {
                                 advance(5);
+                                copyChatPrompt();
                                 toast.success('Ready for Paddle', {
-                                  description: 'Reply in chat to enable Paddle with "Josh Cox".',
+                                  description: 'Prompt copied — paste in chat. Auto-checking status…',
                                 });
                                 runPaddleStatusCheck();
                               }}
@@ -361,9 +388,31 @@ const PaymentsOnboardingPage = () => {
                   )}
 
                   {verify.status === 'checking' && (
-                    <p className="text-xs text-muted-foreground">
-                      Verifying that Paddle is configured for "Josh Cox"…
-                    </p>
+                    <div className="space-y-2">
+                      <p className="text-xs text-muted-foreground">
+                        Verifying that Paddle is configured for "Josh Cox"…
+                      </p>
+                      {polling && (
+                        <p className="text-[11px] text-muted-foreground/80">
+                          Attempt {pollAttempt} of {MAX_POLLS} — auto re-checks every {POLL_INTERVAL_MS / 1000}s.
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Chat prompt helper */}
+                  {(verify.status === 'checking' || verify.status === 'not_enabled') && (
+                    <div className="rounded-md border border-border bg-background/60 p-3 space-y-2">
+                      <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+                        <MessageSquare className="h-3 w-3" />
+                        Send this in Lovable chat
+                      </div>
+                      <p className="text-xs leading-relaxed text-foreground/90">{CHAT_PROMPT}</p>
+                      <Button size="sm" variant="outline" onClick={copyChatPrompt} className="gap-1.5">
+                        <Copy className="h-3.5 w-3.5" />
+                        Copy prompt
+                      </Button>
+                    </div>
                   )}
                 </div>
               </div>
