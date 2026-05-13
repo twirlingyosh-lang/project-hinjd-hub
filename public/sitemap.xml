@@ -44,11 +44,31 @@
     <priority>0.4</priority>
   </url>
 
-  <!-- LLM-friendly summary for AI search engines -->
+  <!-- Privacy / Legal -->
   <url>
-    <loc>https://hinjd-ecosystem-hub.lovable.app/llm.html</loc>
+    <loc>https://hinjd-ecosystem-hub.lovable.app/privacy-policy</loc>
     <lastmod>2026-02-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- App routes -->
+  <url>
+    <loc>https://hinjd-ecosystem-hub.lovable.app/app</loc>
+    <lastmod>2026-02-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hinjd-ecosystem-hub.lovable.app/app/equipment</loc>
+    <lastmod>2026-02-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hinjd-ecosystem-hub.lovable.app/app/materials</loc>
+    <lastmod>2026-02-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
   </url>
 </urlset>
