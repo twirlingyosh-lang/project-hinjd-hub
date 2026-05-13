@@ -1,0 +1,22 @@
+# HINJD Global
+
+> Industrial ecosystem hub for aggregate and heavy equipment operators — AI diagnostics, fleet tracking, BeltSaver® predictive maintenance, CRM, and financial dashboards.
+
+HINJD Global builds tools for mining, aggregates, and bulk material handling. Flagship products include BeltSaver® conveyor belt protection (U.S. Patent No. 12,195,281 B1), Cox Aggs aggregate operations, and Equipment Opps AI diagnostics.
+
+## Pages
+
+- [Home](/): Overview of the HINJD industrial ecosystem.
+- [BeltSaver®](/beltsaver): Patented tail-pulley conveyor belt protection product.
+- [Conveyor Maintenance](/conveyor-maintenance): B2B guide to reducing conveyor downtime.
+- [Aggregate Opps](/aggregate-opps): Aggregate operations management tools.
+- [Content Generator](/content-generator): AI content tooling for industrial brands.
+- [Blog](/blog): Industry insights on conveyor maintenance and equipment diagnostics.
+- [Privacy Policy](/privacy-policy): Privacy practices.
+- [Sign in](/auth): Account authentication.
+
+## Optional
+
+- [App Home](/app): Authenticated dashboard entry point.
+- [Equipment](/app/equipment): Equipment registry inside the app.
+- [Materials](/app/materials): Materials reference inside the app.
