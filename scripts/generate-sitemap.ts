@@ -1,5 +1,5 @@
 // Runs before `vite dev` and `vite build` (predev/prebuild hooks).
-// Writes public/sitemap.xml from the route list below.
+// Writes public/sitemap.xml and public/robots.xml from a single source of truth.
 
 import { writeFileSync } from "fs";
 import { resolve } from "path";
@@ -61,8 +61,62 @@ function generateSitemap(items: SitemapEntry[]) {
   ].join("\n");
 }
 
+function generateRobotsTxt() {
+  return [
+    `# Standard Search Engine Crawlers`,
+    `User-agent: Googlebot`,
+    `Allow: /`,
+    ``,
+    `User-agent: Bingbot`,
+    `Allow: /`,
+    ``,
+    `User-agent: Twitterbot`,
+    `Allow: /`,
+    ``,
+    `User-agent: facebookexternalhit`,
+    `Allow: /`,
+    ``,
+    `User-agent: LinkedInBot`,
+    `Allow: /`,
+    ``,
+    `# AI/LLM Crawlers - Allow for citations and visibility`,
+    `User-agent: GPTBot`,
+    `Allow: /`,
+    ``,
+    `User-agent: PerplexityBot`,
+    `Allow: /`,
+    ``,
+    `User-agent: Claude-Web`,
+    `Allow: /`,
+    ``,
+    `User-agent: Anthropic-AI`,
+    `Allow: /`,
+    ``,
+    `# AI Training Crawlers - Block`,
+    `User-agent: Google-Extended`,
+    `Disallow: /`,
+    ``,
+    `User-agent: CCBot`,
+    `Disallow: /`,
+    ``,
+    `# Default rule`,
+    `User-agent: *`,
+    `Allow: /`,
+    ``,
+    `# Sitemap location`,
+    `Sitemap: ${BASE_URL}/sitemap.xml`,
+    ``,
+    `# LLM-friendly summary page`,
+    `# ${BASE_URL}/llm.html`,
+    ``,
+  ].join("\n");
+}
+
 writeFileSync(resolve("public/sitemap.xml"), generateSitemap(entries));
 console.log(`sitemap.xml written (${entries.length} entries, ${today})`);
+
+writeFileSync(resolve("public/robots.txt"), generateRobotsTxt());
+console.log(`robots.txt written (${BASE_URL}/sitemap.xml)`);
 
 // Best-effort: ping the resubmit-sitemap edge function so Google re-fetches.
 // Skipped silently if the project ref or function are unavailable (e.g. local dev without network).
