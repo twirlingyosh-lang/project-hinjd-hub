@@ -139,6 +139,7 @@ export default defineConfig(({ mode }) => ({
         ],
       },
     }),
+    mcpPlugin(),
     mode === "development" && componentTagger(),
   ].filter(Boolean),
   resolve: {
