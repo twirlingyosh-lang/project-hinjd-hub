@@ -52,6 +52,7 @@ const AggregateOpps = lazyWithRetry(() => import("./pages/AggregateOpps"), "lazy
 const NotFound = lazyWithRetry(() => import("./pages/NotFound"), "lazy-retry:not-found");
 const PrivacyPolicy = lazyWithRetry(() => import("./pages/PrivacyPolicy"), "lazy-retry:privacy-policy");
 const Debug = lazyWithRetry(() => import("./pages/Debug"), "lazy-retry:debug");
+const OAuthConsent = lazyWithRetry(() => import("./pages/OAuthConsent"), "lazy-retry:oauth-consent");
 
 // Aggregate Tools App pages
 const AppHome = lazyWithRetry(() => import("./pages/app/AppHome"), "lazy-retry:app-home");
@@ -117,6 +118,7 @@ const App = () => (
                 <Route path="/aggregate-opps" element={<AggregateOpps />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/debug" element={<Debug />} />
+                <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
                 {/* Aggregate Tools App Routes */}
                 <Route path="/app" element={<AppHome />} />
                 <Route path="/app/materials" element={<MaterialsPage />} />

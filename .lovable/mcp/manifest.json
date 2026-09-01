@@ -1,0 +1,237 @@
+{
+  "version": 1,
+  "sdk_version": "0.28.0",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://umfsspcknteaocrbveat.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "project-hinjd-hub",
+      "version": "0.1.0",
+      "title": "Project Hinjd Hub"
+    },
+    "tools": [
+      {
+        "name": "list_belt_diagnostics",
+        "title": "List belt diagnostics",
+        "description": "List the signed-in user's saved conveyor belt diagnostic records, newest first.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "description": "Maximum records to return (default 10)."
+            },
+            "status": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 50,
+              "description": "Filter by record status, e.g. 'open'."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_belt_diagnostic",
+        "title": "Create belt diagnostic",
+        "description": "Save a new conveyor belt diagnostic record for the signed-in user, including cause and recommendations.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "description": "Where on the conveyor the issue was observed."
+            },
+            "tracking_direction": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 50,
+              "description": "Direction the belt is mistracking, e.g. 'left', 'right', 'none'."
+            },
+            "severity": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 50,
+              "description": "Severity, e.g. 'low', 'medium', 'high', 'critical'."
+            },
+            "cause": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000,
+              "description": "Diagnosed root cause."
+            },
+            "recommendations": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "minItems": 1,
+              "maxItems": 20,
+              "description": "Recommended corrective actions."
+            },
+            "belt_saver_benefits": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "maxItems": 20,
+              "description": "How BeltSaver would address this issue."
+            },
+            "notes": {
+              "type": "string",
+              "maxLength": 2000,
+              "description": "Additional free-form notes."
+            },
+            "status": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 50,
+              "description": "Record status (default 'open')."
+            }
+          },
+          "required": [
+            "location",
+            "tracking_direction",
+            "severity",
+            "cause",
+            "recommendations"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_equipment_diagnostics",
+        "title": "List equipment diagnostics",
+        "description": "List the signed-in user's heavy equipment diagnostic sessions, newest first, optionally filtered by make or equipment type.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "description": "Maximum records to return (default 10)."
+            },
+            "make": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "description": "Filter by equipment make, e.g. 'CAT'."
+            },
+            "equipment_type": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "description": "Filter by equipment type, e.g. 'Excavator'."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "search_parts",
+        "title": "Search equipment parts",
+        "description": "Search the equipment parts catalog by name, part number, or category and return matching parts with average pricing.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "description": "Search text matched against part name and part number."
+            },
+            "category": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "description": "Optional category filter."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "description": "Maximum parts to return (default 10)."
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_fleet_units",
+        "title": "List fleet units",
+        "description": "List the signed-in user's fleet units with status and monthly revenue, optionally filtered by status.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "description": "Maximum units to return (default 25)."
+            },
+            "status": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 50,
+              "description": "Filter by unit status, e.g. 'active'."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

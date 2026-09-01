@@ -48,7 +48,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const signUp = async (email: string, password: string, fullName?: string) => {
-    const redirectUrl = `${window.location.origin}/`;
+    // Preserve a same-origin ?next= target (used by the OAuth consent flow).
+    const rawNext = new URLSearchParams(window.location.search).get('next');
+    const nextPath = rawNext && rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/';
+    const redirectUrl = `${window.location.origin}${nextPath}`;
     
     const { error } = await supabase.auth.signUp({
       email,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable';
@@ -43,7 +43,13 @@ const Auth = () => {
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const { signIn, signUp, user, loading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { trackAuth, trackButtonClick, trackPageView } = useAnalytics();
+
+  // Same-origin relative path to return to after auth (used by the OAuth consent flow).
+  const rawNext = searchParams.get('next');
+  const nextPath = rawNext && rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/';
+  const nextUrl = `${window.location.origin}${nextPath}`;
 
   // Track page view on mount
   useEffect(() => {
@@ -93,7 +99,7 @@ const Auth = () => {
     trackButtonClick('google_signin');
     setIsGoogleLoading(true);
     const { error } = await lovable.auth.signInWithOAuth('google', {
-      redirect_uri: window.location.origin
+      redirect_uri: nextUrl
     });
     
     if (error) {
@@ -111,7 +117,7 @@ const Auth = () => {
     trackButtonClick('apple_signin');
     setIsAppleLoading(true);
     const { error } = await lovable.auth.signInWithOAuth('apple', {
-      redirect_uri: window.location.origin
+      redirect_uri: nextUrl
     });
     
     if (error) {
@@ -127,7 +133,7 @@ const Auth = () => {
 
   useEffect(() => {
     if (!loading && user) {
-      navigate('/');
+      navigate(nextPath);
     }
   }, [user, loading, navigate]);
 
@@ -175,7 +181,7 @@ const Auth = () => {
         title: 'Welcome back!',
         description: 'You have successfully signed in.'
       });
-      navigate('/');
+      navigate(nextPath);
     }
   };
 
@@ -208,7 +214,7 @@ const Auth = () => {
         title: 'Account Created!',
         description: 'You have successfully signed up and are now logged in.'
       });
-      navigate('/');
+      navigate(nextPath);
     }
   };
 
