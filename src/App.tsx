@@ -52,6 +52,7 @@ const AggregateOpps = lazyWithRetry(() => import("./pages/AggregateOpps"), "lazy
 const NotFound = lazyWithRetry(() => import("./pages/NotFound"), "lazy-retry:not-found");
 const PrivacyPolicy = lazyWithRetry(() => import("./pages/PrivacyPolicy"), "lazy-retry:privacy-policy");
 const Debug = lazyWithRetry(() => import("./pages/Debug"), "lazy-retry:debug");
+const OAuthConsent = lazyWithRetry(() => import("./pages/OAuthConsent"), "lazy-retry:oauth-consent");
 
 // Aggregate Tools App pages
 const AppHome = lazyWithRetry(() => import("./pages/app/AppHome"), "lazy-retry:app-home");
