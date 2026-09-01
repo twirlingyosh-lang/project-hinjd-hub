@@ -118,6 +118,7 @@ const App = () => (
                 <Route path="/aggregate-opps" element={<AggregateOpps />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/debug" element={<Debug />} />
+                <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
                 {/* Aggregate Tools App Routes */}
                 <Route path="/app" element={<AppHome />} />
                 <Route path="/app/materials" element={<MaterialsPage />} />
