@@ -43,7 +43,13 @@ const Auth = () => {
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const { signIn, signUp, user, loading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { trackAuth, trackButtonClick, trackPageView } = useAnalytics();
+
+  // Same-origin relative path to return to after auth (used by the OAuth consent flow).
+  const rawNext = searchParams.get('next');
+  const nextPath = rawNext && rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/';
+  const nextUrl = `${window.location.origin}${nextPath}`;
 
   // Track page view on mount
   useEffect(() => {
