@@ -99,7 +99,7 @@ const Auth = () => {
     trackButtonClick('google_signin');
     setIsGoogleLoading(true);
     const { error } = await lovable.auth.signInWithOAuth('google', {
-      redirect_uri: window.location.origin
+      redirect_uri: nextUrl
     });
     
     if (error) {
@@ -117,7 +117,7 @@ const Auth = () => {
     trackButtonClick('apple_signin');
     setIsAppleLoading(true);
     const { error } = await lovable.auth.signInWithOAuth('apple', {
-      redirect_uri: window.location.origin
+      redirect_uri: nextUrl
     });
     
     if (error) {
@@ -133,7 +133,7 @@ const Auth = () => {
 
   useEffect(() => {
     if (!loading && user) {
-      navigate('/');
+      navigate(nextPath);
     }
   }, [user, loading, navigate]);
 
@@ -181,7 +181,7 @@ const Auth = () => {
         title: 'Welcome back!',
         description: 'You have successfully signed in.'
       });
-      navigate('/');
+      navigate(nextPath);
     }
   };
 
@@ -214,7 +214,7 @@ const Auth = () => {
         title: 'Account Created!',
         description: 'You have successfully signed up and are now logged in.'
       });
-      navigate('/');
+      navigate(nextPath);
     }
   };
 
