@@ -96,6 +96,7 @@ const CRMInvoiceForm = lazyWithRetry(() => import("./pages/crm/CRMInvoiceForm"),
 const CRMMessages = lazyWithRetry(() => import("./pages/crm/CRMMessages"), "lazy-retry:crm-messages");
 const CRMSalesFunnel = lazyWithRetry(() => import("./pages/crm/CRMSalesFunnel"), "lazy-retry:crm-funnel");
 const CRMReports = lazyWithRetry(() => import("./pages/crm/CRMReports"), "lazy-retry:crm-reports");
+const CRMOperations = lazyWithRetry(() => import("./pages/crm/CRMOperations"), "lazy-retry:crm-operations");
 
 const queryClient = new QueryClient();
 
@@ -166,6 +167,7 @@ const App = () => (
                 <Route path="/crm/messages" element={<CRMMessages />} />
                 <Route path="/crm/funnel" element={<CRMSalesFunnel />} />
                 <Route path="/crm/reports" element={<CRMReports />} />
+                <Route path="/crm/operations" element={<CRMOperations />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
