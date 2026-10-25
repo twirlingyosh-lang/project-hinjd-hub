@@ -19,3 +19,4 @@
 - [ ] Fix critical security finding + republish
 - [ ] Test customer portal walkthrough: quote > invoiced > paid
 - [ ] Real Cox Aggs page: products, quotes, payments (blocked: need product list + prices)
+- [x] Portal login link on quote + fleet repair pages
