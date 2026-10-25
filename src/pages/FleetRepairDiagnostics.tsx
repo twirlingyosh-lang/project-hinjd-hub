@@ -26,6 +26,7 @@ const FleetRepairDiagnostics = () => (
     <div className="max-w-5xl mx-auto">
       <Link to="/" className="text-sm text-muted-foreground hover:text-primary">← Home</Link>
       <h1 className="text-4xl font-bold mt-4 text-primary">Fleet Repair Diagnostics</h1>
+      <p className="mt-2 text-sm text-muted-foreground">Already a customer? <a href="/portal" className="text-primary underline">Log in to your Customer Portal</a></p>
       <p className="text-lg text-muted-foreground mt-3 max-w-2xl">
         Diagnose heavy equipment faster. Hinjd's diagnostic tools help mechanics and fleet managers find the problem, the part and the fix — before downtime adds up.
       </p>
