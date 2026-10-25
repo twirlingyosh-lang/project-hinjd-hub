@@ -23,3 +23,4 @@
 - [ ] CRM Invoices: Paid/Unpaid/Overdue tabs, overdue rows red
 - [ ] Repair Logs: Download PDF per entry
 - [ ] Saved Runs empty state: quick-start buttons
+- [ ] Fix 3 payment security issues
