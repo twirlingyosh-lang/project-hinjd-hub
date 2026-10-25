@@ -25,3 +25,4 @@
 - [ ] Saved Runs empty state: quick-start buttons
 - [ ] Fix 3 payment security issues
 - [ ] Cox Aggs quotes share portal + payment flow with BeltSaver (blocked: product list)
+- [ ] Switch Stripe to test mode + end-to-end portal walkthrough with test email
