@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
+import { TonnageChart } from '@/components/app/TonnageChart';
 import { FleetRevenueDashboard } from '@/components/fleet/FleetRevenueDashboard';
 
 const ExecutiveSummary = ({ 
@@ -654,6 +655,7 @@ export default function HinjdDashboard() {
 
             {/* Right Column: Performance & Actions */}
             <div className="lg:col-span-2 space-y-6">
+              <TonnageChart userId={user?.id} />
               <PerformanceChart totalWealth={metrics?.total_wealth || 0} />
               <FleetRevenueDashboard
                 fleetUnits={fleetUnits}

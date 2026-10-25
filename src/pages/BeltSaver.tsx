@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import SocialMediaLinks from '@/components/SocialMediaLinks';
+import { BeltSavingsCalculator } from '@/components/BeltSavingsCalculator';
 import heroImage from '@/assets/tail-pulley-hero.jpg?format=webp';
 import tailPulleyTakeup from '@/assets/tail-pulley-takeup.jpg?format=webp';
 import tailPulleyEdge from '@/assets/tail-pulley-edge-protection.jpg?format=webp';
@@ -152,6 +153,7 @@ const BeltSaver = () => {
           <Button size="sm" className="ml-2" onClick={() => navigate('/beltsaver/quote')}>
             Request a Quote
           </Button>
+          <span className="ml-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">In stock: 4 left</span>
         </div>
 
         {/* Social Links */}
@@ -433,6 +435,8 @@ const BeltSaver = () => {
             </div>
           </div>
         </section>
+
+        <section className="mb-20"><BeltSavingsCalculator /></section>
 
         {/* CTA Section */}
         <section className="text-center animate-slide-up" style={{ animationDelay: '1.2s' }}>

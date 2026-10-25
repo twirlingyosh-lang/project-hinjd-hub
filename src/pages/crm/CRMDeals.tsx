@@ -159,6 +159,21 @@ export const CRMDeals = () => {
         </Button>
       </div>
 
+      {/* Stage totals */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+        {STAGES.map((stage) => {
+          const list = deals.filter((d) => d.stage === stage.key);
+          const total = list.reduce((sum, d) => sum + (Number(d.value) || 0), 0);
+          return (
+            <div key={stage.key} className="rounded-lg border border-border bg-card p-3">
+              <p className="text-xs text-muted-foreground">{stage.label}</p>
+              <p className="text-lg font-bold text-foreground">{list.length} deal{list.length === 1 ? '' : 's'}</p>
+              <p className="text-sm font-semibold text-primary">${total.toLocaleString()}</p>
+            </div>
+          );
+        })}
+      </div>
+
       {/* Kanban Board */}
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
