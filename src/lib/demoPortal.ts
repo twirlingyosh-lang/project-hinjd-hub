@@ -1,4 +1,4 @@
-// Demo-only state. Lives solely in localStorage under DEMO_KEY — never written to the database or Stripe.
+// Demo-only state. Lives solely in localStorage under DEMO_KEY — never sent to the backend or the payment processor.
 export const DEMO_KEY = 'hinjd_demo_portal_v1';
 export const DEMO_TTL_MS = 30 * 60 * 1000;
 export const DEMO_STEPS = ['Requested', 'Quoted', 'Invoiced', 'Paid'] as const;
