@@ -262,6 +262,11 @@ export const CRMInvoices = () => {
                     )}
                   </TableCell>
                   <TableCell>
+                    {(invoice as any).payment_url && (
+                      <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); navigator.clipboard?.writeText((invoice as any).payment_url); window.open((invoice as any).payment_url, '_blank'); }}>
+                        Pay link
+                      </Button>
+                    )}
                     {invoice.pdf_url ? (
                       <Button
                         variant="ghost"
