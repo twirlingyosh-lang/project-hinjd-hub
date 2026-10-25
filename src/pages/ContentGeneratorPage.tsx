@@ -2,7 +2,6 @@ import { ContentGenerator } from '@/components/ContentGenerator';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import BeltAssistant from '@/components/BeltAssistant';
 
 const ContentGeneratorPage = () => {
   return (
@@ -23,7 +22,6 @@ const ContentGeneratorPage = () => {
         <ContentGenerator />
       </main>
 
-      <BeltAssistant />
     </div>
   );
 };

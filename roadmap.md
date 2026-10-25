@@ -16,7 +16,17 @@
 - [x] Stock badge next to quote button on BeltSaver page
 - [x] Portal quote tracker: Requested > Quoted > Invoiced > Paid
 - [x] CRM Deals: summary cards (count + total value per stage)
-- [ ] Fix critical security finding + republish
+- [x] Fix critical security finding + republish
 - [ ] Test customer portal walkthrough: quote > invoiced > paid
 - [ ] Real Cox Aggs page: products, quotes, payments (blocked: need product list + prices)
 - [x] Portal login link on quote + fleet repair pages
+- [x] CRM Invoices: Paid/Unpaid/Overdue tabs, overdue rows red
+- [x] Repair Logs: Download PDF per entry
+- [x] Saved Runs empty state: quick-start buttons
+- [x] Fix 3 payment security issues
+- [ ] Cox Aggs quotes share portal + payment flow with BeltSaver (blocked: product list)
+- [ ] Switch Stripe to test mode + end-to-end portal walkthrough with test email
+- [x] Real-time updates on key screens + AI assistant on every screen
+- [ ] Play Store release (needs user: build + upload from own computer, Google Play developer account)
+- [ ] Test payments in preview (needs user: Stripe test key)
+- [ ] LinkedIn (needs user: share posts? sign-in? company page?)

@@ -1,3 +1,4 @@
+import { useLiveRefresh } from '@/hooks/useLiveRefresh';
 import { useState, useEffect, useCallback } from 'react';
 import { AppLayout } from '@/components/app/AppLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,6 +18,7 @@ import {
 } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
+import { downloadRepairPdf } from '@/lib/repairPdf';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -268,6 +270,7 @@ const SmashGuruPage = () => {
   }, [user]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+  useLiveRefresh(['repair_logs', 'throughput_logs'], () => fetchData());
 
   const filteredLogs = throughputLogs.filter(l =>
     l.crusher.toLowerCase().includes(searchThroughput.toLowerCase()) ||
@@ -505,6 +508,7 @@ const SmashGuruPage = () => {
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1"><DollarSign size={12} /> ${Number(repair.cost).toLocaleString()}</span>
                         <span className="flex items-center gap-1"><Clock size={12} /> {repair.downtime}h downtime</span>
+                        <Button size="sm" variant="ghost" className="ml-auto h-7 text-xs" onClick={() => downloadRepairPdf(repair)}>Download PDF</Button>
                       </div>
                     </CardContent>
                   </Card>

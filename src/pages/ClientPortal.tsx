@@ -1,3 +1,4 @@
+import { useLiveRefresh } from '@/hooks/useLiveRefresh';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -35,6 +36,8 @@ export default function ClientPortal() {
     if (!loading && !user) navigate('/auth?next=/portal');
   }, [user, loading, navigate]);
 
+  const [tick, setTick] = useState(0);
+  useLiveRefresh(['quote_requests','crm_invoices','belt_diagnostics','equipment_diagnostics'], () => setTick((t) => t + 1), !!user);
   useEffect(() => {
     if (!user) return;
     (async () => {
@@ -52,7 +55,7 @@ export default function ClientPortal() {
       setEquip(e.data ?? []);
       setName(p.data?.full_name ?? '');
     })();
-  }, [user]);
+  }, [user, tick]);
 
   const saveAccount = async () => {
     const { error } = await supabase.from('profiles').update({ full_name: name.trim().slice(0, 100) }).eq('id', user.id);

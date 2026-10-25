@@ -1,3 +1,4 @@
+import { useLiveRefresh } from '@/hooks/useLiveRefresh';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CRMLayout } from './CRMLayout';
@@ -44,6 +45,7 @@ export const CRMDeals = () => {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  useLiveRefresh(['crm_deals'], () => fetchDeals());
 
   useEffect(() => {
     if (!authLoading && !user) {

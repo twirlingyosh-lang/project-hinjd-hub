@@ -1,3 +1,4 @@
+import { useLiveRefresh } from '@/hooks/useLiveRefresh';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CRMLayout } from './CRMLayout';
@@ -27,6 +28,8 @@ const CRMOperations = () => {
     if (!authLoading && !user) navigate('/crm/login');
   }, [authLoading, user, navigate]);
 
+  const [tick, setTick] = useState(0);
+  useLiveRefresh(['belt_diagnostics','equipment_diagnostics','fleet_units'], () => setTick((t) => t + 1), !!user);
   useEffect(() => {
     if (!user) return;
     (async () => {
@@ -43,7 +46,7 @@ const CRMOperations = () => {
       setFleet(f.data ?? []);
       setLoading(false);
     })();
-  }, [user]);
+  }, [user, tick]);
 
   const empty = (label: string) => <p className="text-sm text-muted-foreground py-6 text-center">No {label} yet.</p>;
 
