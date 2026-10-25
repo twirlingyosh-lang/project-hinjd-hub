@@ -45,7 +45,6 @@ function generateSitemap(items: SitemapEntry[]) {
     [
       `  <url>`,
       `    <loc>${BASE_URL}${e.path}</loc>`,
-      `    <lastmod>${today}</lastmod>`,
       e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
       e.priority ? `    <priority>${e.priority}</priority>` : null,
       `  </url>`,
@@ -115,7 +114,7 @@ function generateRobotsTxt() {
 }
 
 writeFileSync(resolve("public/sitemap.xml"), generateSitemap(entries));
-console.log(`sitemap.xml written (${entries.length} entries, ${today})`);
+console.log(`sitemap.xml written (${entries.length} entries)`);
 
 writeFileSync(resolve("public/robots.txt"), generateRobotsTxt());
 console.log(`robots.txt written (${BASE_URL}/sitemap.xml)`);
