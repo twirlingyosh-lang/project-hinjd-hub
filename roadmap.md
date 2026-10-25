@@ -18,3 +18,4 @@
 - [x] CRM Deals: summary cards (count + total value per stage)
 - [ ] Fix critical security finding + republish
 - [ ] Test customer portal walkthrough: quote > invoiced > paid
+- [ ] Real Cox Aggs page: products, quotes, payments (blocked: need product list + prices)
