@@ -17,6 +17,7 @@ import {
 } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
+import { downloadRepairPdf } from '@/lib/repairPdf';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -505,6 +506,7 @@ const SmashGuruPage = () => {
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1"><DollarSign size={12} /> ${Number(repair.cost).toLocaleString()}</span>
                         <span className="flex items-center gap-1"><Clock size={12} /> {repair.downtime}h downtime</span>
+                        <Button size="sm" variant="ghost" className="ml-auto h-7 text-xs" onClick={() => downloadRepairPdf(repair)}>Download PDF</Button>
                       </div>
                     </CardContent>
                   </Card>

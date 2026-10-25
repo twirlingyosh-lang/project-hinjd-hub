@@ -74,9 +74,11 @@ const SavedRunsPage = () => {
             <p className="text-muted-foreground mb-6">
               Your calculator and troubleshooting results will appear here
             </p>
-            <Link to="/app/calculator">
-              <Button>Go to Calculator</Button>
-            </Link>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-xl">
+              <Link to="/app/calculator"><Button size="lg" className="w-full h-20 text-base">Tonnage Calculator</Button></Link>
+              <Link to="/app/equipment"><Button size="lg" variant="secondary" className="w-full h-20 text-base">Equipment Diagnostics</Button></Link>
+              <Link to="/app/materials"><Button size="lg" variant="outline" className="w-full h-20 text-base">Screen Setup</Button></Link>
+            </div>
           </div>
         ) : (
           <>
