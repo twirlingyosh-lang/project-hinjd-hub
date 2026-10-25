@@ -9,3 +9,4 @@
 - [ ] Materials screen: enter feed material + screen size -> setup steps
 - [ ] Create real BeltSaver quote, invoice, send Stripe link to test customer
 - [ ] Client portal: customers view quotes, invoices, diagnostics, update account
+- [ ] Publish + submit sitemap to Google
