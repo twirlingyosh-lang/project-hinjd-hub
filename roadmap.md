@@ -30,3 +30,6 @@
 - [ ] Play Store release (needs user: build + upload from own computer, Google Play developer account)
 - [ ] Test payments in preview (needs user: Stripe test key)
 - [ ] LinkedIn (needs user: share posts? sign-in? company page?)
+- [ ] Portal: demo simulation Requested>Quoted>Invoiced>Paid
+- [ ] Cox Aggs catalog with price tiers + quote into pipeline
+- [ ] Fleet threshold alerts + Generate Work Order (+PDF)
