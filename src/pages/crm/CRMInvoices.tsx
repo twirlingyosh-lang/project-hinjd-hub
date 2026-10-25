@@ -51,6 +51,7 @@ export const CRMInvoices = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [tab, setTab] = useState<'all' | 'paid' | 'unpaid' | 'overdue'>('all');
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -123,9 +124,11 @@ export const CRMInvoices = () => {
     }
   };
 
+  const isOverdue = (i: Invoice) => i.status !== 'paid' && i.status !== 'cancelled' && !!i.due_date && new Date(i.due_date) < new Date(new Date().toDateString());
   const filteredInvoices = invoices.filter(invoice =>
-    invoice.client_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    invoice.id.toLowerCase().includes(searchQuery.toLowerCase())
+    (invoice.client_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    invoice.id.toLowerCase().includes(searchQuery.toLowerCase())) &&
+    (tab === 'all' || (tab === 'paid' ? invoice.status === 'paid' : tab === 'overdue' ? isOverdue(invoice) : invoice.status !== 'paid' && invoice.status !== 'cancelled' && !isOverdue(invoice)))
   );
 
   const formatCurrency = (value: number) => {
@@ -198,7 +201,17 @@ export const CRMInvoices = () => {
             </div>
           </CardContent>
         </Card>
-      ) : filteredInvoices.length === 0 ? (
+      ) : null}
+      {!loading && (
+        <div className="flex gap-2 mb-4 flex-wrap">
+          {(['all', 'paid', 'unpaid', 'overdue'] as const).map((t) => (
+            <Button key={t} size="sm" variant={tab === t ? 'default' : 'outline'} onClick={() => setTab(t)} className={t === 'overdue' && tab !== t ? 'text-destructive border-destructive/50' : ''}>
+              {t[0].toUpperCase() + t.slice(1)} ({invoices.filter((i) => t === 'all' || (t === 'paid' ? i.status === 'paid' : t === 'overdue' ? isOverdue(i) : i.status !== 'paid' && i.status !== 'cancelled' && !isOverdue(i))).length})
+            </Button>
+          ))}
+        </div>
+      )}
+      {loading ? null : filteredInvoices.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
             <Receipt className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
@@ -236,7 +249,7 @@ export const CRMInvoices = () => {
               {filteredInvoices.map(invoice => (
                 <TableRow 
                   key={invoice.id}
-                  className="cursor-pointer"
+                  className={`cursor-pointer ${isOverdue(invoice) ? 'bg-destructive/10 text-destructive hover:bg-destructive/20' : ''}`}
                   onClick={() => navigate(`/crm/invoices/${invoice.id}`)}
                 >
                   <TableCell className="font-mono text-sm">
