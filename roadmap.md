@@ -4,7 +4,7 @@
 - [x] CRM usage dashboard: assistant tool calls per account
 - [x] Monetization: quote → invoice with Stripe pay link (subscriptions + part orders already existed; aggregates = calculator only)
 - [x] Materials: step-by-step screen deck setup per machine for max TPH on each material
-- [ ] Submit diagnostics page to Google (blocked: needs publish first)
+- [x] Submit diagnostics page to Google
 - [x] Wire AI assistant: answer conveyor maintenance Qs, surface quotes/diagnostics/materials
 - [x] Materials screen: enter feed material + screen size -> setup steps
 - [ ] Create real BeltSaver quote, invoice, send Stripe link to test customer
