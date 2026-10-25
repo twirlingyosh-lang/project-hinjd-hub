@@ -1,3 +1,4 @@
+import { useLiveRefresh } from '@/hooks/useLiveRefresh';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CRMLayout } from './CRMLayout';
@@ -52,6 +53,7 @@ export const CRMInvoices = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [tab, setTab] = useState<'all' | 'paid' | 'unpaid' | 'overdue'>('all');
+  useLiveRefresh(['crm_invoices'], () => fetchInvoices());
 
   useEffect(() => {
     if (!authLoading && !user) {

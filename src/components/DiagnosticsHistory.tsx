@@ -1,3 +1,4 @@
+import { useLiveRefresh } from '@/hooks/useLiveRefresh';
 import { useEffect, useState } from 'react';
 import { 
   Clock, 
@@ -55,6 +56,7 @@ const FILTERS: Record<string, RegExp> = {
 
 const DiagnosticsHistory = () => {
   const [filter, setFilter] = useState<string>('All');
+  useLiveRefresh(['belt_diagnostics'], () => fetchDiagnostics());
   const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

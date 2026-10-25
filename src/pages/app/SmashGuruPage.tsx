@@ -1,3 +1,4 @@
+import { useLiveRefresh } from '@/hooks/useLiveRefresh';
 import { useState, useEffect, useCallback } from 'react';
 import { AppLayout } from '@/components/app/AppLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -269,6 +270,7 @@ const SmashGuruPage = () => {
   }, [user]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+  useLiveRefresh(['repair_logs', 'throughput_logs'], () => fetchData());
 
   const filteredLogs = throughputLogs.filter(l =>
     l.crusher.toLowerCase().includes(searchThroughput.toLowerCase()) ||
