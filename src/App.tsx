@@ -74,6 +74,7 @@ const AdminPanel = lazyWithRetry(() => import("./pages/app/AdminPanel"), "lazy-r
 const WorkflowsPage = lazyWithRetry(() => import("./pages/app/WorkflowsPage"), "lazy-retry:workflows");
 const SnippetsPage = lazyWithRetry(() => import("./pages/app/SnippetsPage"), "lazy-retry:snippets");
 const Base44AppPage = lazyWithRetry(() => import("./pages/app/Base44AppPage"), "lazy-retry:base44");
+const ClientPortal = lazyWithRetry(() => import("./pages/ClientPortal"), "lazy-retry:portal");
 const SettingsPage = lazyWithRetry(() => import("./pages/app/SettingsPage"), "lazy-retry:settings");
 const PaymentsOnboardingPage = lazyWithRetry(() => import("./pages/app/PaymentsOnboardingPage"), "lazy-retry:payments-onboarding");
 const ElectricalPage = lazyWithRetry(() => import("./pages/app/ElectricalPage"), "lazy-retry:electrical");
@@ -142,6 +143,7 @@ const App = () => (
                 <Route path="/app/workflows" element={<WorkflowsPage />} />
                 <Route path="/app/snippets" element={<SnippetsPage />} />
                 <Route path="/app/base44" element={<Base44AppPage />} />
+                <Route path="/portal" element={<ClientPortal />} />
                 <Route path="/app/settings" element={<SettingsPage />} />
                 <Route path="/app/payments-onboarding" element={<PaymentsOnboardingPage />} />
                 <Route path="/app/referral" element={<ReferralPage />} />
