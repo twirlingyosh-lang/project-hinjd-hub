@@ -8,6 +8,13 @@
       "when": 1792942361685,
       "tag": "0000_quote_requests",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792942382167,
+      "tag": "0001_mcp_tool_calls",
+      "breakpoints": true
     }
   ]
 }

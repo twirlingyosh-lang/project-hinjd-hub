@@ -657,6 +657,30 @@ export type Database = {
         }
         Relationships: []
       }
+      mcp_tool_calls: {
+        Row: {
+          created_at: string
+          id: string
+          success: boolean
+          tool_name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          success?: boolean
+          tool_name: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          success?: boolean
+          tool_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       order_manifests: {
         Row: {
           created_at: string
