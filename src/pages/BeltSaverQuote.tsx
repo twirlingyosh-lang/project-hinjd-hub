@@ -53,6 +53,7 @@ const BeltSaverQuote = () => {
       <div className="max-w-xl mx-auto">
         <Link to="/beltsaver" className="text-sm text-muted-foreground hover:text-primary">← BeltSaver</Link>
         <h1 className="text-3xl font-bold mt-4 text-primary">Request a BeltSaver Quote</h1>
+        <p className="mt-2 text-sm font-semibold text-primary">4 units in stock — ready to ship</p>
         <p className="text-muted-foreground mt-2 mb-6">Tell us about your conveyor and we'll get back to you with pricing.</p>
         <Card>
           <CardContent className="pt-6">
