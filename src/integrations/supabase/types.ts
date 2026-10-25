@@ -764,6 +764,45 @@ export type Database = {
         }
         Relationships: []
       }
+      quote_requests: {
+        Row: {
+          belt_width: string | null
+          company: string | null
+          created_at: string
+          email: string
+          id: string
+          message: string | null
+          name: string
+          phone: string | null
+          quantity: number | null
+          status: string
+        }
+        Insert: {
+          belt_width?: string | null
+          company?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          message?: string | null
+          name: string
+          phone?: string | null
+          quantity?: number | null
+          status?: string
+        }
+        Update: {
+          belt_width?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string | null
+          name?: string
+          phone?: string | null
+          quantity?: number | null
+          status?: string
+        }
+        Relationships: []
+      }
       referrals: {
         Row: {
           converted_at: string | null
