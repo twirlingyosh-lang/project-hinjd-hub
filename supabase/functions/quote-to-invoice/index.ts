@@ -1,7 +1,7 @@
 import Stripe from "https://esm.sh/stripe@18.5.0";
-import { createClient } from "npm:@supabase/supabase-js@2.57.2";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
-import { z } from "npm:zod@3.25.76";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+const corsHeaders = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version" };
+import { z } from "https://esm.sh/zod@3.25.76";
 
 const Body = z.object({
   quote_id: z.string().uuid(),
