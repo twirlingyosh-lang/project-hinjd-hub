@@ -16,3 +16,5 @@
 - [x] Stock badge next to quote button on BeltSaver page
 - [x] Portal quote tracker: Requested > Quoted > Invoiced > Paid
 - [x] CRM Deals: summary cards (count + total value per stage)
+- [ ] Fix critical security finding + republish
+- [ ] Test customer portal walkthrough: quote > invoiced > paid
