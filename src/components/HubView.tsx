@@ -110,6 +110,14 @@ const HubView = ({ onNavigateToApp }: HubViewProps) => {
       borderAccent: 'border-industrial-red/20 hover:border-industrial-red/50',
     },
     {
+      title: "Fleet Repair Diagnostics",
+      desc: "AI diagnostics, fault codes, hydraulics & electrical troubleshooting",
+      icon: <Wrench size={22} />,
+      path: '/fleet-repair-diagnostics',
+      accent: 'from-primary/15 to-primary/5',
+      borderAccent: 'border-primary/20 hover:border-primary/50',
+    },
+    {
       title: "CRM & Command",
       desc: "Sales pipeline, AI insights & HQ financial dashboard",
       icon: <TrendingUp size={22} />,

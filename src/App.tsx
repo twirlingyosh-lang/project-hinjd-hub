@@ -52,6 +52,9 @@ const AggregateOpps = lazyWithRetry(() => import("./pages/AggregateOpps"), "lazy
 const NotFound = lazyWithRetry(() => import("./pages/NotFound"), "lazy-retry:not-found");
 const PrivacyPolicy = lazyWithRetry(() => import("./pages/PrivacyPolicy"), "lazy-retry:privacy-policy");
 const Debug = lazyWithRetry(() => import("./pages/Debug"), "lazy-retry:debug");
+const BeltSaverQuote = lazyWithRetry(() => import("./pages/BeltSaverQuote"), "lazy-retry:beltsaver-quote");
+const FleetRepairDiagnostics = lazyWithRetry(() => import("./pages/FleetRepairDiagnostics"), "lazy-retry:fleet-repair");
+const CRMUsage = lazyWithRetry(() => import("./pages/crm/CRMUsage"), "lazy-retry:crm-usage");
 const OAuthConsent = lazyWithRetry(() => import("./pages/OAuthConsent"), "lazy-retry:oauth-consent");
 
 // Aggregate Tools App pages
@@ -114,6 +117,8 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/beltsaver" element={<BeltSaver />} />
+                <Route path="/beltsaver/quote" element={<BeltSaverQuote />} />
+                <Route path="/fleet-repair-diagnostics" element={<FleetRepairDiagnostics />} />
                 <Route path="/conveyor-maintenance" element={<ConveyorMaintenance />} />
                 <Route path="/content-generator" element={<ContentGeneratorPage />} />
                 <Route path="/aggregate-opps" element={<AggregateOpps />} />
@@ -168,6 +173,7 @@ const App = () => (
                 <Route path="/crm/funnel" element={<CRMSalesFunnel />} />
                 <Route path="/crm/reports" element={<CRMReports />} />
                 <Route path="/crm/operations" element={<CRMOperations />} />
+                <Route path="/crm/usage" element={<CRMUsage />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

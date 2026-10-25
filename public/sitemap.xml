@@ -19,6 +19,18 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://hinjd-ecosystem-hub.lovable.app/fleet-repair-diagnostics</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://hinjd-ecosystem-hub.lovable.app/beltsaver/quote</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://hinjd-ecosystem-hub.lovable.app/aggregate-opps</loc>
     <lastmod>2026-10-25</lastmod>
     <changefreq>monthly</changefreq>

@@ -30,6 +30,7 @@ const navItems = [
   { path: '/crm/funnel', icon: TrendingUp, label: 'Sales Funnel' },
   { path: '/crm/reports', icon: BarChart3, label: 'Reports' },
   { path: '/crm/operations', icon: Wrench, label: 'Operations' },
+  { path: '/crm/usage', icon: BarChart3, label: 'Usage & Quotes' },
   { path: '/crm/clients', icon: Users, label: 'Clients' },
   { path: '/crm/deals', icon: Handshake, label: 'Deals' },
   { path: '/crm/invoices', icon: Receipt, label: 'Invoices' },
