@@ -13,3 +13,6 @@
 - [ ] BeltSaver ROI: users enter own belt costs, see yearly savings
 - [ ] Command Center: line chart of tonnage over time from throughput logs
 - [ ] Diagnostic History: filter chips (crusher, screener, conveyor, electrical)
+- [ ] Stock badge next to quote button on BeltSaver page
+- [ ] Portal quote tracker: Requested > Quoted > Invoiced > Paid
+- [ ] CRM Deals: summary cards (count + total value per stage)
