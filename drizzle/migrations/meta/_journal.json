@@ -50,6 +50,13 @@
       "when": 1792943868973,
       "tag": "0006_lock_subscription_writes",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792943962068,
+      "tag": "0007_profiles_column_updates",
+      "breakpoints": true
     }
   ]
 }
