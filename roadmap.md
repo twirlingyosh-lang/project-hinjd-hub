@@ -20,3 +20,6 @@
 - [ ] Test customer portal walkthrough: quote > invoiced > paid
 - [ ] Real Cox Aggs page: products, quotes, payments (blocked: need product list + prices)
 - [x] Portal login link on quote + fleet repair pages
+- [ ] CRM Invoices: Paid/Unpaid/Overdue tabs, overdue rows red
+- [ ] Repair Logs: Download PDF per entry
+- [ ] Saved Runs empty state: quick-start buttons
