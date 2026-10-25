@@ -6,3 +6,6 @@
 - [x] Materials: step-by-step screen deck setup per machine for max TPH on each material
 - [ ] Submit diagnostics page to Google (blocked: needs publish first)
 - [ ] Wire AI assistant: answer conveyor maintenance Qs, surface quotes/diagnostics/materials
+- [ ] Materials screen: enter feed material + screen size -> setup steps
+- [ ] Create real BeltSaver quote, invoice, send Stripe link to test customer
+- [ ] Client portal: customers view quotes, invoices, diagnostics, update account
