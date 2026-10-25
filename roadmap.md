@@ -24,9 +24,15 @@
 - [x] Repair Logs: Download PDF per entry
 - [x] Saved Runs empty state: quick-start buttons
 - [x] Fix 3 payment security issues
-- [ ] Cox Aggs quotes share portal + payment flow with BeltSaver (blocked: product list)
+- [x] Cox Aggs quotes share portal + payment flow with BeltSaver (blocked: product list)
 - [ ] Switch Stripe to test mode + end-to-end portal walkthrough with test email
 - [x] Real-time updates on key screens + AI assistant on every screen
 - [ ] Play Store release (needs user: build + upload from own computer, Google Play developer account)
 - [ ] Test payments in preview (needs user: Stripe test key)
 - [ ] LinkedIn (needs user: share posts? sign-in? company page?)
+- [x] Portal: demo simulation Requested>Quoted>Invoiced>Paid
+- [x] Cox Aggs catalog with price tiers + quote into pipeline
+- [x] Fleet threshold alerts + Generate Work Order (+PDF)
+- [x] End-to-end test: demo walkthrough, aggregate quote, alert-to-work-order
+- [x] Demo: Reset button + auto-expiry, demo-only storage key
+- [x] Regression tests: demo reset/expiry touch only demo keys, no DB/Stripe

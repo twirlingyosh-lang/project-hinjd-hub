@@ -1,5 +1,13 @@
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { useAuth } from '@/contexts/AuthContext';
+import { FleetAlerts } from '@/components/fleet/FleetAlerts';
+
+const FleetAlertsIfSignedIn = () => {
+  const { user } = useAuth();
+  if (!user) return null;
+  return <section className="mt-12"><FleetAlerts /></section>;
+};
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Wrench, Zap, Droplets, Cpu, Cog, Search } from 'lucide-react';
@@ -50,6 +58,7 @@ const FleetRepairDiagnostics = () => (
           <li>Get the likely cause, repair steps and the parts you need.</li>
         </ol>
       </section>
+      <FleetAlertsIfSignedIn />
     </div>
   </main>
 );

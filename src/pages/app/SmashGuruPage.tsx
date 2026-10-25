@@ -18,6 +18,7 @@ import {
 } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
+import { FleetAlerts } from '@/components/fleet/FleetAlerts';
 import { downloadRepairPdf } from '@/lib/repairPdf';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -445,6 +446,7 @@ const SmashGuruPage = () => {
 
           {/* Repairs Tab */}
           <TabsContent value="repairs" className="space-y-4 mt-4">
+            <FleetAlerts />
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-semibold">Repair Logs</h3>
               <Button size="sm" variant="outline" onClick={() => setShowAddRepair(!showAddRepair)}>

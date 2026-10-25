@@ -796,12 +796,15 @@ export type Database = {
           belt_width: string | null
           company: string | null
           created_at: string
+          details: Json | null
           email: string
+          estimated_total: number | null
           id: string
           invoice_id: string | null
           message: string | null
           name: string
           phone: string | null
+          product: string
           quantity: number | null
           status: string
         }
@@ -809,12 +812,15 @@ export type Database = {
           belt_width?: string | null
           company?: string | null
           created_at?: string
+          details?: Json | null
           email: string
+          estimated_total?: number | null
           id?: string
           invoice_id?: string | null
           message?: string | null
           name: string
           phone?: string | null
+          product?: string
           quantity?: number | null
           status?: string
         }
@@ -822,12 +828,15 @@ export type Database = {
           belt_width?: string | null
           company?: string | null
           created_at?: string
+          details?: Json | null
           email?: string
+          estimated_total?: number | null
           id?: string
           invoice_id?: string | null
           message?: string | null
           name?: string
           phone?: string | null
+          product?: string
           quantity?: number | null
           status?: string
         }

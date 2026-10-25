@@ -1,3 +1,4 @@
+import { DemoWalkthrough } from '@/components/portal/DemoWalkthrough';
 import { useLiveRefresh } from '@/hooks/useLiveRefresh';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -43,7 +44,7 @@ export default function ClientPortal() {
     (async () => {
       const email = user.email ?? '';
       const [q, i, b, e, p] = await Promise.all([
-        supabase.from('quote_requests').select('id, created_at, belt_width, quantity, status, invoice_id').ilike('email', email).order('created_at', { ascending: false }),
+        supabase.from('quote_requests').select('id, created_at, belt_width, quantity, status, invoice_id, product, estimated_total').ilike('email', email).order('created_at', { ascending: false }),
         supabase.from('crm_invoices').select('id, created_at, amount, status, due_date, payment_url').order('created_at', { ascending: false }),
         supabase.from('belt_diagnostics').select('id, created_at, location, severity, status').eq('user_id', user.id).order('created_at', { ascending: false }),
         supabase.from('equipment_diagnostics').select('id, created_at, equipment_type, make, model, status').eq('user_id', user.id).order('created_at', { ascending: false }),
@@ -73,6 +74,7 @@ export default function ClientPortal() {
           <h1 className="text-3xl industrial-title text-foreground">Customer Portal</h1>
           <Button asChild variant="outline"><Link to="/beltsaver/quote">New quote</Link></Button>
         </div>
+        <DemoWalkthrough />
         <Tabs defaultValue="quotes">
           <TabsList className="grid grid-cols-4 w-full">
             <TabsTrigger value="quotes">Quotes</TabsTrigger>
@@ -83,7 +85,7 @@ export default function ClientPortal() {
           <TabsContent value="quotes"><Card><CardContent className="pt-6 space-y-2">
             {quotes.length === 0 ? <Empty t="quotes" /> : quotes.map((q) => (
               <div key={q.id} className="border-b border-border py-3 text-sm space-y-2">
-                <span>{date(q.created_at)} · BeltSaver {q.belt_width ?? ''} × {q.quantity ?? 1}</span>
+                <span>{date(q.created_at)} · {q.product === 'cox_aggs' ? `Cox Aggregates · ${q.quantity ?? 0} t${q.estimated_total ? ` · est. $${Number(q.estimated_total).toLocaleString()}` : ''}` : `BeltSaver ${q.belt_width ?? ''} × ${q.quantity ?? 1}`}</span>
                 <div className="grid grid-cols-4 gap-1">
                   {STEPS.map((s, idx) => (
                     <div key={s} className="space-y-1">

@@ -64,6 +64,13 @@
       "when": 1792944014765,
       "tag": "0008_enable_realtime_core_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792944331663,
+      "tag": "0009_quote_product_details",
+      "breakpoints": true
     }
   ]
 }
