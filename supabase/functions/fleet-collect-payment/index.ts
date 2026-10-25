@@ -10,7 +10,7 @@ const corsHeaders = {
 
 const RequestSchema = z.object({
   unit_id: z.string().uuid(),
-  amount: z.number().positive().max(100000),
+  amount: z.number().optional(), // ignored: price comes from the fleet unit record
   description: z.string().max(500).optional(),
 });
 
@@ -44,7 +44,7 @@ serve(async (req) => {
       });
     }
 
-    const { unit_id, amount, description } = parsed.data;
+    const { unit_id, description } = parsed.data;
 
     // Verify fleet unit exists and belongs to user or user is admin
     const { data: unit, error: unitError } = await supabaseClient
@@ -54,6 +54,10 @@ serve(async (req) => {
       .single();
 
     if (unitError || !unit) throw new Error("Fleet unit not found");
+    const { data: isAdmin } = await supabaseClient.rpc('has_role', { _user_id: user.id, _role: 'admin' });
+    if (unit.user_id !== user.id && !isAdmin) throw new Error("Not allowed");
+    const amount = Number(unit.monthly_revenue);
+    if (!(amount > 0) || amount > 100000) throw new Error("This unit has no valid lease price set");
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
 
