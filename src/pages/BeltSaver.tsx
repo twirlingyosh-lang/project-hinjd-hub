@@ -149,6 +149,9 @@ const BeltSaver = () => {
             <ArrowLeft size={16} />
             Back to Hub
           </Button>
+          <Button size="sm" className="ml-2" onClick={() => navigate('/beltsaver/quote')}>
+            Request a Quote
+          </Button>
         </div>
 
         {/* Social Links */}

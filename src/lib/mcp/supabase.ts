@@ -64,3 +64,15 @@ export function supabaseForUser(ctx: ToolContext) {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
+
+/** Records one tool call for the usage dashboard; never fails the tool. */
+export async function logToolCall(
+  supabase: ReturnType<typeof supabaseForUser>,
+  toolName: string,
+) {
+  try {
+    await supabase.from("mcp_tool_calls").insert({ tool_name: toolName });
+  } catch {
+    // Usage logging is best-effort.
+  }
+}

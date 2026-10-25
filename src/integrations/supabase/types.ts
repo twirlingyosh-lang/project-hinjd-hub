@@ -27,7 +27,7 @@ export type Database = {
           severity: string
           status: string
           tracking_direction: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           attachments?: string[] | null
@@ -41,7 +41,7 @@ export type Database = {
           severity: string
           status?: string
           tracking_direction: string
-          user_id?: string
+          user_id?: string | null
         }
         Update: {
           attachments?: string[] | null
@@ -55,7 +55,7 @@ export type Database = {
           severity?: string
           status?: string
           tracking_direction?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -657,6 +657,30 @@ export type Database = {
         }
         Relationships: []
       }
+      mcp_tool_calls: {
+        Row: {
+          created_at: string
+          id: string
+          success: boolean
+          tool_name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          success?: boolean
+          tool_name: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          success?: boolean
+          tool_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       order_manifests: {
         Row: {
           created_at: string
@@ -761,6 +785,45 @@ export type Database = {
           id?: string
           total_uses?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      quote_requests: {
+        Row: {
+          belt_width: string | null
+          company: string | null
+          created_at: string
+          email: string
+          id: string
+          message: string | null
+          name: string
+          phone: string | null
+          quantity: number | null
+          status: string
+        }
+        Insert: {
+          belt_width?: string | null
+          company?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          message?: string | null
+          name: string
+          phone?: string | null
+          quantity?: number | null
+          status?: string
+        }
+        Update: {
+          belt_width?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string | null
+          name?: string
+          phone?: string | null
+          quantity?: number | null
+          status?: string
         }
         Relationships: []
       }

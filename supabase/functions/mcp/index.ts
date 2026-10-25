@@ -59,6 +59,12 @@ function supabaseForUser(ctx) {
     auth: { persistSession: false, autoRefreshToken: false }
   });
 }
+async function logToolCall(supabase, toolName) {
+  try {
+    await supabase.from("mcp_tool_calls").insert({ tool_name: toolName });
+  } catch {
+  }
+}
 
 // src/lib/mcp/tools/list-belt-diagnostics.ts
 var list_belt_diagnostics_default = defineTool({
@@ -75,6 +81,7 @@ var list_belt_diagnostics_default = defineTool({
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
     const supabase = supabaseForUser(ctx);
+    await logToolCall(supabase, "list_belt_diagnostics");
     let query = supabase.from("belt_diagnostics").select("id, created_at, location, tracking_direction, severity, cause, status, notes").order("created_at", { ascending: false }).limit(limit ?? 10);
     if (status) query = query.eq("status", status);
     const { data, error } = await query;
@@ -111,6 +118,7 @@ var create_belt_diagnostic_default = defineTool2({
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
     const supabase = supabaseForUser(ctx);
+    await logToolCall(supabase, "create_belt_diagnostic");
     const { data, error } = await supabase.from("belt_diagnostics").insert({
       user_id: ctx.getUserId(),
       location: input.location,
@@ -150,6 +158,7 @@ var list_equipment_diagnostics_default = defineTool3({
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
     const supabase = supabaseForUser(ctx);
+    await logToolCall(supabase, "list_equipment_diagnostics");
     let query = supabase.from("equipment_diagnostics").select("id, created_at, equipment_type, make, model, symptoms, diagnosis, status").order("created_at", { ascending: false }).limit(limit ?? 10);
     if (make) query = query.ilike("make", make);
     if (equipment_type) query = query.ilike("equipment_type", equipment_type);
@@ -182,6 +191,7 @@ var search_parts_default = defineTool4({
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
     const supabase = supabaseForUser(ctx);
+    await logToolCall(supabase, "search_parts");
     const escaped = query.replace(/[%,]/g, " ");
     let request = supabase.from("equipment_parts").select("id, part_number, name, description, category, makes, equipment_types, avg_price").or(`name.ilike.%${escaped}%,part_number.ilike.%${escaped}%`).limit(limit ?? 10);
     if (category) request = request.ilike("category", category);
@@ -213,6 +223,7 @@ var list_fleet_units_default = defineTool5({
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
     const supabase = supabaseForUser(ctx);
+    await logToolCall(supabase, "list_fleet_units");
     let query = supabase.from("fleet_units").select("id, unit_name, unit_type, status, monthly_revenue, acquisition_date, notes").order("created_at", { ascending: false }).limit(limit ?? 25);
     if (status) query = query.eq("status", status);
     const { data, error } = await query;
@@ -235,13 +246,67 @@ var list_fleet_units_default = defineTool5({
   }
 });
 
+// src/lib/mcp/tools/list-quote-requests.ts
+import { defineTool as defineTool6 } from "npm:@lovable.dev/mcp-js@0.28.0";
+import { z as z6 } from "npm:zod@^3.25.76";
+var list_quote_requests_default = defineTool6({
+  name: "list_quote_requests",
+  title: "List BeltSaver quote requests",
+  description: "List BeltSaver quote requests and leads submitted from the public quote page, newest first. Only admin accounts can see them.",
+  inputSchema: {
+    limit: z6.number().int().min(1).max(100).optional().describe("Maximum requests to return (default 25)."),
+    status: z6.string().trim().min(1).max(50).optional().describe("Filter by status, e.g. 'new' or 'contacted'.")
+  },
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+  handler: async ({ limit, status }, ctx) => {
+    if (!ctx.isAuthenticated()) {
+      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    }
+    const supabase = supabaseForUser(ctx);
+    await logToolCall(supabase, "list_quote_requests");
+    let query = supabase.from("quote_requests").select("id, created_at, name, email, company, phone, belt_width, quantity, message, status").order("created_at", { ascending: false }).limit(limit ?? 25);
+    if (status) query = query.eq("status", status);
+    const { data, error } = await query;
+    if (error) return { content: [{ type: "text", text: error.message }], isError: true };
+    return {
+      content: [{ type: "text", text: JSON.stringify(data ?? [], null, 2) }],
+      structuredContent: { quotes: data ?? [] }
+    };
+  }
+});
+
+// src/lib/mcp/tools/update-quote-status.ts
+import { defineTool as defineTool7 } from "npm:@lovable.dev/mcp-js@0.28.0";
+import { z as z7 } from "npm:zod@^3.25.76";
+var update_quote_status_default = defineTool7({
+  name: "update_quote_status",
+  title: "Update quote request status",
+  description: "Change the status of a BeltSaver quote request (admin accounts only).",
+  inputSchema: {
+    id: z7.string().uuid().describe("Quote request id."),
+    status: z7.enum(["new", "contacted", "quoted", "won", "lost"]).describe("New status.")
+  },
+  annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  handler: async ({ id, status }, ctx) => {
+    if (!ctx.isAuthenticated()) {
+      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    }
+    const supabase = supabaseForUser(ctx);
+    await logToolCall(supabase, "update_quote_status");
+    const { data, error } = await supabase.from("quote_requests").update({ status }).eq("id", id).select("id, status").maybeSingle();
+    if (error) return { content: [{ type: "text", text: error.message }], isError: true };
+    if (!data) return { content: [{ type: "text", text: "Quote not found or not permitted." }], isError: true };
+    return { content: [{ type: "text", text: `Quote ${id} set to ${status}.` }], structuredContent: { quote: data } };
+  }
+});
+
 // src/lib/mcp/index.ts
-var projectRef = "umfsspcknteaocrbveat";
+var projectRef = "zpslppxkrwjxsfotypdp";
 var mcp_default = defineMcp({
   name: "project-hinjd-hub",
   title: "Project Hinjd Hub",
-  version: "0.1.0",
-  instructions: "Tools for Project Hinjd Hub, an industrial equipment and conveyor operations platform. Use `list_belt_diagnostics` and `create_belt_diagnostic` for conveyor belt tracking issues, `list_equipment_diagnostics` for heavy equipment diagnostic history, `search_parts` to look up parts and pricing, and `list_fleet_units` for fleet status and revenue. All tools act as the signed-in user.",
+  version: "0.2.0",
+  instructions: "Tools for Project Hinjd Hub, an industrial equipment and conveyor operations platform. Use `list_belt_diagnostics` and `create_belt_diagnostic` for conveyor belt tracking issues, `list_equipment_diagnostics` for heavy equipment diagnostic history, `search_parts` to look up parts and pricing, `list_fleet_units` for fleet status and revenue, and `list_quote_requests` / `update_quote_status` for BeltSaver quote leads (admin only). All tools act as the signed-in user.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated"
@@ -251,7 +316,9 @@ var mcp_default = defineMcp({
     create_belt_diagnostic_default,
     list_equipment_diagnostics_default,
     search_parts_default,
-    list_fleet_units_default
+    list_fleet_units_default,
+    list_quote_requests_default,
+    update_quote_status_default
   ]
 });
 

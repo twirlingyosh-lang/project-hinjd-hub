@@ -24,6 +24,8 @@ const entries: SitemapEntry[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
   { path: "/beltsaver", changefreq: "weekly", priority: "0.9" },
   { path: "/conveyor-maintenance", changefreq: "weekly", priority: "0.9" },
+  { path: "/fleet-repair-diagnostics", changefreq: "weekly", priority: "0.9" },
+  { path: "/beltsaver/quote", changefreq: "monthly", priority: "0.8" },
   { path: "/aggregate-opps", changefreq: "monthly", priority: "0.7" },
   { path: "/content-generator", changefreq: "monthly", priority: "0.6" },
   { path: "/blog", changefreq: "weekly", priority: "0.7" },
@@ -43,7 +45,6 @@ function generateSitemap(items: SitemapEntry[]) {
     [
       `  <url>`,
       `    <loc>${BASE_URL}${e.path}</loc>`,
-      `    <lastmod>${today}</lastmod>`,
       e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
       e.priority ? `    <priority>${e.priority}</priority>` : null,
       `  </url>`,
@@ -113,7 +114,7 @@ function generateRobotsTxt() {
 }
 
 writeFileSync(resolve("public/sitemap.xml"), generateSitemap(entries));
-console.log(`sitemap.xml written (${entries.length} entries, ${today})`);
+console.log(`sitemap.xml written (${entries.length} entries)`);
 
 writeFileSync(resolve("public/robots.txt"), generateRobotsTxt());
 console.log(`robots.txt written (${BASE_URL}/sitemap.xml)`);
