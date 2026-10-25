@@ -137,8 +137,11 @@ serve(async (req) => {
         });
       }
     } else {
-      event = JSON.parse(body);
-      logStep('WARNING: Processing without signature verification');
+      logStep('Rejected: STRIPE_WEBHOOK_SECRET not configured');
+      return new Response(JSON.stringify({ error: 'Webhook not configured' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500,
+      });
     }
 
     logStep('Event type', { type: event.type });
