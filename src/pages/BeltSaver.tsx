@@ -153,6 +153,7 @@ const BeltSaver = () => {
           <Button size="sm" className="ml-2" onClick={() => navigate('/beltsaver/quote')}>
             Request a Quote
           </Button>
+          <span className="ml-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">In stock: 4 left</span>
         </div>
 
         {/* Social Links */}

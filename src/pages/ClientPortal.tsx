@@ -12,6 +12,14 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 
 type Row = Record<string, any>;
+const STEPS = ['Requested', 'Quoted', 'Invoiced', 'Paid'];
+export const quoteStep = (q: Row, invoices: Row[]) => {
+  const inv = invoices.find((i) => i.id === q.invoice_id);
+  if (inv?.status === 'paid') return 3;
+  if (q.invoice_id) return 2;
+  if (q.status === 'quoted') return 1;
+  return 0;
+};
 const date = (d: string) => new Date(d).toLocaleDateString();
 
 export default function ClientPortal() {
@@ -32,7 +40,7 @@ export default function ClientPortal() {
     (async () => {
       const email = user.email ?? '';
       const [q, i, b, e, p] = await Promise.all([
-        supabase.from('quote_requests').select('id, created_at, belt_width, quantity, status').ilike('email', email).order('created_at', { ascending: false }),
+        supabase.from('quote_requests').select('id, created_at, belt_width, quantity, status, invoice_id').ilike('email', email).order('created_at', { ascending: false }),
         supabase.from('crm_invoices').select('id, created_at, amount, status, due_date, payment_url').order('created_at', { ascending: false }),
         supabase.from('belt_diagnostics').select('id, created_at, location, severity, status').eq('user_id', user.id).order('created_at', { ascending: false }),
         supabase.from('equipment_diagnostics').select('id, created_at, equipment_type, make, model, status').eq('user_id', user.id).order('created_at', { ascending: false }),
@@ -71,9 +79,16 @@ export default function ClientPortal() {
           </TabsList>
           <TabsContent value="quotes"><Card><CardContent className="pt-6 space-y-2">
             {quotes.length === 0 ? <Empty t="quotes" /> : quotes.map((q) => (
-              <div key={q.id} className="flex justify-between border-b border-border py-2 text-sm">
+              <div key={q.id} className="border-b border-border py-3 text-sm space-y-2">
                 <span>{date(q.created_at)} · BeltSaver {q.belt_width ?? ''} × {q.quantity ?? 1}</span>
-                <Badge variant="secondary">{q.status}</Badge>
+                <div className="grid grid-cols-4 gap-1">
+                  {STEPS.map((s, idx) => (
+                    <div key={s} className="space-y-1">
+                      <div className={`h-1.5 rounded-full ${idx <= quoteStep(q, invoices) ? 'bg-primary' : 'bg-muted'}`} />
+                      <p className={`text-xs ${idx <= quoteStep(q, invoices) ? 'text-primary font-semibold' : 'text-muted-foreground'}`}>{s}</p>
+                    </div>
+                  ))}
+                </div>
               </div>))}
           </CardContent></Card></TabsContent>
           <TabsContent value="invoices"><Card><CardContent className="pt-6 space-y-2">
