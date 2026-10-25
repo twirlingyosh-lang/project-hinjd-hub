@@ -10,3 +10,6 @@
 - [ ] Create real BeltSaver quote, invoice, send Stripe link to test customer
 - [ ] Client portal: customers view quotes, invoices, diagnostics, update account
 - [ ] Publish + submit sitemap to Google
+- [ ] BeltSaver ROI: users enter own belt costs, see yearly savings
+- [ ] Command Center: line chart of tonnage over time from throughput logs
+- [ ] Diagnostic History: filter chips (crusher, screener, conveyor, electrical)
