@@ -13,7 +13,7 @@ const logStep = (step: string, details?: Record<string, unknown>) => {
 };
 
 const messageSchema = z.object({
-  role: z.enum(['user', 'assistant', 'system']),
+  role: z.enum(['user', 'assistant']),
   content: z.string().min(1).max(10000),
 });
 

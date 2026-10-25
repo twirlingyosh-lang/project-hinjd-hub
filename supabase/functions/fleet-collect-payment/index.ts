@@ -3,6 +3,9 @@ import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { z } from "https://esm.sh/zod@3.25.76";
 
+const ALLOWED_ORIGINS = ["https://hinjd-ecosystem-hub.lovable.app", "https://id-preview--8a90f329-1999-4f92-9e0a-6730f7f00d7a.lovable.app", "http://localhost:8080"];
+const safeOrigin = (o: string | null) => (o && ALLOWED_ORIGINS.includes(o) ? o : ALLOWED_ORIGINS[0]);
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
@@ -84,8 +87,8 @@ serve(async (req) => {
         quantity: 1,
       }],
       mode: 'payment',
-      success_url: `${req.headers.get("origin") || 'https://hinjd-ecosystem-hub.lovable.app'}/app/dashboard?payment=success&unit=${unit_id}`,
-      cancel_url: `${req.headers.get("origin") || 'https://hinjd-ecosystem-hub.lovable.app'}/app/dashboard?payment=canceled`,
+      success_url: `${safeOrigin(req.headers.get("origin"))}/app/dashboard?payment=success&unit=${unit_id}`,
+      cancel_url: `${safeOrigin(req.headers.get("origin"))}/app/dashboard?payment=canceled`,
       metadata: {
         user_id: user.id,
         unit_id,

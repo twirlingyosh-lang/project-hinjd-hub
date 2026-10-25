@@ -1,5 +1,8 @@
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+const ALLOWED_ORIGINS = ["https://hinjd-ecosystem-hub.lovable.app", "https://id-preview--8a90f329-1999-4f92-9e0a-6730f7f00d7a.lovable.app", "http://localhost:8080"];
+const safeOrigin = (o: string | null) => (o && ALLOWED_ORIGINS.includes(o) ? o : ALLOWED_ORIGINS[0]);
+
 const corsHeaders = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version" };
 import { z } from "https://esm.sh/zod@3.25.76";
 
@@ -44,7 +47,7 @@ Deno.serve(async (req) => {
 
     const cents = Math.round(amount * 100);
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, { apiVersion: "2025-08-27.basil" });
-    const origin = req.headers.get("origin") ?? "https://hinjd-ecosystem-hub.lovable.app";
+    const origin = safeOrigin(req.headers.get("origin"));
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       customer_email: q.email,
