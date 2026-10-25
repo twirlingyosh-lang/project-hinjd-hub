@@ -15,6 +15,13 @@
       "when": 1792942382167,
       "tag": "0001_mcp_tool_calls",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792942843241,
+      "tag": "0002_invoice_payment_url",
+      "breakpoints": true
     }
   ]
 }
