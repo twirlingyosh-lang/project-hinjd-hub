@@ -20,7 +20,7 @@ const BeltAssistant = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Hi! I'm BeltSaver AI, your conveyor belt diagnostic assistant. Describe your belt tracking issue and I'll help you troubleshoot it. What problem are you experiencing?"
+      content: "Hi! I'm Hinjd AI. Ask me about any problem — conveyors and BeltSaver, crushers, screens, hydraulics, electrical, fault codes, fleet equipment, materials setup, or your quotes and invoices."
     }
   ]);
   const [input, setInput] = useState('');
@@ -180,7 +180,7 @@ const BeltAssistant = () => {
         onClick={() => setIsOpen(true)}
         className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50"
         size="icon"
-        aria-label="Open BeltSaver AI diagnostic assistant"
+        aria-label="Open Hinjd AI assistant"
       >
         <MessageCircle size={24} />
       </Button>
@@ -188,7 +188,7 @@ const BeltAssistant = () => {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 w-[380px] h-[520px] bg-card border border-border rounded-3xl shadow-2xl flex flex-col z-50 animate-slide-up overflow-hidden">
+    <div className="fixed bottom-4 right-4 w-[calc(100vw-2rem)] max-w-[380px] h-[min(520px,80vh)] bg-card border border-border rounded-3xl shadow-2xl flex flex-col z-50 animate-slide-up overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-primary/5">
         <div className="flex items-center gap-2">

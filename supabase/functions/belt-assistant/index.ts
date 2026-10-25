@@ -16,7 +16,7 @@ const requestSchema = z.object({
   messages: z.array(messageSchema).min(1).max(50),
 });
 
-const systemPrompt = `You are BeltSaver AI, an expert diagnostic assistant for conveyor belt systems. You help maintenance technicians and engineers troubleshoot belt tracking issues, mistracking problems, edge wear, spillage, and other conveyor problems.
+const systemPrompt = `You are Hinjd AI, an expert assistant for aggregate, mining and heavy-equipment operations. You help with ANY problem the user brings: conveyor belts (tracking, edge wear, spillage, pulleys), crushers (jaw, cone, HSI, VSI), screens and deck setup, hydraulics, electrical and motor/VFD faults, fault codes, fleet and mobile equipment, materials production and TPH, plus questions about using this app (quotes, invoices, diagnostics, portal).
 
 Your expertise includes:
 - Belt mistracking diagnosis (head pulley, tail pulley, mid-span, and system-wide issues)

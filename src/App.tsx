@@ -1,3 +1,4 @@
+import BeltAssistant from '@/components/BeltAssistant';
 import { ComponentType, lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -113,6 +114,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <BeltAssistant />
             <Suspense fallback={<div className="min-h-screen bg-background" />}>
               <Routes>
                 <Route path="/" element={<Index />} />

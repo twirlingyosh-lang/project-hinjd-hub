@@ -1,6 +1,5 @@
 import { Helmet } from 'react-helmet-async';
 import HubView from '@/components/HubView';
-import BeltAssistant from '@/components/BeltAssistant';
 const Index = () => {
   const organizationSchema = {
     "@context": "https://schema.org",
@@ -55,7 +54,6 @@ const Index = () => {
         </script>
       </Helmet>
       <HubView />
-      <BeltAssistant />
     </>
   );
 };
