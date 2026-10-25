@@ -1,6 +1,6 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
-import { supabaseForUser } from "../supabase";
+import { supabaseForUser, logToolCall } from "../supabase";
 
 export default defineTool({
   name: "search_parts",
@@ -18,6 +18,7 @@ export default defineTool({
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
     const supabase = supabaseForUser(ctx);
+    await logToolCall(supabase, "search_parts");
     const escaped = query.replace(/[%,]/g, " ");
     let request = supabase
       .from("equipment_parts")

@@ -59,6 +59,12 @@ function supabaseForUser(ctx) {
     auth: { persistSession: false, autoRefreshToken: false }
   });
 }
+async function logToolCall(supabase, toolName) {
+  try {
+    await supabase.from("mcp_tool_calls").insert({ tool_name: toolName });
+  } catch {
+  }
+}
 
 // src/lib/mcp/tools/list-belt-diagnostics.ts
 var list_belt_diagnostics_default = defineTool({
@@ -75,6 +81,7 @@ var list_belt_diagnostics_default = defineTool({
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
     const supabase = supabaseForUser(ctx);
+    await logToolCall(supabase, "list_belt_diagnostics");
     let query = supabase.from("belt_diagnostics").select("id, created_at, location, tracking_direction, severity, cause, status, notes").order("created_at", { ascending: false }).limit(limit ?? 10);
     if (status) query = query.eq("status", status);
     const { data, error } = await query;
@@ -111,6 +118,7 @@ var create_belt_diagnostic_default = defineTool2({
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
     const supabase = supabaseForUser(ctx);
+    await logToolCall(supabase, "create_belt_diagnostic");
     const { data, error } = await supabase.from("belt_diagnostics").insert({
       user_id: ctx.getUserId(),
       location: input.location,
@@ -150,6 +158,7 @@ var list_equipment_diagnostics_default = defineTool3({
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
     const supabase = supabaseForUser(ctx);
+    await logToolCall(supabase, "list_equipment_diagnostics");
     let query = supabase.from("equipment_diagnostics").select("id, created_at, equipment_type, make, model, symptoms, diagnosis, status").order("created_at", { ascending: false }).limit(limit ?? 10);
     if (make) query = query.ilike("make", make);
     if (equipment_type) query = query.ilike("equipment_type", equipment_type);
@@ -182,6 +191,7 @@ var search_parts_default = defineTool4({
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
     const supabase = supabaseForUser(ctx);
+    await logToolCall(supabase, "search_parts");
     const escaped = query.replace(/[%,]/g, " ");
     let request = supabase.from("equipment_parts").select("id, part_number, name, description, category, makes, equipment_types, avg_price").or(`name.ilike.%${escaped}%,part_number.ilike.%${escaped}%`).limit(limit ?? 10);
     if (category) request = request.ilike("category", category);
@@ -213,6 +223,7 @@ var list_fleet_units_default = defineTool5({
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
     const supabase = supabaseForUser(ctx);
+    await logToolCall(supabase, "list_fleet_units");
     let query = supabase.from("fleet_units").select("id, unit_name, unit_type, status, monthly_revenue, acquisition_date, notes").order("created_at", { ascending: false }).limit(limit ?? 25);
     if (status) query = query.eq("status", status);
     const { data, error } = await query;

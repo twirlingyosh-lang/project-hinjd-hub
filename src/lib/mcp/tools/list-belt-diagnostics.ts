@@ -1,6 +1,6 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
-import { supabaseForUser } from "../supabase";
+import { supabaseForUser, logToolCall } from "../supabase";
 
 export default defineTool({
   name: "list_belt_diagnostics",
@@ -17,6 +17,7 @@ export default defineTool({
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
     const supabase = supabaseForUser(ctx);
+    await logToolCall(supabase, "list_belt_diagnostics");
     let query = supabase
       .from("belt_diagnostics")
       .select("id, created_at, location, tracking_direction, severity, cause, status, notes")
