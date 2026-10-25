@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import SocialMediaLinks from '@/components/SocialMediaLinks';
+import { BeltSavingsCalculator } from '@/components/BeltSavingsCalculator';
 import heroImage from '@/assets/tail-pulley-hero.jpg?format=webp';
 import tailPulleyTakeup from '@/assets/tail-pulley-takeup.jpg?format=webp';
 import tailPulleyEdge from '@/assets/tail-pulley-edge-protection.jpg?format=webp';
@@ -433,6 +434,8 @@ const BeltSaver = () => {
             </div>
           </div>
         </section>
+
+        <section className="mb-20"><BeltSavingsCalculator /></section>
 
         {/* CTA Section */}
         <section className="text-center animate-slide-up" style={{ animationDelay: '1.2s' }}>

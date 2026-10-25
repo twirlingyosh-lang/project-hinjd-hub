@@ -46,7 +46,15 @@ interface Diagnostic {
   attachments: string[] | null;
 }
 
+const FILTERS: Record<string, RegExp> = {
+  Crusher: /crush|jaw|cone|impact|vsi|hsi/i,
+  Screener: /screen|deck|mesh/i,
+  Conveyor: /belt|conveyor|pulley|idler|track|head|tail|span/i,
+  Electrical: /electric|motor|wiring|vfd|sensor|switch|power/i,
+};
+
 const DiagnosticsHistory = () => {
+  const [filter, setFilter] = useState<string>('All');
   const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -198,7 +206,13 @@ const DiagnosticsHistory = () => {
         </Button>
       </div>
 
-      {diagnostics.map((diag) => (
+      <div className="flex flex-wrap gap-2">
+        {['All', ...Object.keys(FILTERS)].map((f) => (
+          <Button key={f} size="sm" variant={filter === f ? 'default' : 'outline'} className="rounded-full" onClick={() => setFilter(f)}>{f}</Button>
+        ))}
+      </div>
+
+      {diagnostics.filter((d) => filter === 'All' || FILTERS[filter].test(`${d.location} ${d.cause} ${d.notes ?? ''}`)).map((diag) => (
         <Card key={diag.id} className="bg-card border-border">
           <CardHeader className="pb-2">
             <div className="flex items-start justify-between gap-2">
