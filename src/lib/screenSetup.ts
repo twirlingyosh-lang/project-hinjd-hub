@@ -19,6 +19,13 @@ export const PRODUCTS: Product[] = [
   { value: 'sand', label: 'Manufactured / Concrete Sand', top: 0.1875, bottom: 0 },
 ];
 
+export const FEED_MATERIALS = [
+  { value: 'limestone', label: 'Limestone (soft)', factor: 1.1 },
+  { value: 'gravel', label: 'River gravel / pit run', factor: 1.05 },
+  { value: 'granite', label: 'Granite (hard)', factor: 0.9 },
+  { value: 'basalt', label: 'Basalt / trap rock (hard, abrasive)', factor: 0.85 },
+];
+
 export const MACHINES: { value: Machine; label: string; yield: number }[] = [
   { value: 'jaw', label: 'Jaw Crusher', yield: 0.3 },
   { value: 'cone', label: 'Cone Crusher', yield: 0.55 },
@@ -43,7 +50,10 @@ export interface SetupResult {
 
 const fmt = (n: number) => `${n.toFixed(3).replace(/0+$/, '').replace(/\.$/, '')}"`;
 
-export function planSetup(machine: Machine, product: Product, feedTph: number): SetupResult {
+export interface PlantInput { feedMaterial?: string; feedTopSize?: number; myScreenOpening?: number }
+
+export function planSetup(machine: Machine, product: Product, feedTph: number, plant: PlantInput = {}): SetupResult {
+  const factor = FEED_MATERIALS.find((f) => f.value === plant.feedMaterial)?.factor ?? 1;
   const m = MACHINES.find((x) => x.value === machine)!;
   const top = openingFor(product.top);
   const bottom = product.bottom > 0 ? openingFor(product.bottom) : 0;
@@ -56,7 +66,7 @@ export function planSetup(machine: Machine, product: Product, feedTph: number): 
 
   // Closed circuit: oversize returns to the crusher, lifting usable yield.
   const closedYield = Math.min(0.9, m.yield + (product.bottom > 0 ? 0.2 : 0.3));
-  const productTph = Math.round(feedTph * closedYield);
+  const productTph = Math.round(feedTph * closedYield * factor);
   const recirculatingTph = Math.round(feedTph * (1 - m.yield) * (product.bottom > 0 ? 0.6 : 0.7));
   const screenAreaSqFt = Math.ceil((feedTph + recirculatingTph) / tphPerSqFt(top));
 
@@ -79,6 +89,17 @@ export function planSetup(machine: Machine, product: Product, feedTph: number): 
     `Screen needs about ${screenAreaSqFt} ft² per deck for ${feedTph + recirculatingTph} TPH total load.`,
     `Check a gradation sample after 30 min; tighten the setting if oversize return exceeds ${recirculatingTph} TPH.`,
   ];
+
+  if (plant.feedTopSize && plant.feedTopSize > 0) {
+    const ratio = plant.feedTopSize / product.top;
+    const maxRatio = machine === 'jaw' ? 8 : machine === 'cone' ? 6 : machine === 'hsi' ? 10 : 4;
+    if (ratio > maxRatio) steps.unshift(`Feed top size ${fmt(plant.feedTopSize)} is too big for one ${m.label} stage (ratio ${ratio.toFixed(1)}:1, max ~${maxRatio}:1). Add a primary crusher ahead of it.`);
+  }
+  if (plant.myScreenOpening && plant.myScreenOpening > 0 && Math.abs(plant.myScreenOpening - top) > 0.01) {
+    steps.push(plant.myScreenOpening > top
+      ? `Your ${fmt(plant.myScreenOpening)} top screen is bigger than the ${fmt(top)} needed — oversize will get into your product. Swap to ${fmt(top)}.`
+      : `Your ${fmt(plant.myScreenOpening)} top screen is smaller than the ${fmt(top)} needed — you'll recirculate good product and lose TPH. Swap to ${fmt(top)}.`);
+  }
 
   return { crusherSetting, decks, productTph, recirculatingTph, screenAreaSqFt, steps };
 }
