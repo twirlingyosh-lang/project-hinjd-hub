@@ -1250,6 +1250,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      my_client_ids: { Args: never; Returns: string[] }
     }
     Enums: {
       app_role: "admin" | "user"
