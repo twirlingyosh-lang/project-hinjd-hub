@@ -8,6 +8,7 @@ import { SubscriptionPlans } from '@/components/SubscriptionPlans';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { ScreenSetupPlanner } from '@/components/app/ScreenSetupPlanner';
 
 const AggregateOpps = () => {
   const navigate = useNavigate();
@@ -72,6 +73,10 @@ const AggregateOpps = () => {
         <meta name="twitter:image" content="https://hinjd-ecosystem-hub.lovable.app/og-aggregate-opps.jpg" />
       </Helmet>
       <AggregateOppsApp onNavigateToHub={handleNavigateToHub} />
+      <section className="container mx-auto px-4 py-8">
+        <h2 className="text-2xl industrial-title text-foreground mb-4">Cox Aggs Screen Setup</h2>
+        <ScreenSetupPlanner />
+      </section>
       
       <Dialog open={showPlans} onOpenChange={setShowPlans}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
