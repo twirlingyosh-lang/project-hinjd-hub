@@ -34,3 +34,4 @@
 - [ ] Cox Aggs catalog with price tiers + quote into pipeline
 - [ ] Fleet threshold alerts + Generate Work Order (+PDF)
 - [ ] End-to-end test: demo walkthrough, aggregate quote, alert-to-work-order
+- [ ] Demo: Reset button + auto-expiry, demo-only storage key
