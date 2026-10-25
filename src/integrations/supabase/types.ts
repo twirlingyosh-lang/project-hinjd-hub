@@ -198,6 +198,7 @@ export type Database = {
           deal_id: string | null
           due_date: string | null
           id: string
+          payment_url: string | null
           pdf_url: string | null
           status: string
           stripe_payment_intent_id: string | null
@@ -211,6 +212,7 @@ export type Database = {
           deal_id?: string | null
           due_date?: string | null
           id?: string
+          payment_url?: string | null
           pdf_url?: string | null
           status?: string
           stripe_payment_intent_id?: string | null
@@ -224,6 +226,7 @@ export type Database = {
           deal_id?: string | null
           due_date?: string | null
           id?: string
+          payment_url?: string | null
           pdf_url?: string | null
           status?: string
           stripe_payment_intent_id?: string | null
@@ -795,6 +798,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          invoice_id: string | null
           message: string | null
           name: string
           phone: string | null
@@ -807,6 +811,7 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          invoice_id?: string | null
           message?: string | null
           name: string
           phone?: string | null
@@ -819,6 +824,7 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          invoice_id?: string | null
           message?: string | null
           name?: string
           phone?: string | null

@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowRight, Calculator, Info } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { ScreenSetupPlanner } from '@/components/app/ScreenSetupPlanner';
 
 const aggregateTypes = [
   { value: 'gravel', label: 'Gravel', density: 1.5 },
@@ -62,9 +63,10 @@ const MaterialsPage = () => {
     <AppLayout title="Materials">
       <div className="p-4 space-y-6">
         <Tabs defaultValue="yardage" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="yardage">Yardage</TabsTrigger>
             <TabsTrigger value="crusher">Crusher Setup</TabsTrigger>
+            <TabsTrigger value="screens">Screen Setup</TabsTrigger>
           </TabsList>
 
           <TabsContent value="yardage" className="space-y-4 mt-4">
@@ -174,6 +176,10 @@ const MaterialsPage = () => {
                 </Link>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="screens" className="mt-4">
+            <ScreenSetupPlanner />
           </TabsContent>
         </Tabs>
 
