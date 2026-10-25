@@ -91,6 +91,26 @@ serve(async (req) => {
 
     console.log('Processing chat request with', messages.length, 'messages');
 
+    // Pull the signed-in user's own records (RLS-scoped) so the assistant can surface them
+    const [belt, equip, quotes] = await Promise.all([
+      supabaseClient.from('belt_diagnostics').select('created_at, location, tracking_direction, severity, cause, status').order('created_at', { ascending: false }).limit(10),
+      supabaseClient.from('equipment_diagnostics').select('created_at, equipment_type, make, model, symptoms, diagnosis, status').order('created_at', { ascending: false }).limit(10),
+      supabaseClient.from('quote_requests').select('created_at, name, company, belt_width, quantity, status').order('created_at', { ascending: false }).limit(10),
+    ]);
+    const appContext = `
+
+APP DATA (this user's own records — use when they ask about their diagnostics, quotes or history; never invent records):
+Belt diagnostics: ${JSON.stringify(belt.data ?? [])}
+Equipment diagnostics: ${JSON.stringify(equip.data ?? [])}
+BeltSaver quote requests (visible to admins only): ${JSON.stringify(quotes.data ?? [])}
+
+APP PAGES to point users to:
+- Request a BeltSaver quote: /beltsaver/quote
+- Equipment diagnostics: /app/equipment ; public overview: /fleet-repair-diagnostics
+- Materials & Cox Aggs screen setup (crusher settings, deck openings, max TPH per machine — jaw, cone, HSI, VSI — for road base, clean rock, chips, sand): /aggregate-opps and /app/materials
+- Conveyor maintenance guide: /conveyor-maintenance
+Format links as markdown, e.g. [Request a quote](/beltsaver/quote).`;
+
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -100,7 +120,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
         messages: [
-          { role: "system", content: systemPrompt },
+          { role: "system", content: systemPrompt + appContext },
           ...messages,
         ],
         stream: true,

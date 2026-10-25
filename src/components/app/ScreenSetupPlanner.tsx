@@ -3,11 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MACHINES, PRODUCTS, planSetup, type Machine } from '@/lib/screenSetup';
+import { FEED_MATERIALS, MACHINES, PRODUCTS, planSetup, type Machine } from '@/lib/screenSetup';
 
 export const ScreenSetupPlanner = () => {
   const [productVal, setProductVal] = useState(PRODUCTS[3].value);
   const [feed, setFeed] = useState('250');
+  const [material, setMaterial] = useState(FEED_MATERIALS[0].value);
+  const [feedTop, setFeedTop] = useState('');
+  const [myScreen, setMyScreen] = useState('');
+  const plant = { feedMaterial: material, feedTopSize: Number(feedTop) || undefined, myScreenOpening: Number(myScreen) || undefined };
   const product = PRODUCTS.find((p) => p.value === productVal)!;
   const tph = Math.max(1, Number(feed) || 0);
 
@@ -24,6 +28,23 @@ export const ScreenSetupPlanner = () => {
             </Select>
           </div>
           <div className="space-y-2">
+            <Label>Your plant's feed material</Label>
+            <Select value={material} onValueChange={setMaterial}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>{FEED_MATERIALS.map((f) => <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="feedTop">Biggest feed rock (in)</Label>
+              <Input id="feedTop" type="number" step="0.25" min={0} placeholder="e.g. 6" value={feedTop} onChange={(e) => setFeedTop(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="myScreen">Your top screen size (in)</Label>
+              <Input id="myScreen" type="number" step="0.0625" min={0} placeholder="e.g. 0.875" value={myScreen} onChange={(e) => setMyScreen(e.target.value)} />
+            </div>
+          </div>
+          <div className="space-y-2">
             <Label htmlFor="feedTph">Feed rate per machine (TPH)</Label>
             <Input id="feedTph" type="number" min={1} value={feed} onChange={(e) => setFeed(e.target.value)} />
           </div>
@@ -31,7 +52,7 @@ export const ScreenSetupPlanner = () => {
       </Card>
 
       {MACHINES.map((m) => {
-        const r = planSetup(m.value as Machine, product, tph);
+        const r = planSetup(m.value as Machine, product, tph, plant);
         return (
           <Card key={m.value}>
             <CardHeader className="pb-2">
