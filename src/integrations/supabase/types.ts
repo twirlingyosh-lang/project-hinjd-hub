@@ -27,7 +27,7 @@ export type Database = {
           severity: string
           status: string
           tracking_direction: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           attachments?: string[] | null
@@ -41,7 +41,7 @@ export type Database = {
           severity: string
           status?: string
           tracking_direction: string
-          user_id?: string
+          user_id?: string | null
         }
         Update: {
           attachments?: string[] | null
@@ -55,7 +55,7 @@ export type Database = {
           severity?: string
           status?: string
           tracking_direction?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }

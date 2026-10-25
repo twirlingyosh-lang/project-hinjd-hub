@@ -236,7 +236,7 @@ var list_fleet_units_default = defineTool5({
 });
 
 // src/lib/mcp/index.ts
-var projectRef = "umfsspcknteaocrbveat";
+var projectRef = "zpslppxkrwjxsfotypdp";
 var mcp_default = defineMcp({
   name: "project-hinjd-hub",
   title: "Project Hinjd Hub",
