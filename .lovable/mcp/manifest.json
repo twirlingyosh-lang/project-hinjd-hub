@@ -4,7 +4,7 @@
   "path": "/functions/v1/mcp",
   "auth": {
     "type": "oauth",
-    "issuer": "https://umfsspcknteaocrbveat.supabase.co/auth/v1",
+    "issuer": "https://zpslppxkrwjxsfotypdp.supabase.co/auth/v1",
     "accepted_audiences": [
       "authenticated"
     ]
@@ -12,7 +12,7 @@
   "mcp": {
     "server": {
       "name": "project-hinjd-hub",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "title": "Project Hinjd Hub"
     },
     "tools": [
@@ -227,6 +227,75 @@
               "description": "Filter by unit status, e.g. 'active'."
             }
           },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_quote_requests",
+        "title": "List BeltSaver quote requests",
+        "description": "List BeltSaver quote requests and leads submitted from the public quote page, newest first. Only admin accounts can see them.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "description": "Maximum requests to return (default 25)."
+            },
+            "status": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 50,
+              "description": "Filter by status, e.g. 'new' or 'contacted'."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_quote_status",
+        "title": "Update quote request status",
+        "description": "Change the status of a BeltSaver quote request (admin accounts only).",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Quote request id."
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "new",
+                "contacted",
+                "quoted",
+                "won",
+                "lost"
+              ],
+              "description": "New status."
+            }
+          },
+          "required": [
+            "id",
+            "status"
+          ],
           "additionalProperties": false,
           "$schema": "http://json-schema.org/draft-07/schema#"
         },
