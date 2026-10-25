@@ -196,7 +196,7 @@ const BeltAssistant = () => {
             <Bot size={18} className="text-primary-foreground" />
           </div>
           <div>
-            <h3 className="font-bold text-sm">BeltSaver AI</h3>
+            <h3 className="font-bold text-sm">Hinjd AI</h3>
             <p className="text-xs text-muted-foreground">Diagnostic Assistant</p>
           </div>
         </div>

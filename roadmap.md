@@ -27,3 +27,4 @@
 - [ ] Cox Aggs quotes share portal + payment flow with BeltSaver (blocked: product list)
 - [ ] Switch Stripe to test mode + end-to-end portal walkthrough with test email
 - [ ] Real-time updates on all screens + AI assistant available on every screen
+- [ ] Play Store release (needs user: build + upload from own computer, Google Play developer account)
