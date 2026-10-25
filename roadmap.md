@@ -24,3 +24,4 @@
 - [ ] Repair Logs: Download PDF per entry
 - [ ] Saved Runs empty state: quick-start buttons
 - [ ] Fix 3 payment security issues
+- [ ] Cox Aggs quotes share portal + payment flow with BeltSaver (blocked: product list)
