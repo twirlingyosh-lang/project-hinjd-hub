@@ -71,6 +71,13 @@
       "when": 1792944331663,
       "tag": "0009_quote_product_details",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793022244731,
+      "tag": "0010_lock_storage_owner_only",
+      "breakpoints": true
     }
   ]
 }
