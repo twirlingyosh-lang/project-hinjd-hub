@@ -39,3 +39,4 @@
 - [x] Lock uploaded photos/files to owner (+admin)
 - [ ] Slack alert for every new lead (needs user: connect Slack + pick channel)
 - [ ] Google Play walkthrough (answered in chat; upload needs user's computer + Play account)
+- [ ] Real equipment list with hours/temp/pressure for fleet alerts (needs user: machine list + readings)
