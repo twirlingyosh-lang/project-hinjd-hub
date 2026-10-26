@@ -36,3 +36,6 @@
 - [x] End-to-end test: demo walkthrough, aggregate quote, alert-to-work-order
 - [x] Demo: Reset button + auto-expiry, demo-only storage key
 - [x] Regression tests: demo reset/expiry touch only demo keys, no DB/Stripe
+- [x] Lock uploaded photos/files to owner (+admin)
+- [ ] Slack alert for every new lead (needs user: connect Slack + pick channel)
+- [ ] Google Play walkthrough (answered in chat; upload needs user's computer + Play account)
