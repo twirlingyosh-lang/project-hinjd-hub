@@ -38,5 +38,7 @@
 - [x] Regression tests: demo reset/expiry touch only demo keys, no DB/Stripe
 - [x] Lock uploaded photos/files to owner (+admin)
 - [ ] Slack alert for every new lead (needs user: connect Slack + pick channel)
+- [ ] Slack automatic notifications for BeltSaver quotes, aggregate quotes, and fleet alerts (needs Slack connection + channel)
+- [ ] Replace Cox Aggs placeholder prices with real per-ton prices (needs user's prices and any volume discounts)
 - [ ] Google Play walkthrough (answered in chat; upload needs user's computer + Play account)
 - [ ] Real equipment list with hours/temp/pressure for fleet alerts (needs user: machine list + readings)
