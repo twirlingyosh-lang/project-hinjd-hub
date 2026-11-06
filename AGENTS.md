@@ -1,0 +1,2 @@
+# Architecture rules
+- Keep the Facebook hub a curated public resource feed with outbound Facebook share links, not an authenticated Facebook feed; this avoids suggesting that unconnected social data is live.

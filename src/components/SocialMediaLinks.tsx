@@ -1,4 +1,6 @@
 import { Facebook, Instagram } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 // TikTok icon (not in lucide-react)
 const TikTokIcon = ({ size = 20 }: { size?: number }) => (
@@ -77,6 +79,7 @@ const SocialMediaLinks = ({ variant = 'footer' }: SocialMediaLinksProps) => {
           </a>
         ))}
       </div>
+      <Button variant="link" asChild><Link to="/facebook-hub">Facebook Hub</Link></Button>
     </div>
   );
 };
