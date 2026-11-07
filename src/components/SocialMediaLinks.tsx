@@ -24,7 +24,7 @@ const SocialMediaLinks = ({ variant = 'footer' }: SocialMediaLinksProps) => {
     {
       name: 'Facebook',
       icon: <Facebook size={20} />,
-      url: 'https://facebook.com/hinjdglobal',
+      url: 'https://www.facebook.com/share/18QQKcaRwY/',
       hoverColor: 'hover:text-[#1877F2]'
     },
     {
