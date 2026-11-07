@@ -78,6 +78,13 @@
       "when": 1793022244731,
       "tag": "0010_lock_storage_owner_only",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1794010439233,
+      "tag": "0011_slack_event_notifications",
+      "breakpoints": true
     }
   ]
 }

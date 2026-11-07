@@ -914,6 +914,36 @@ export type Database = {
         }
         Relationships: []
       }
+      slack_notifications: {
+        Row: {
+          created_at: string
+          delivered_at: string | null
+          error: string | null
+          id: string
+          kind: string
+          message: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          delivered_at?: string | null
+          error?: string | null
+          id?: string
+          kind: string
+          message: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          delivered_at?: string | null
+          error?: string | null
+          id?: string
+          kind?: string
+          message?: string
+          status?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           created_at: string
