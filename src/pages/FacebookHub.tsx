@@ -9,6 +9,7 @@ import beltImage from '@/assets/beltsaver-closeup.jpg';
 import quarryImage from '@/assets/quarry-aerial.jpg';
 import fleetImage from '@/assets/hero-dozer.jpg';
 
+const createPageUrl = 'https://www.facebook.com/pages/create';
 const facebookPage = 'https://www.facebook.com/share/18QQKcaRwY/';
 const posts = [
   { id: 'belt', category: 'Conveyors', title: 'BeltSaver® conveyor protection', text: 'Tail pulley protection for your conveyor operation.', image: beltImage, path: '/beltsaver', action: 'Explore BeltSaver' },
@@ -29,7 +30,7 @@ export default function FacebookHub() {
     <Helmet><title>HINJD Facebook Hub</title><meta name="description" content="HINJD community updates for BeltSaver, Cox Aggs, and equipment maintenance." /></Helmet>
     <header className="border-b border-border"><div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4">
       <Button variant="ghost" asChild><Link to="/"><ArrowLeft /> HINJD Hub</Link></Button>
-      <Button variant="outline" asChild><a href={facebookPage} target="_blank" rel="noopener noreferrer"><Facebook /> Facebook <ArrowUpRight /></a></Button>
+      <div className="flex flex-wrap gap-2"><Button variant="secondary" asChild><a href={createPageUrl} target="_blank" rel="noopener noreferrer"><Facebook /> Create Facebook Page <ArrowUpRight /></a></Button><Button variant="outline" asChild><a href={facebookPage} target="_blank" rel="noopener noreferrer"><Facebook /> Facebook <ArrowUpRight /></a></Button></div>
     </div></header>
     <main className="mx-auto max-w-7xl px-4 py-8">
       <div className="mb-8 flex flex-wrap items-end justify-between gap-5"><div><p className="mb-2 text-sm text-primary">HINJD GLOBAL / COMMUNITY</p><h1 className="text-3xl font-bold sm:text-4xl">Facebook Hub</h1></div>
@@ -48,7 +49,7 @@ export default function FacebookHub() {
           {visible.length === 0 && <p className="py-12 text-muted-foreground">No matching updates.</p>}
         </section>
         <aside aria-label="Community sidebar" className="space-y-6 border-t border-border pt-6 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
-          <div><Users className="mb-3 h-7 w-7 text-primary" /><h2 className="mb-2 text-lg font-semibold">HINJD community</h2><p className="mb-4 text-sm text-muted-foreground">Conveyors. Aggregates. Equipment.</p><Button className="w-full" asChild><a href={facebookPage} target="_blank" rel="noopener noreferrer"><Facebook /> Visit Facebook page</a></Button></div>
+          <div><Users className="mb-3 h-7 w-7 text-primary" /><h2 className="mb-2 text-lg font-semibold">HINJD community</h2><p className="mb-4 text-sm text-muted-foreground">Conveyors. Aggregates. Equipment.</p><Button className="w-full" asChild><a href={facebookPage} target="_blank" rel="noopener noreferrer"><Facebook /> Visit Facebook page</a></Button><Button variant="outline" className="mt-2 w-full" asChild><a href={createPageUrl} target="_blank" rel="noopener noreferrer"><Facebook /> Create Facebook Page</a></Button></div>
           <div className="border-t border-border pt-5"><h2 className="mb-3 font-semibold">Around the hub</h2>{posts.map(post => <Button key={post.id} variant="ghost" className="w-full justify-between" asChild><Link to={post.path}>{post.category}<ArrowUpRight /></Link></Button>)}</div>
           <Button variant="outline" className="w-full" asChild><Link to="/beltsaver/quote">Request a BeltSaver quote</Link></Button>
         </aside>
