@@ -43,3 +43,4 @@
 - [x] Facebook hub: two-column feed, community sidebar, share controls (no Facebook sign-in)
 - [ ] Google Play walkthrough (answered in chat; upload needs user's computer + Play account)
 - [ ] Real equipment list with hours/temp/pressure for fleet alerts (needs user: machine list + readings)
+- [x] Post-purchase confirmation screen (account access + receipt link)
