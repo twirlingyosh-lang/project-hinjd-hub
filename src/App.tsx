@@ -89,6 +89,7 @@ const ThreeDViewerPage = lazyWithRetry(() => import("./pages/app/ThreeDViewerPag
 const FleetMapPage = lazyWithRetry(() => import("./pages/app/FleetMapPage"), "lazy-retry:fleet-map");
 const BlogPage = lazyWithRetry(() => import("./pages/BlogPage"), "lazy-retry:blog");
 const FacebookHub = lazyWithRetry(() => import("./pages/FacebookHub"), "lazy-retry:facebook-hub");
+const PurchaseSuccess = lazyWithRetry(() => import("./pages/PurchaseSuccess"), "lazy-retry:purchase-success");
 
 // CRM pages
 const CRMDashboard = lazyWithRetry(() => import("./pages/crm/CRMDashboard"), "lazy-retry:crm-dashboard");
@@ -160,6 +161,7 @@ const App = () => (
                 <Route path="/app/fleet-map" element={<FleetMapPage />} />
                 <Route path="/blog" element={<BlogPage />} />
                 <Route path="/facebook-hub" element={<FacebookHub />} />
+                <Route path="/purchase-success" element={<PurchaseSuccess />} />
                 {/* CRM Routes */}
                 <Route path="/crm" element={<CRMDashboard />} />
                 <Route path="/crm/login" element={<CRMLogin />} />
