@@ -86,7 +86,7 @@ serve(async (req) => {
         },
       ],
       mode: "subscription",
-      success_url: `${requestOrigin}/aggregate-opps?checkout=success`,
+      success_url: `${requestOrigin}/purchase-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${requestOrigin}/aggregate-opps?checkout=canceled`,
       metadata: {
         user_id: user.id,
