@@ -1,3 +1,4 @@
 # Architecture rules
 - Keep the Facebook hub a curated public resource feed with outbound Facebook share links, not an authenticated Facebook feed; this avoids suggesting that unconnected social data is live.
 - Queue Slack notifications in service-only records from quote inserts and equipment threshold crossings; webhook delivery claims each event atomically and never accepts caller-provided messages, preventing spoofing and duplicate sends.
+- Use shared server plan definitions for checkout and subscription access; validate live recurring prices before checkout to prevent advertised-price mismatches.
