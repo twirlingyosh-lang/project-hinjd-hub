@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { PRODUCT_TIERS } from '../_shared/hubPlans.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,10 +18,6 @@ const logStep = (step: string, details?: Record<string, unknown>) => {
 };
 
 // Hardcoded Stripe product IDs to tier mapping
-const PRODUCT_TIERS: Record<string, string> = {
-  "prod_Thsg6srM9owk9O": "enterprise",
-  "prod_ThsgeNu6wH9NSp": "pro",
-};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -95,7 +92,8 @@ serve(async (req) => {
 
     if (hasActiveSub) {
       const subscription = subscriptions.data[0];
-      subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
+      const end = subscription.items.data[0]?.current_period_end ?? subscription.current_period_end;
+      subscriptionEnd = end ? new Date(end * 1000).toISOString() : null;
       productId = subscription.items.data[0].price.product as string;
       tier = PRODUCT_TIERS[productId] || null;
       

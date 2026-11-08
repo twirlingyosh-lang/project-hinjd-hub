@@ -1,6 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { HUB_PLANS } from '../_shared/hubPlans.ts';
+import { z } from 'https://esm.sh/zod@3.23.8';
 
 const ALLOWED_ORIGINS = ["https://hinjd-ecosystem-hub.lovable.app", "https://id-preview--8a90f329-1999-4f92-9e0a-6730f7f00d7a.lovable.app", "http://localhost:8080"];
 const safeOrigin = (o: string | null) => (o && ALLOWED_ORIGINS.includes(o) ? o : ALLOWED_ORIGINS[0]);
@@ -12,9 +14,10 @@ const corsHeaders = {
 
 // Hardcoded Stripe price IDs
 const PRICE_IDS = {
-  pro: "price_1TE7rIB2N13DcggIPO18gyqS",
-  enterprise: "price_1TE7rJB2N13DcggIaHopPNNX",
+  pro: HUB_PLANS.pro.priceId,
+  enterprise: HUB_PLANS.enterprise.priceId,
 };
+const Body = z.object({ tier: z.enum(['pro', 'enterprise']) });
 
 const logStep = (step: string, details?: Record<string, unknown>) => {
   // Log without PII (no user IDs or emails)
@@ -42,10 +45,9 @@ serve(async (req) => {
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
     logStep("Stripe key verified");
 
-    const { tier } = await req.json();
-    if (!tier || !PRICE_IDS[tier as keyof typeof PRICE_IDS]) {
-      throw new Error("Valid tier (pro or enterprise) is required");
-    }
+    const parsed = Body.safeParse(await req.json().catch(() => ({})));
+    if (!parsed.success) return new Response(JSON.stringify({ success: false, error: 'Valid tier required' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    const { tier } = parsed.data;
     
     const priceId = PRICE_IDS[tier as keyof typeof PRICE_IDS];
     logStep("Tier and price ID determined", { tier, priceId });
@@ -62,6 +64,10 @@ serve(async (req) => {
     const stripe = new Stripe(stripeKey, {
       apiVersion: "2025-08-27.basil",
     });
+    const price = await stripe.prices.retrieve(priceId);
+    if (!price.active || !price.livemode || price.currency !== 'usd' || price.unit_amount !== HUB_PLANS[tier].amount || price.recurring?.interval !== 'month' || price.recurring.interval_count !== 1) {
+      throw new Error('Subscription price does not match the advertised live monthly plan');
+    }
 
     // Check if customer already exists
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
@@ -87,7 +93,7 @@ serve(async (req) => {
       ],
       mode: "subscription",
       success_url: `${requestOrigin}/purchase-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${requestOrigin}/aggregate-opps?checkout=canceled`,
+      cancel_url: `${requestOrigin}/app/upgrade?checkout=canceled`,
       metadata: {
         user_id: user.id,
         tier: tier,

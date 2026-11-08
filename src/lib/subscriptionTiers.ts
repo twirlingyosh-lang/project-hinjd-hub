@@ -1,8 +1,8 @@
 export const SUBSCRIPTION_TIERS = {
   enterprise: {
     name: "Enterprise",
-    price_id: "price_1SkSvKApXzGOpOgg8flgnodS",
-    product_id: "prod_Thsg6srM9owk9O",
+    price_id: "price_1UZN5HB2N13DcggIdyL8sKfC",
+    product_id: "prod_VaYB4yGfJN36F9",
     price: 300,
     features: [
       "Unlimited diagnostic analyses",
@@ -15,8 +15,8 @@ export const SUBSCRIPTION_TIERS = {
   },
   pro: {
     name: "Pro",
-    price_id: "price_1SkSvRApXzGOpOgg3YvtNViL",
-    product_id: "prod_ThsgeNu6wH9NSp",
+    price_id: "price_1UZN5GB2N13DcggI4960b5W4",
+    product_id: "prod_VaYBG7Ko6xptnQ",
     price: 49,
     features: [
       "10 diagnostic analyses per month",
