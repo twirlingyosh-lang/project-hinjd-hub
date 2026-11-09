@@ -71,6 +71,7 @@ const AccountPage = lazyWithRetry(() => import("./pages/app/AccountPage"), "lazy
 const LegalPage = lazyWithRetry(() => import("./pages/app/LegalPage"), "lazy-retry:legal");
 const InstallPage = lazyWithRetry(() => import("./pages/app/InstallPage"), "lazy-retry:install");
 const HinjdDashboard = lazyWithRetry(() => import("./pages/app/HinjdDashboard"), "lazy-retry:dashboard");
+const PaidDashboard = lazyWithRetry(() => import("./pages/app/PaidDashboard"), "lazy-retry:paid-dashboard");
 const AdminPanel = lazyWithRetry(() => import("./pages/app/AdminPanel"), "lazy-retry:admin");
 const WorkflowsPage = lazyWithRetry(() => import("./pages/app/WorkflowsPage"), "lazy-retry:workflows");
 const SnippetsPage = lazyWithRetry(() => import("./pages/app/SnippetsPage"), "lazy-retry:snippets");

@@ -103,6 +103,12 @@ serve(async (req) => {
         tier,
         endDate: subscriptionEnd 
       });
+    }
+
+    const hasPaidSub = hasActiveSub && (tier === 'pro' || tier === 'enterprise');
+
+    if (hasPaidSub) {
+      const subscription = subscriptions.data[0];
 
       // Update local subscriptions table
       await supabaseClient

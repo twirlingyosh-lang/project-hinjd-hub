@@ -33,10 +33,11 @@ const moduleItems = [
 ];
 
 const adminItems = [
-  { path: '/app/dashboard', icon: BarChart3, label: 'HQ Command', description: 'Financial dashboard' },
+  { path: '/app/hq-command', icon: BarChart3, label: 'HQ Command', description: 'Financial dashboard' },
 ];
 
 const utilityItems = [
+  { path: '/app/dashboard', icon: BarChart3, label: 'Dashboard', description: 'Plan, billing & customer records' },
   { path: '/app/settings', icon: Settings, label: 'Settings', description: 'App preferences' },
   { path: '/app/upgrade', icon: Crown, label: 'Upgrade', description: 'Plans & billing' },
   { path: '/app/account', icon: User, label: 'Account', description: 'Profile settings' },

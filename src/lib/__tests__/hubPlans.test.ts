@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { HUB_PLANS, PRODUCT_TIERS } from '../../../supabase/functions/_shared/hubPlans';
-import { SUBSCRIPTION_TIERS } from '../subscriptionTiers';
+import { canAccessPaidDashboard, SUBSCRIPTION_TIERS } from '../subscriptionTiers';
 
 describe('live monthly plans', () => {
   it('Pro charges exactly $49 and maps to Pro access', () => {
