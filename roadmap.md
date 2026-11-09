@@ -45,5 +45,5 @@
 - [ ] Real equipment list with hours/temp/pressure for fleet alerts (needs user: machine list + readings)
 - [x] Post-purchase confirmation screen (account access + receipt link)
 - [x] Publish Facebook Hub and purchase confirmation pages (deployment requested)
-- [ ] Link Facebook page from app (setup text supplied; clarify whether Hinjd.hub is page name or username and obtain full URL)
+- [x] Link Hinjd.hub Facebook page from app; Facebook Hub and Buy the app buttons connected
 - [ ] Verify live Stripe checkout and purchase receipt PDF (connected account has live prices; checkout price mismatch requires correction before buyers pay)
