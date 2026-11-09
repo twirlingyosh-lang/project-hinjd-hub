@@ -29,3 +29,8 @@ export const SUBSCRIPTION_TIERS = {
 } as const;
 
 export type SubscriptionTier = keyof typeof SUBSCRIPTION_TIERS;
+
+export const canAccessPaidDashboard = (
+  subscribed: boolean,
+  tier: string | null,
+): tier is SubscriptionTier => subscribed && (tier === 'pro' || tier === 'enterprise');

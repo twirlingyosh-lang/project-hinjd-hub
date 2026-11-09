@@ -71,6 +71,7 @@ const AccountPage = lazyWithRetry(() => import("./pages/app/AccountPage"), "lazy
 const LegalPage = lazyWithRetry(() => import("./pages/app/LegalPage"), "lazy-retry:legal");
 const InstallPage = lazyWithRetry(() => import("./pages/app/InstallPage"), "lazy-retry:install");
 const HinjdDashboard = lazyWithRetry(() => import("./pages/app/HinjdDashboard"), "lazy-retry:dashboard");
+const PaidDashboard = lazyWithRetry(() => import("./pages/app/PaidDashboard"), "lazy-retry:paid-dashboard");
 const AdminPanel = lazyWithRetry(() => import("./pages/app/AdminPanel"), "lazy-retry:admin");
 const WorkflowsPage = lazyWithRetry(() => import("./pages/app/WorkflowsPage"), "lazy-retry:workflows");
 const SnippetsPage = lazyWithRetry(() => import("./pages/app/SnippetsPage"), "lazy-retry:snippets");
@@ -142,7 +143,8 @@ const App = () => (
                 <Route path="/app/account" element={<AccountPage />} />
                 <Route path="/app/legal" element={<LegalPage />} />
                 <Route path="/app/install" element={<InstallPage />} />
-                <Route path="/app/dashboard" element={<HinjdDashboard />} />
+                <Route path="/app/dashboard" element={<PaidDashboard />} />
+                <Route path="/app/hq-command" element={<HinjdDashboard />} />
                 <Route path="/app/admin" element={<AdminPanel />} />
                 <Route path="/app/workflows" element={<WorkflowsPage />} />
                 <Route path="/app/snippets" element={<SnippetsPage />} />
