@@ -160,11 +160,11 @@ serve(async (req) => {
     }
 
     return new Response(JSON.stringify({
-      subscribed: hasActiveSub,
-      tier: tier,
+      subscribed: hasPaidSub,
+      tier: hasPaidSub ? tier : null,
       product_id: productId,
-      subscription_end: subscriptionEnd,
-      aggregate_ops_active: hasActiveSub && (tier === 'pro' || tier === 'enterprise'),
+      subscription_end: hasPaidSub ? subscriptionEnd : null,
+      aggregate_ops_active: hasPaidSub,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

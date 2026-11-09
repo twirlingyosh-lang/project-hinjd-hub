@@ -16,3 +16,17 @@ describe('live monthly plans', () => {
     expect(PRODUCT_TIERS[HUB_PLANS.enterprise.productId]).toBe('enterprise');
   });
 });
+
+describe('paid Dashboard access', () => {
+  it('unlocks for active Pro and Enterprise subscriptions', () => {
+    expect(canAccessPaidDashboard(true, 'pro')).toBe(true);
+    expect(canAccessPaidDashboard(true, 'enterprise')).toBe(true);
+  });
+
+  it('stays locked for unpaid, free and unrecognized plans', () => {
+    expect(canAccessPaidDashboard(false, 'pro')).toBe(false);
+    expect(canAccessPaidDashboard(false, 'enterprise')).toBe(false);
+    expect(canAccessPaidDashboard(true, 'free')).toBe(false);
+    expect(canAccessPaidDashboard(true, null)).toBe(false);
+  });
+});

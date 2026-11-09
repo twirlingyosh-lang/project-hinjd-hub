@@ -143,7 +143,8 @@ const App = () => (
                 <Route path="/app/account" element={<AccountPage />} />
                 <Route path="/app/legal" element={<LegalPage />} />
                 <Route path="/app/install" element={<InstallPage />} />
-                <Route path="/app/dashboard" element={<HinjdDashboard />} />
+                <Route path="/app/dashboard" element={<PaidDashboard />} />
+                <Route path="/app/hq-command" element={<HinjdDashboard />} />
                 <Route path="/app/admin" element={<AdminPanel />} />
                 <Route path="/app/workflows" element={<WorkflowsPage />} />
                 <Route path="/app/snippets" element={<SnippetsPage />} />
