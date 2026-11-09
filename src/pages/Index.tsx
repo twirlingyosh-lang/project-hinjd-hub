@@ -9,7 +9,7 @@ const Index = () => {
     "logo": "https://hinjd-ecosystem-hub.lovable.app/og-hinjd-hub.jpg",
     "description": "Industrial conveyor diagnostics and BeltSaver® technology solutions for mining, aggregates, and bulk material handling industries.",
     "sameAs": [
-      "https://www.facebook.com/share/18QQKcaRwY/",
+      "https://www.facebook.com/share/1H2i9cLLs4/",
       "https://www.instagram.com/hinjd_global/",
       "https://www.tiktok.com/@hinjd_global",
       "https://www.linkedin.com/company/hinjd-global"

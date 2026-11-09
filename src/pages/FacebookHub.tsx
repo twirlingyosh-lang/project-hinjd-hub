@@ -10,7 +10,7 @@ import quarryImage from '@/assets/quarry-aerial.jpg';
 import fleetImage from '@/assets/hero-dozer.jpg';
 
 const createPageUrl = 'https://www.facebook.com/pages/create';
-const facebookPage = 'https://www.facebook.com/share/18QQKcaRwY/';
+const facebookPage = 'https://www.facebook.com/share/1H2i9cLLs4/';
 const posts = [
   { id: 'belt', category: 'Conveyors', title: 'BeltSaver® conveyor protection', text: 'Tail pulley protection for your conveyor operation.', image: beltImage, path: '/beltsaver', action: 'Explore BeltSaver' },
   { id: 'aggs', category: 'Aggregates', title: 'Cox Aggs · materials & plant setup', text: 'Aggregate products, quote requests, and screen setup planning.', image: quarryImage, path: '/aggregate-opps', action: 'Visit Cox Aggs' },
