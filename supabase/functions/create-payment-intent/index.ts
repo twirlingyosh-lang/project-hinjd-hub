@@ -56,7 +56,7 @@ serve(async (req) => {
 
     const userEmail = claimsData.claims.email as string;
     const userId = claimsData.claims.sub as string;
-    logStep("User authenticated", { userId, email: userEmail });
+    logStep("User authenticated");
 
     // Parse request body
     const { priceId, amount, currency = "usd", metadata = {} } = await req.json();
