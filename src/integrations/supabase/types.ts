@@ -514,6 +514,7 @@ export type Database = {
           status: string | null
           telemetry: Json | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           current_spec_task?: string | null
@@ -527,6 +528,7 @@ export type Database = {
           status?: string | null
           telemetry?: Json | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           current_spec_task?: string | null
@@ -540,8 +542,17 @@ export type Database = {
           status?: string | null
           telemetry?: Json | null
           updated_at?: string | null
+          user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "equipment_master_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       equipment_parts: {
         Row: {
