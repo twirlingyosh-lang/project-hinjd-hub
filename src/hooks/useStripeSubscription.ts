@@ -60,6 +60,7 @@ export const useStripeSubscription = () => {
         isLoading: false,
         error: null,
       });
+      window.dispatchEvent(new Event('hinjd-subscription-changed'));
     } catch (error) {
       console.error('Error checking subscription:', error);
       setStatus(prev => ({

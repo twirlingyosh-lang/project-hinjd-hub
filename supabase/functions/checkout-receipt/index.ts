@@ -19,6 +19,7 @@ Deno.serve(async (req) => {
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, { apiVersion: "2025-08-27.basil" });
     const s = await stripe.checkout.sessions.retrieve(parsed.data.session_id, { expand: ["invoice", "payment_intent.latest_charge"] });
     if (s.metadata?.user_id !== user.id) return json({ success: false, error: "Not your purchase" });
+    if (s.payment_status !== "paid") return json({ success: false, status: s.payment_status, error: "Payment has not completed" });
     const inv = s.invoice as Stripe.Invoice | null;
     const charge = (s.payment_intent as Stripe.PaymentIntent | null)?.latest_charge as Stripe.Charge | null;
     return json({

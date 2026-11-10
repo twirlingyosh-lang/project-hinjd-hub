@@ -46,6 +46,8 @@ export const useSubscription = () => {
     };
 
     fetchSubscription();
+    window.addEventListener('hinjd-subscription-changed', fetchSubscription);
+    return () => window.removeEventListener('hinjd-subscription-changed', fetchSubscription);
   }, [user]);
 
   const isSubscribed = subscription?.status === 'active' || subscription?.status === 'trial';
