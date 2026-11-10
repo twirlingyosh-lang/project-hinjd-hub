@@ -49,3 +49,4 @@
 - [ ] Connect real Stripe account and verify live Pro/Enterprise charges plus thank-you receipt PDF (correct $49/$300 pricing before buyers pay)
 - [ ] Build paid Dashboard that unlocks for Pro/Enterprise buyers and shows their account
 - [ ] Create/manage Hinjd.hub Facebook page and pinned post (needs Facebook account/page management access); verify live Hub link
+- [ ] Audit and fix current build, runtime, payment, Dashboard and launch issues; document account-only external steps separately
