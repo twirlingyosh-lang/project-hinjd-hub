@@ -328,6 +328,13 @@ export type Database = {
             referencedRelation: "equipment_parts"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "dealer_inventory_part_id_fkey"
+            columns: ["part_id"]
+            isOneToOne: false
+            referencedRelation: "equipment_parts_catalog"
+            referencedColumns: ["id"]
+          },
         ]
       }
       diagnostic_logic: {
@@ -1268,7 +1275,42 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      equipment_parts_catalog: {
+        Row: {
+          avg_price: number | null
+          category: string | null
+          description: string | null
+          equipment_types: string[] | null
+          id: string | null
+          image_url: string | null
+          makes: string[] | null
+          name: string | null
+          part_number: string | null
+        }
+        Insert: {
+          avg_price?: number | null
+          category?: string | null
+          description?: string | null
+          equipment_types?: string[] | null
+          id?: string | null
+          image_url?: string | null
+          makes?: string[] | null
+          name?: string | null
+          part_number?: string | null
+        }
+        Update: {
+          avg_price?: number | null
+          category?: string | null
+          description?: string | null
+          equipment_types?: string[] | null
+          id?: string | null
+          image_url?: string | null
+          makes?: string[] | null
+          name?: string | null
+          part_number?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       activate_user_module: {
