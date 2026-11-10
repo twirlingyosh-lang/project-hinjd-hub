@@ -21,7 +21,7 @@ export default defineTool({
     await logToolCall(supabase, "search_parts");
     const escaped = query.replace(/[%,]/g, " ");
     let request = supabase
-      .from("equipment_parts")
+      .from("equipment_parts_catalog")
       .select("id, part_number, name, description, category, makes, equipment_types, avg_price")
       .or(`name.ilike.%${escaped}%,part_number.ilike.%${escaped}%`)
       .limit(limit ?? 10);
