@@ -13,6 +13,7 @@ import { Send, Loader2, Wrench, Truck, AlertTriangle, Settings, Zap, History, Ma
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAdminRole } from '@/hooks/useAdminRole';
 import GoogleMapView from '@/components/app/GoogleMapView';
 import { useNavigate } from 'react-router-dom';
 import { useAnalytics } from '@/hooks/useAnalytics';
@@ -116,6 +117,7 @@ export const EquipmentDiagnostics = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { user, session } = useAuth();
+  const { isAdmin } = useAdminRole();
   const navigate = useNavigate();
   const { trackDiagnostic, trackSearch, trackFileUpload, trackFormSubmit } = useAnalytics();
 
@@ -880,19 +882,21 @@ export const EquipmentDiagnostics = () => {
                   <MapPin className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>No dealers found</p>
                   <p className="text-sm mt-2">Try a different search</p>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" className="mt-4">
-                        Add Dealer
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Add a Dealer</DialogTitle>
-                      </DialogHeader>
-                      <AddDealerForm onSuccess={fetchDealers} />
-                    </DialogContent>
-                  </Dialog>
+                  {isAdmin && (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="mt-4">
+                          Add Dealer
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Add a Dealer</DialogTitle>
+                        </DialogHeader>
+                        <AddDealerForm onSuccess={fetchDealers} />
+                      </DialogContent>
+                    </Dialog>
+                  )}
                 </div>
               ) : (
                 <ScrollArea className="flex-1">

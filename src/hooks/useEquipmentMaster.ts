@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 export interface EquipmentNode {
   node_id: string;
@@ -20,16 +21,19 @@ const QUERY_KEY = ['equipment-master'];
 
 export function useEquipmentMaster() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const queryKey = ['equipment-master', user?.id ?? 'signed-out'];
 
-  // Subscribe to realtime changes
+  // Subscribe only to the signed-in account's permitted realtime changes.
   useEffect(() => {
+    if (!user) return;
     const channel = supabase
-      .channel('equipment-master-realtime')
+      .channel(`equipment-master-realtime-${user.id}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'equipment_master' },
         () => {
-          queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+          queryClient.invalidateQueries({ queryKey });
         }
       )
       .subscribe();
@@ -37,10 +41,11 @@ export function useEquipmentMaster() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [queryClient]);
+  }, [queryClient, queryKey, user]);
 
   return useQuery({
-    queryKey: QUERY_KEY,
+    queryKey,
+    enabled: !!user,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('equipment_master' as any)
