@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -17,12 +17,10 @@ export interface EquipmentNode {
   updated_at: string | null;
 }
 
-const QUERY_KEY = ['equipment-master'];
-
 export function useEquipmentMaster() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const queryKey = ['equipment-master', user?.id ?? 'signed-out'];
+  const queryKey = useMemo(() => ['equipment-master', user?.id ?? 'signed-out'], [user?.id]);
 
   // Subscribe only to the signed-in account's permitted realtime changes.
   useEffect(() => {

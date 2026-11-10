@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { z } from "https://esm.sh/zod@3.23.8";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,6 +12,13 @@ const logStep = (step: string, details?: unknown) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[CREATE-PAYMENT-INTENT] ${step}${detailsStr}`);
 };
+
+const requestSchema = z.object({
+  priceId: z.string().trim().min(1).max(255),
+  amount: z.number().positive().optional(),
+  currency: z.string().optional(),
+  metadata: z.record(z.string(), z.string().max(500)).optional(),
+});
 
 serve(async (req) => {
   // Handle CORS preflight
@@ -56,18 +64,29 @@ serve(async (req) => {
 
     const userEmail = claimsData.claims.email as string;
     const userId = claimsData.claims.sub as string;
-    logStep("User authenticated", { userId, email: userEmail });
+    logStep("User authenticated");
 
-    // Parse request body
-    const { priceId, amount, currency = "usd", metadata = {} } = await req.json();
-    
-    if (!amount || amount <= 0) {
-      throw new Error("Valid amount is required");
+    const parsed = requestSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: "Invalid payment request" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
-    logStep("Request parsed", { priceId, amount, currency });
+    const { priceId, metadata = {} } = parsed.data;
 
-    // Initialize Stripe
+    // Initialize Stripe and derive the charge from the stored one-time price.
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
+    const price = await stripe.prices.retrieve(priceId);
+    if (!price.active || price.type !== "one_time" || !price.unit_amount) {
+      return new Response(JSON.stringify({ error: "Price is not available for one-time payment" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const amount = price.unit_amount;
+    const currency = price.currency;
+    logStep("Verified Stripe price", { priceId, amount, currency });
 
     // Find or create Stripe customer
     let customerId: string | undefined;
@@ -92,9 +111,9 @@ serve(async (req) => {
       customer: customerId,
       automatic_payment_methods: { enabled: true },
       metadata: {
-        supabase_user_id: userId,
-        price_id: priceId || "",
         ...metadata,
+        supabase_user_id: userId,
+        price_id: price.id,
       },
     });
 

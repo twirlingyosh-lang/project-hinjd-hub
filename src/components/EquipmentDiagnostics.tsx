@@ -207,7 +207,7 @@ export const EquipmentDiagnostics = () => {
     setIsLoadingParts(true);
     try {
       let query = supabase
-        .from('equipment_parts')
+        .from('equipment_parts_catalog')
         .select('*')
         .order('name');
 

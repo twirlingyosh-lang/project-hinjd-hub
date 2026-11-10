@@ -92,6 +92,13 @@
       "when": 1794292154225,
       "tag": "0012_tighten_lead_dealer_and_fleet_access",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1794292242726,
+      "tag": "0013_expose_read_only_parts_catalog",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DollarSign, TrendingUp, Truck, CreditCard, Loader2, Zap, ArrowUpRight } from 'lucide-react';
+import { DollarSign, TrendingUp, Truck, CreditCard, Loader2, ArrowUpRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,14 +18,12 @@ interface FleetUnit {
 interface FleetRevenueDashboardProps {
   fleetUnits: FleetUnit[];
   isAdmin: boolean;
-  onRefresh: () => void;
 }
 
-export function FleetRevenueDashboard({ fleetUnits, isAdmin, onRefresh }: FleetRevenueDashboardProps) {
+export function FleetRevenueDashboard({ fleetUnits }: FleetRevenueDashboardProps) {
   const { toast } = useToast();
   const { log } = useDebugLog();
   const [collectingId, setCollectingId] = useState<string | null>(null);
-  const [autoDepositing, setAutoDepositing] = useState(false);
 
   const totalMonthlyRevenue = fleetUnits.reduce((sum, u) => sum + (u.monthly_revenue || 0), 0);
   const activeUnits = fleetUnits.filter(u => u.status === 'active');
@@ -62,29 +60,6 @@ export function FleetRevenueDashboard({ fleetUnits, isAdmin, onRefresh }: FleetR
     }
   };
 
-  const handleAutoDeposit = async () => {
-    setAutoDepositing(true);
-    log('info', 'AutoDeposit', 'Starting fleet auto-deposit...');
-    try {
-      const { data, error } = await supabase.functions.invoke('fleet-auto-deposit');
-      if (error) {
-        log('error', 'AutoDeposit', `Edge function error: ${error.message}`);
-        throw error;
-      }
-      log('success', 'AutoDeposit', `Deposited $${(data?.total_deposited || 0).toFixed(2)} from ${data?.users_processed || 0} user(s)`);
-      toast({
-        title: 'Fleet Revenue Deposited',
-        description: `$${(data?.total_deposited || 0).toFixed(2)} deposited from ${data?.users_processed || 0} user(s)`,
-      });
-      onRefresh();
-    } catch (err: any) {
-      log('error', 'AutoDeposit', err.message || String(err));
-      toast({ title: 'Auto-deposit failed', description: err.message, variant: 'destructive' });
-    } finally {
-      setAutoDepositing(false);
-    }
-  };
-
   return (
     <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-5">
       <div className="flex justify-between items-center">
@@ -97,17 +72,7 @@ export function FleetRevenueDashboard({ fleetUnits, isAdmin, onRefresh }: FleetR
             <p className="text-[10px] text-slate-500">{revenueUnits.length} earning unit(s)</p>
           </div>
         </div>
-        {isAdmin && (
-          <Button
-            onClick={handleAutoDeposit}
-            disabled={autoDepositing || revenueUnits.length === 0}
-            size="sm"
-            className="bg-emerald-600 hover:bg-emerald-700 text-xs"
-          >
-            {autoDepositing ? <Loader2 size={14} className="animate-spin mr-1" /> : <Zap size={14} className="mr-1" />}
-            Auto-Deposit All
-          </Button>
-        )}
+        <p className="max-w-[180px] text-right text-[10px] text-slate-500">Estimates only; verified payments update balances.</p>
       </div>
 
       {/* Revenue Summary */}
