@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { CheckCircle2, Receipt, LogIn, LayoutDashboard, Loader2 } from 'lucide-react';
+import { CheckCircle2, Clock3, Receipt, LogIn, LayoutDashboard, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { isPaidCheckout } from '@/lib/purchase';
@@ -30,7 +30,9 @@ export default function PurchaseSuccess() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-2xl px-4 py-16">
-        <CheckCircle2 className="mb-4 h-14 w-14 text-primary" />
+        {info && !paymentConfirmed
+          ? <Clock3 className="mb-4 h-14 w-14 text-primary" />
+          : <CheckCircle2 className="mb-4 h-14 w-14 text-primary" />}
         <h1 className="mb-2 text-3xl font-bold">{info && !paymentConfirmed ? 'Payment not confirmed' : 'Thank you for your purchase'}</h1>
         <p className="mb-8 text-muted-foreground">
           {paymentConfirmed
@@ -49,7 +51,13 @@ export default function PurchaseSuccess() {
               {info.invoice_pdf && <Button variant="outline" asChild><a href={info.invoice_pdf} target="_blank" rel="noopener noreferrer">Download PDF</a></Button>}
             </div>
           ) : (info || signedIn === false || !sessionId) && (
-            <p className="text-sm text-muted-foreground">Check your email for the Stripe receipt{signedIn === false ? ', or sign in to view it here' : ''}. You can also see invoices in your Customer Portal.</p>
+            <p className="text-sm text-muted-foreground">
+              {paymentConfirmed
+                ? 'Check your email for the Stripe receipt. You can also see invoices in your Customer Portal.'
+                : info
+                  ? 'No receipt is available until Stripe confirms your payment.'
+                  : 'Sign in to view your receipt here. Stripe emails receipts only after completed payments.'}
+            </p>
           )}
         </section>
 
@@ -57,7 +65,7 @@ export default function PurchaseSuccess() {
           <h2 className="mb-3 font-semibold">How to access your account</h2>
           <ol className="list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
             <li>Sign in with the same Google or Apple account you used at checkout.</li>
-            <li>Open the Dashboard — your paid features unlock automatically (it can take a minute).</li>
+            <li>{paymentConfirmed || !info ? 'Open the Dashboard — your paid features unlock automatically (it can take a minute).' : 'After payment completes, open the Dashboard to access your paid features.'}</li>
             <li>Find quotes, invoices and receipts any time in the Customer Portal.</li>
             <li>Install the app on your phone from your browser's "Add to Home Screen" menu.</li>
           </ol>
